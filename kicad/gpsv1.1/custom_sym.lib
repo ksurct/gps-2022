@@ -1,0 +1,18 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# teensy4.1
+#
+DEF teensy4.1 U 0 40 Y Y 1 F N
+F0 "U" 0 0 50 H V C CNN
+F1 "teensy4.1" 0 0 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+S -1100 2150 -300 -1750 0 1 0 N
+X 0 0 -1300 1950 200 R 50 50 1 1 I
+X GND GND -1300 2050 200 R 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library
