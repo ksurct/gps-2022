@@ -33,7 +33,7 @@ void loop() {
   delayMicroseconds(2);
   // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
   digitalWrite(trigPin1, HIGH);
-  delayMicroseconds(10);
+  delayMicroseconds(1);
   digitalWrite(trigPin1, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration1 = pulseIn(echoPin1, HIGH);
