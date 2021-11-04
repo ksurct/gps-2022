@@ -8,7 +8,6 @@ json::Data::Data() {
     #undef clr
 }
 
-json::Data json::Data::data;
 
 void json::Data::sendJson() {
     StaticJsonDocument<1000> doc;
