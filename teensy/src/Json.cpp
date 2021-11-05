@@ -1,4 +1,3 @@
-
 #include "Json.hpp"
 
 json::Data::Data() {
