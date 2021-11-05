@@ -8,7 +8,6 @@ namespace json {
         static const int NUM_SENSORS = 8;
         double sensors[NUM_SENSORS];
         double encoderSpeeds[NUM_ENCODERS];
-        unsigned int hallEffect;
         void sendJson();
     private:
         Data();
