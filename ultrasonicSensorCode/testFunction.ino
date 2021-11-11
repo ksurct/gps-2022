@@ -1,8 +1,19 @@
 
-int sensorDataFunction(int echoPin, int trigPin, int sizeOfDistances){
 
 
 
+struct SensorData {
+   int left;
+   int leftAngle;
+   int center;
+   int rightAngle;
+   int right;
+};
+
+SensorData sensorDataFunction(int echoPin, int trigPin, int sizeOfDistances){
+SensorData data;
+long duration1; // variable for the duration of sound wave travel
+int distance1; // variable for the distance measurement
 #define echoPin1 echoPin // attach pin D2 Arduino to pin Echo of HC-SR04
 #define trigPin1 trigPin  //attach pin D3 Arduino to pin Trig of HC-SR04
 pinMode(trigPin1, OUTPUT); // Sets the trigPin as an OUTPUT
@@ -15,9 +26,8 @@ pinMode(trigPin1, OUTPUT); // Sets the trigPin as an OUTPUT
   delayMicroseconds(1);
   digitalWrite(trigPin1, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration1 = pulseIn(echoPin1, HIGH);
   // Calculating the distance
-  distance[i] = duration1 * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  distance[i] = pulseIn(echoPin1, HIGH) * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
   // Displays the distance on the Serial Monitor
   }
   int average = 0;
@@ -30,8 +40,10 @@ pinMode(trigPin1, OUTPUT); // Sets the trigPin as an OUTPUT
   }
   if(elements != 0){
     average = average / elements;
-    return average;
+    data.left = average;
   }else{
+
+    
     return -1;
   }
   
