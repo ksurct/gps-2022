@@ -16,6 +16,11 @@ class Motor():
             self.dirPin = GPIO.LOW
         pass
 
+def motorTest(motor: Motor):
+    motor.setSpeed(50)
+
 if __name__ == "__main__":
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
+    motor = Motor(12,11)
+    motorTest(motor)
