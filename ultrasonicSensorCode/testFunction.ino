@@ -8,7 +8,7 @@ struct SensorData {
    int r_data;
 };
 void setup(){
-
+Serial.begin(115200);
 /*
 On current board
 fr (front-right) = TOF1
@@ -42,21 +42,21 @@ int distance1; // variable for the distance measurement
 
  int distance[sizeOfDistances];
   for(int i = 0; i < sizeOfDistances; i++){
-  digitalWrite(tpin, LOW);
+  digitalWriteFast(tpin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
-  digitalWrite(tpin, HIGH);
+  digitalWriteFast(tpin, HIGH);
   delayMicroseconds(1);
-  digitalWrite(tpin, LOW);
+  digitalWriteFast(tpin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
   // Calculating the distance
-  distance[i] = pulseIn(epin, HIGH) * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  distance[i] = pulseIn(epin, HIGH, 3000) * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
   // Displays the distance on the Serial Monitor
   }
   int average = 0;
   int elements = 0;
   for(int i = 0; i < sizeOfDistances; i++){
-    if(distance[i] <= 200){
+    if(distance[i] <= 200 && distance[i] != 0){
       average += distance[i];
       elements++;
     }
@@ -80,7 +80,20 @@ SensorData collectData(int sizeOfDistances){
 }
 
 void loop(){
-SensorData data = collectData(5);
-Serial.print("Test Distance: ");
+SensorData data = collectData(6);
+Serial.print("right Distance: ");
+Serial.print(data.r_data);
+Serial.print(", ");
+Serial.print("left Distance: ");
 Serial.print(data.l_data);
+Serial.print(", ");
+Serial.print("right front Distance: ");
+Serial.print(data.fr_data);
+Serial.print(", ");
+Serial.print("left front Distance: ");
+Serial.print(data.fl_data);
+Serial.print(", ");
+Serial.print("front Distance: ");
+Serial.println(data.f_data);
+
 }
