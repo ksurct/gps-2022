@@ -12,6 +12,7 @@ red = (255,0,0,255)
 yellow = (255, 255 , 0, 255)
 mod = 0
 flag = 0
+is_blue = False
 
 
 # Algorithm
@@ -26,36 +27,29 @@ def algorithm(robot, time, events):
     global red
     global mod
     global flag
+    global is_blue
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
     cameraData = robot.getCameraData()
-    for event in events:
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            return
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            robot.rotate(-90, 45)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            robot.move(100, 200)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            robot.move(-100, 200)
-        elif event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
-            robot.rotate(90, 45)
+    keyboard(events)
     # in degrees
     angle = robot.getAngle()
     # Probable x,y coordinates
     position = robot.getPosition()
     print("------------------")
-    for sensorName in sensorData:
-        print(sensorName, 'distance =', sensorData[sensorName])
+    #for sensorName in sensorData:
+        #print(sensorName, 'distance =', sensorData[sensorName])
 
     for cameraName in cameraData.keys():
         camera = cameraData[cameraName]
         # Do something
+        
         for split in camera:
-            print("[", end="")
+            
+            #print("[", end="")
             for object in split:
+                '''
                 if (object == blue):
                     print("blue,", end="")
                 elif (object == white):
@@ -64,11 +58,27 @@ def algorithm(robot, time, events):
                     print("green,", end="")
                 elif (object == red):
                     print("red,", end="")
-            print("]")
+                '''
+
+            #print("]")
+            print(split)
+
+        if blue in camera[2] or blue in camera[1]:
+            robot.rotate(30,10)
+        elif blue in camera[0]:
+            is_blue = True
+            robot.move(30,30)
+        elif is_blue:
+            robot.rotate(-30,10)
+        else:
+            robot.move(30,30)
+
+            
+
 
         
-        if(robot.getAngle() < 180):
-            robot.rotate(120, 182-robot.getAngle())
+        #if(robot.getAngle() < 180):
+            #robot.rotate(120, 182-robot.getAngle())
         # if(robot.isNotMoving()):
         #     robot.constantMove(60)
         #     robot.constantRotate(40)
@@ -83,6 +93,21 @@ def algorithm(robot, time, events):
     # elif (robot.isNotMoving()):
     #     mod = 0
     #     robot.constantMove(400)
+
+def keyboard(events):
+    for event in events:
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            return
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+            robot.rotate(-90, 45)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+            robot.move(100, 200)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+            robot.move(-100, 200)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+            robot.rotate(90, 45)
+
 
 # Pixels is the resolution on screen
 # Course resolution is the grid count used to draw a course
