@@ -4,14 +4,20 @@
 
 namespace json {
     struct Data {
-        static const int NUM_ENCODERS = 4;
-        static const int NUM_SENSORS = 8;
-        double sensors[NUM_SENSORS];
-        double encoderSpeeds[NUM_ENCODERS];
-        void sendJson();
-    private:
         Data();
+        int fr_data;
+        int fl_data;
+        int f_data;
+        int l_data;
+        int r_data;
+        double angle;//gps.course (10^-2 deg)
+        double latitude;
+        double longitude;
+        double speed;//gps.f_speed_mps()
+        void sendJson();
     };
 }
+
+
 
 #endif
