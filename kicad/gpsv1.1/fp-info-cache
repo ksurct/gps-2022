@@ -1,4 +1,4 @@
-150508118348473
+164279647514801
 Battery_Holders
 Bulgin_BX0036_1xC
 
@@ -19705,6 +19705,34 @@ Custom_sym
 1
 1
 Custom_sym
+1×20
+
+
+0
+20
+20
+Custom_sym
+1×24
+
+
+0
+24
+24
+Custom_sym
+BuckConverter(LM2596)
+
+
+0
+6
+6
+Custom_sym
+ExternalBattery
+
+
+0
+2
+2
+Custom_sym
 GPS PA1616D
 
 
@@ -19726,6 +19754,20 @@ Magnetometer
 5
 5
 Custom_sym
+RasberryPI3
+
+
+0
+44
+44
+Custom_sym
+SMAAntennaMale
+
+
+0
+5
+2
+Custom_sym
 TOF Sensor
 
 
@@ -19739,6 +19781,20 @@ Teensy 4.1
 0
 59
 49
+Custom_sym
+TerminalBlock2
+
+
+0
+2
+2
+Custom_sym
+XH-3A Female Connector
+
+
+0
+3
+3
 Diodes_SMD
 D_0603
 
