@@ -1,12 +1,13 @@
 #include "Gps.hpp"
 #include "Json.hpp"
+#include <TinyGPS.h>
 
-static bool dataReady = false;
+static bool dataReady;
 static TinyGPS gps;
 
 void init(){
     Uart.begin(9600);
-    gps
+    dataReady = false;
 }
 
 bool isDataReady(){
@@ -32,7 +33,8 @@ void gpsUpdate(){
 }
 
 void getGpsData(Data &data){
-    unsigned long age
-    gps.get_position(&data.latitude, &data.longitude, age);
+    unsigned long age;
+    gps.f_get_position(&data.latitude, &data.longitude, &age);
     data.speed = gps.f_speed_mps();
+    data.course = gps.course();
 }

@@ -1,4 +1,5 @@
 #include "src/Json.hpp"
+#include "src/Gps.hpp"
 #include "src/Sensors.hpp"
 
 json::Data data;
@@ -17,7 +18,7 @@ void loop()
     if(isDataReady()){
         getGpsData(data);
     }
-    collectData(5, data);
+    collectSensorData(5, data);
     data.sendJson();
     Serial.println("New data: ");
 }

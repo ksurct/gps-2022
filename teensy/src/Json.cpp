@@ -14,11 +14,16 @@ void json::Data::sendJson() {
     doc["l_data"] = l_data;
     doc["r_data"] = r_data;
 
+    //GPS Course (Heading)
+    doc["course"] = course;
 
     // Hall's Effect Sensor
     doc["longitude"] = longitude;
     doc["latitude"] = latitude;
     doc["altitude"] = altitude;
+
+    //GPS Speed (in mps)
+    doc["speed"] = speed;
 
     serializeJsonPretty(doc, Serial);
 }
