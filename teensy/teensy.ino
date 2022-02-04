@@ -8,6 +8,7 @@ void setup()
 {
     Serial.begin(115200);
     sensorsInit();
+    init();
     data.latitude = 90;
 }
 
@@ -19,6 +20,6 @@ void loop()
         getGpsData(data);
     }
     collectSensorData(5, data);
+    Serial.println("\n\nNew data: ");
     data.sendJson();
-    Serial.println("New data: ");
 }

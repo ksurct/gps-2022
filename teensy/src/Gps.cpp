@@ -13,22 +13,21 @@ void init(){
 bool isDataReady(){
     return dataReady;
 }
+unsigned long start = millis();
 
 void gpsUpdate(){
-
+    dataReady = false;
     unsigned long start = millis();
 
-    // Every 5 seconds we print an update
+  // Every 5 seconds we print an update
     while (millis() - start < 5000) {
         if (Uart.available()) {
-        char c = Uart.read();
-        Serial.print(c);  // uncomment to see raw GPS data
-        if (gps.encode(c)) {
-        dataReady = true;
-        // break;  // uncomment to print new data immediately!
+          char c = Uart.read();
+          Serial.print(c);  // uncomment to see raw GPS data
+          if (gps.encode(c)) {
+            dataReady = true;
       }
     }
-
   }
 }
 

@@ -6,7 +6,7 @@
 
 using namespace json;
 
-#define Uart Serial2
+#define Uart Serial1
 void init();
 void getGpsData(Data &data);
 void gpsUpdate();
