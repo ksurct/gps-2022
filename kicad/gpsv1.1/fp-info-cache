@@ -1,4 +1,4 @@
-164279647514801
+172556743678910
 Battery_Holders
 Bulgin_BX0036_1xC
 
@@ -19719,6 +19719,20 @@ Custom_sym
 24
 24
 Custom_sym
+2×20
+
+
+0
+40
+40
+Custom_sym
+BatteryBackUp
+
+
+0
+3
+2
+Custom_sym
 BuckConverter(LM2596)
 
 
@@ -19754,12 +19768,33 @@ Magnetometer
 5
 5
 Custom_sym
+MountHole
+
+
+0
+0
+0
+Custom_sym
+Proto1
+
+
+0
+272
+103
+Custom_sym
 RasberryPI3
 
 
 0
 44
 44
+Custom_sym
+Resistor
+
+
+0
+2
+2
 Custom_sym
 SMAAntennaMale
 
