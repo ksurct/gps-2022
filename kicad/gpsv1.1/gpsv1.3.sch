@@ -53,17 +53,6 @@ GND
 Text GLabel 6500 5450 0    50   Input ~ 0
 GND
 $Comp
-L custom_sym:ExternalBattery U1
-U 1 1 61AB0669
-P 4750 1450
-F 0 "U1" V 4235 1483 50  0000 C CNN
-F 1 "ExternalBattery" V 4326 1483 50  0000 C CNN
-F 2 "Custom_sym:ExternalBattery" H 4750 1450 50  0001 C CNN
-F 3 "" H 4750 1450 50  0001 C CNN
-	1    4750 1450
-	-1   0    0    1   
-$EndComp
-$Comp
 L custom_sym:SMAAntennaMale Ant1
 U 1 1 61F0A4B9
 P 3900 2850
@@ -1068,4 +1057,15 @@ Text GLabel 7800 5450 2    50   Input ~ 0
 40
 Text GLabel 7750 4050 2    50   Input ~ 0
 12
+$Comp
+L custom_sym:ExternalBattery U1
+U 1 1 61AB0669
+P 4750 1450
+F 0 "U1" V 4235 1483 50  0000 C CNN
+F 1 "ExternalBattery" V 4326 1483 50  0000 C CNN
+F 2 "Custom_sym:ExternalBattery" H 4750 1450 50  0001 C CNN
+F 3 "" H 4750 1450 50  0001 C CNN
+	1    4750 1450
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
