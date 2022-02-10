@@ -1,3 +1,4 @@
+
 from RPi import GPIO
 from time import sleep
 
@@ -7,6 +8,7 @@ class Motor():
         GPIO.setup(dir_pin, GPIO.OUT)
         self.pwmPin = GPIO.PWM(pwm_pin, 1000)
         self.dirPin = dir_pin
+
     def setSpeed(self, speed):
         # set speed of motor
         self.pwmPin.ChangeDutyCycle(abs(speed))
