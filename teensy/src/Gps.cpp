@@ -23,7 +23,7 @@ void gpsUpdate(){
     while (millis() - start < 5000) {
         if (Uart.available()) {
           char c = Uart.read();
-          Serial.print(c);  // uncomment to see raw GPS data
+        //   Serial.print(c);  // uncomment to see raw GPS data
           if (gps.encode(c)) {
             dataReady = true;
       }
