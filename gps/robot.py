@@ -7,6 +7,7 @@ class Robot():
         self.left = Motor(12,23)
         self.timeCalled = time.time()
         self.timeToKill = 0
+        self.constant = False
 
     # Compass
     def getAngle(self):
@@ -28,20 +29,32 @@ class Robot():
     def mpsToPercent(self, speedMps):
         return 4 / 0.78 * speedMps
 
-    def angleToPercent(self):
+    def dpsToPercent(self, speedRps):
         pass
 
     # Tells wether the robot is executing a move
-    def isNotMoving(self):
-        return self.stopped
+    def isMoving(self):
+        return self.constant or time.time() - self.timeCalled < self.timeToKill
     
     # Set constant speed
-    def constantMove(self, speed):
-        pass
+    def constantMove(self, speedMps):
+        speedPercent = self.mpsToPercent(speedMps)
+        self.right.setSpeed(speedPercent)
+        self.left.setSpeed(speedPercent)
+        self.timeCalled = time.time()
+        self.timeToKill = 0
+        self.constant = True
+
+
 
     # Set constant rotation
-    def constantRotate(self, speed):
-        pass
+    def constantRotate(self, speedDps):
+        speedPercent = self.dpsToPercent(speedDps)
+        self.right.setSpeed(speedPercent)
+        self.left.setSpeed(-speedPercent)
+        self.timeCalled = time.time()
+        self.timeToKill = 0
+        self.constant = True
 
     # Move a certain distance at a speed
     def move(self, speedMps, distanceMeters):
@@ -51,23 +64,31 @@ class Robot():
         self.left.setSpeed(speedPercent)
         self.timeCalled = time.time()
         self.timeToKill = seconds
+        self.constant = False
         print("Kill after", self.timeToKill)
 
 
 
     # Rotate a certain amount at a certain speed
-    def rotate(self, speed, degrees):
-        pass
+    def rotate(self, speedDps, degrees):
+        seconds = degrees / speedDps
+        speedPercent = self.dpsToPercent(speedDps)
+        self.right.setSpeed(speedPercent)
+        self.left.setSpeed(-speedPercent)
+        self.timeCalled = time.time()
+        self.timeToKill = seconds
+        self.constant = False
 
     # Stop the robot
     def stop(self):
         self.left.setSpeed(0)
         self.right.setSpeed(0)
+        self.constant = False
 
     def tick(self):
         print("Time: ", time.time())
         print("Called time: ", self.timeCalled)
-        if (time.time() - self.timeCalled > self.timeToKill):
+        if (self.isNotMoving()):
             self.stop()
             return 0
         return 1
