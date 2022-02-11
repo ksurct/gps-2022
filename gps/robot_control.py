@@ -31,6 +31,9 @@ class RobotControl():
     def getLocation(self):
         pass
 
+    def setSpeed(self, speed):
+        pass
+
 
 robot1 = RobotControl("Name1")
 robot2 = RobotControl("Name2")

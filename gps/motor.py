@@ -19,6 +19,7 @@ class Motor():
     
     
 if __name__ == "__main__":
+    
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     motor = Motor(13,24)
@@ -34,4 +35,3 @@ if __name__ == "__main__":
     motor.setSpeed(0)
     motor2.setSpeed(0)
     GPIO.cleanup()
-
