@@ -1,8 +1,12 @@
 from motor import Motor
+import time
 
 class Robot():
     def __init__(self):
-        pass
+        self.right = Motor(13,24)
+        self.left = Motor(12,23)
+        self.timeCalled = time.time()
+        self.timeToKill = 0
 
     # Compass
     def getAngle(self):
@@ -19,11 +23,13 @@ class Robot():
 
     # Camera data, return camera -> splits -> objects
     def getCameraData(self):
-        ret = {}
-        for camera in self.cameras.keys():
-            self.cameras[camera].update(self, -self.robotBody.angle+pi/2, self.course)
-            ret[camera] = self.cameras[camera].getData()
-        return ret
+        pass
+
+    def mpsToPercent(self, speedMps):
+        return 4 / 0.78 * speedMps
+
+    def angleToPercent(self):
+        pass
 
     # Tells wether the robot is executing a move
     def isNotMoving(self):
@@ -38,8 +44,15 @@ class Robot():
         pass
 
     # Move a certain distance at a speed
-    def move(self, speed, distance):
-        pass
+    def move(self, speedMps, distanceMeters):
+        speedPercent = self.mpsToPercent(speedMps)
+        seconds = distanceMeters / speedMps
+        self.right.setSpeed(speedPercent)
+        self.left.setSpeed(speedPercent)
+        self.timeCalled = time.time()
+        self.timeToKill = seconds
+
+
 
     # Rotate a certain amount at a certain speed
     def rotate(self, speed, degrees):
@@ -47,7 +60,14 @@ class Robot():
 
     # Stop the robot
     def stop(self):
-        pass
+        self.left.setSpeed(0)
+        self.right.setSpeed(0)
+
+    def tick(self):
+        if (time.time() - self.timeCalled > self.timeToKill):
+            self.stop()
+            return 0
+        return 1
 
 class Camera():
     def __init__(self):
@@ -57,3 +77,8 @@ class Camera():
     def getData(self):
         pass
 
+if __name__ == '__main__':
+    robot = Robot()
+    robot.move(0.78/4, 2)
+    while(robot.tick()):
+        time.sleep(0.1)
