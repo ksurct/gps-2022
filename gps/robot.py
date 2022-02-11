@@ -51,6 +51,7 @@ class Robot():
         self.left.setSpeed(speedPercent)
         self.timeCalled = time.time()
         self.timeToKill = seconds
+        print("Kill after", self.timeToKill)
 
 
 
@@ -64,6 +65,8 @@ class Robot():
         self.right.setSpeed(0)
 
     def tick(self):
+        print("Time: ", time.time())
+        print("Called time: ", self.timeCalled)
         if (time.time() - self.timeCalled > self.timeToKill):
             self.stop()
             return 0
@@ -78,6 +81,9 @@ class Camera():
         pass
 
 if __name__ == '__main__':
+    from RPi import GPIO
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
     robot = Robot()
     robot.move(0.78/4, 2)
     while(robot.tick()):
