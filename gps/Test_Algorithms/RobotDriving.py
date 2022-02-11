@@ -15,6 +15,13 @@ flag = 0
 is_blue = False
 
 
+def isColorInSplit(split, color):
+    for object in split:
+        if (object['color'] == color):
+            return True
+    return False
+
+
 # Algorithm
 # Called every 'tick' 1/FPS
 # This is a dummy algorithm that shows how to a control a robot
@@ -28,6 +35,7 @@ def algorithm(robot, time, events):
     global mod
     global flag
     global is_blue
+    global morBlue
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
@@ -41,31 +49,58 @@ def algorithm(robot, time, events):
     #for sensorName in sensorData:
         #print(sensorName, 'distance =', sensorData[sensorName])
 
-    for cameraName in cameraData.keys():
-        camera = cameraData[cameraName]
-        # Do something
-        
-        for split in camera:
+    camera = cameraData['main']
+    camera2 = cameraData['main']
+    morBlu = False
+    for object in camera[0]:
+        if (object['color'] == blue):
+            print("blue,", end="")
+        elif (object['color'] == white):
+            print("white,", end="")
+        elif (object['color'] == green):
+            print("green,", end="")
+        elif (object['color'] == red):
+            print("red,", end="")
+            #morBlu = False
+        if (object['color'] == blue):
+            #morBlu = False
+            is_Blue = True
+            """
+            for split in camera2:
+                if (split != camera2[0]):
+                    for object in split:
+                        if (object['color'] == blue):
+                            morBlu = True
+            if (morBlu == False):
+                robot.move(30,30)
+                is_blue = True
+            else:
+                robot.rotate(30,10)
+                is_blue = False
+            """
+        else:
+            if (is_blue == True):
+                morBlu = False
+                for split in camera2:
+                    if (split != camera2[0]):
+                        for object in split:
+                            if (object['color'] == blue):
+                                morBlu = True
+                if (morBlu == False):
+                    robot.constantRotate(-30)
             
-            #print("[", end="")
-            for object in split:
-                '''
-                if (object == blue):
-                    print("blue,", end="")
-                elif (object == white):
-                    print("white,", end="")
-                elif (object == green):
-                    print("green,", end="")
-                elif (object == red):
-                    print("red,", end="")
-                '''
+            
 
-            #print("]")
-            print(split)
+            
+    #for object in camera[1]:
+        
+    #for object in camera[2]:
+        #print("]")
+        #print(split)
 
-        if blue in camera[2] or blue in camera[1]:
+        if object['color'] in camera[2] == blue or object['color'] in camera[1] == blue:
             robot.rotate(30,10)
-        elif blue in camera[0]:
+        elif object['color'] in camera[0] == blue:
             is_blue = True
             robot.move(30,30)
         elif is_blue:
@@ -179,7 +214,8 @@ cameras = {
                    fieldOfView=90,
                    splitCount=3, # How many splits are in the camera when showing object colors
                    resolution=40, # How many rays are in the field of view
-                   debug=True
+                   debug=True,
+                   maxDistance=300
                    )
 }
 
