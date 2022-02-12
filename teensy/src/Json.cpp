@@ -25,5 +25,6 @@ void json::Data::sendJson() {
     //GPS Speed (in mps)
     doc["speed"] = speed;
 
-    serializeJsonPretty(doc, Serial);
+    serializeJson(doc, Serial);
+    Serial.println("");
 }
