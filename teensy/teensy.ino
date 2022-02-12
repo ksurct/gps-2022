@@ -14,12 +14,13 @@ void setup()
 
 void loop()
 {
-    delay(1000);
-    gpsUpdate();
-    if(isDataReady()){
-        getGpsData(data);
+    if (Serial.available()){
+        // gpsUpdate();
+        if(isDataReady()){
+            getGpsData(data);
+        }
+        collectSensorData(1, data);
+        data.sendJson();
+        delay(10);
     }
-    collectSensorData(5, data);
-    Serial.println("\n\nNew data: ");
-    data.sendJson();
 }
