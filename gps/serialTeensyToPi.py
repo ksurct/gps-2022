@@ -21,10 +21,7 @@ class SerialInput(object):
     def receiveData(self):
         self.pingTeensy()
         print(json.loads(self.ser.readline().decode('utf-8').rstrip()))
-        # if self.ser.in_waiting > 0:
         line = json.loads(self.ser.readline().decode('utf-8').rstrip())
-        # print(line)
-        # print("printed")
         self.fr_data = line['fr_data']
         self.fl_data = line['fl_data']
         self.f_data = line['f_data']
@@ -72,5 +69,4 @@ if __name__ == '__main__':
 
     while True:
         ser.receiveData()
-        print(ser.getAltitude())
         sleep(1)
