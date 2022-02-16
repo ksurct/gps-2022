@@ -7,19 +7,23 @@ json::Data data;
 void setup()
 {
     Serial.begin(115200);
-    sensorsInit();
+    sensorsInit(&data);
     init();
     data.latitude = 90;
 }
 
 void loop()
 {
-    delay(1000);
-    gpsUpdate();
-    if(isDataReady()){
-        getGpsData(data);
-    }
-    collectSensorData(5, data);
-    Serial.println("\n\nNew data: ");
     data.sendJson();
+    Serial.println(data.f_data);
+    if (Serial.available()){
+        // gpsUpdate();
+        if(isDataReady()){
+            getGpsData(data);
+        }
+        // getSesnorData();
+        data.sendJson();
+        delay(10);
+    }
+    delay(10);
 }

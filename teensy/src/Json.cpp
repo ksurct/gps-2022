@@ -26,4 +26,5 @@ void json::Data::sendJson() {
     doc["speed"] = speed;
 
     serializeJsonPretty(doc, Serial);
+    Serial.println("");
 }
