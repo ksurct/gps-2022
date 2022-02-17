@@ -15,7 +15,6 @@ void setup()
 void loop()
 {
     data.sendJson();
-    Serial.println(data.f_data);
     if (Serial.available()){
         // gpsUpdate();
         if(isDataReady()){
@@ -23,7 +22,7 @@ void loop()
         }
         // getSesnorData();
         data.sendJson();
-        delay(10);
+        delay(100);
     }
-    delay(10);
+    delay(100);
 }

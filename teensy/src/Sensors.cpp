@@ -5,7 +5,6 @@ using namespace json;
 static json::Data* data;
 
 IntervalTimer timer;
-unsigned long triggerTime;
 unsigned long echoFRTime;
 unsigned long echoRTime;
 unsigned long echoLTime;
@@ -19,17 +18,13 @@ void sensorsInit(Data* dataReference){
     pinMode(trigPinF4, OUTPUT);
     pinMode(trigPinF5, OUTPUT);
     timer.begin(sensorTrigger, 150000);
-    attachInterrupt(echoPinF1, frReceived, RISING);
-    attachInterrupt(echoPinF2, rReceived, RISING);
-    attachInterrupt(echoPinF3, lReceived, RISING);
-    attachInterrupt(echoPinF4, flReceived, RISING);
-    attachInterrupt(echoPinF5, fReceived, RISING);
+    attachInterrupt(echoPinF1, frReceived, CHANGE);
+    attachInterrupt(echoPinF2, rReceived, CHANGE);
+    attachInterrupt(echoPinF3, lReceived, CHANGE);
+    attachInterrupt(echoPinF4, flReceived, CHANGE);
+    attachInterrupt(echoPinF5, fReceived, CHANGE);
     data = dataReference;
 }
-
-// void basicInterruptFunction(){
-//   Serial.println("tick");
-// }
 
 void sensorTrigger(){
   digitalWriteFast(trigPinF1, LOW);
@@ -43,39 +38,73 @@ void sensorTrigger(){
   digitalWriteFast(trigPinF3, HIGH);
   digitalWriteFast(trigPinF4, HIGH);
   digitalWriteFast(trigPinF5, HIGH);
-  delayMicroseconds(1);
+  delayMicroseconds(10);
   digitalWriteFast(trigPinF1, LOW);
   digitalWriteFast(trigPinF2, LOW);
   digitalWriteFast(trigPinF3, LOW);
   digitalWriteFast(trigPinF4, LOW);
   digitalWriteFast(trigPinF5, LOW);
-  triggerTime = micros();
 
 }
 
 void frReceived(){
-  unsigned long echoFRTime = micros();
-  data->fr_data = (echoFRTime - triggerTime) * .034 / 2;
+  if(digitalReadFast(echoPinF1)){ // HIGH
+    echoFRTime = micros();
+  }
+  else{
+    data->fr_data = (micros() - echoFRTime) * .034 / 2;
+    if(data->fr_data > 1000){
+      data->fr_data = -1;
+    }
+  }
 }
 
 void rReceived(){
-  unsigned long echoRTime = micros();
-  data->r_data = (echoRTime - triggerTime) * .034 / 2;
+  if(digitalReadFast(echoPinF2)){ // HIGH
+    echoRTime = micros();
+  }
+  else{
+    data->r_data = (micros() - echoRTime) * .034 / 2;
+    if(data->r_data > 1000){
+      data->r_data = -1;
+    }
+  }
 }
 
 void lReceived(){
-  unsigned long echoLTime = micros();
-  data->l_data = (echoLTime - triggerTime) * .034 / 2;
+  if(digitalReadFast(echoPinF3)){ // HIGH
+    echoLTime = micros();
+  }
+  else{
+    data->l_data = (micros() - echoLTime) * .034 / 2;
+    if(data->l_data > 1000){
+      data->l_data = -1;
+    }
+  }
 }
 
 void flReceived(){
-  unsigned long echoFLTime = micros();
-  data->fl_data = (echoFLTime - triggerTime) * .034 / 2;
+  if(digitalReadFast(echoPinF4)){ // HIGH
+    echoFLTime = micros();
+  }
+  else{
+    data->fl_data = (micros() - echoFLTime) * .034 / 2;
+    if(data->fl_data > 1000){
+      data->fl_data = -1;
+    }
+  }
 }
 
 void fReceived(){
-  unsigned long echoFTime = micros();
-  data->f_data = (echoFTime - triggerTime) * .034 / 2;
+  if(digitalReadFast(echoPinF5)){ // HIGH
+    echoFTime = micros();
+  }
+  else{
+    data->f_data = (micros() - echoFTime) * .034 / 2;
+    if(data->f_data > 1000){
+      data->f_data = -1;
+    }
+  }
 }
 
 // int sensorDataFunction(int sizeOfDistances, int epin, int tpin){
