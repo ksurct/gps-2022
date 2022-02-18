@@ -16,6 +16,9 @@ void loop()
 {
     // data.sendJson();
     if (Serial.available()){
+        while (Serial.available()) {
+            Serial.read();
+        }
         // gpsUpdate();
         if(isDataReady()){
             getGpsData(data);
