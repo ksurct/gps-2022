@@ -5,7 +5,7 @@ from time import sleep
 class SerialInput(object):
     
     def __init__(self):
-        self.ser = serial.Serial(port='/dev/ttyACM1', baudrate=115200)
+        self.ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
         self.ser.flush()
         self.fr_data = ""
         self.fl_data = ""
