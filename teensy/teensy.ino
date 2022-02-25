@@ -9,21 +9,24 @@ void setup()
     Serial.begin(115200);
     sensorsInit(&data);
     init();
-    data.latitude = 90;
 }
+
+unsigned long time = millis();
+unsigned long interval = 500;
 
 void loop()
 {
     // data.sendJson();
+    gpsUpdate();
     if (Serial.available()){
         while (Serial.available()) {
             Serial.read();
         }
-        // gpsUpdate();
         if(isDataReady()){
             getGpsData(data);
         }
         // getSesnorData();
         data.sendJson();
+        time += interval;
     }
 }
