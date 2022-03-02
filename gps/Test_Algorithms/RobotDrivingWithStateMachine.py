@@ -149,9 +149,10 @@ def algorithm(robot, time, events):
         if (isColorInSplit(camera[0], red) == True or
         isColorInSplit(camera[1], red) == True or
         isColorInSplit(camera[2], red) == True):
-            return "threadNeedle"
+            return "straightOn"
         if (isColorInSplit(camera[2], yellow) == True):
-            return "rightTurn"
+            robot.move(sped,sped)    
+            return "straightOn"
         if (isColorInSplit(camera[1], green) == True):
             return "greenBeam"
         #if (robot.getAngle() == 0 and is_blue == False):
@@ -181,7 +182,10 @@ def algorithm(robot, time, events):
             rightSense = False
             leftRed = False
             rightRed = False
-            return "rightTurn"
+            return "leftTurn"
+        if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True and isColorInSplit(camera[1], red) == False):
+            robot.move(sped,sped)       
+            return "threadNeedle"
         if (sensorData['L'] < 15 and sensorData['L'] != -1):
             leftSense = True
         if (sensorData['R'] < 15 and sensorData['R'] != -1):
@@ -189,14 +193,11 @@ def algorithm(robot, time, events):
         if (leftSense == True and rightSense == True):
             leftSense = False
             rightSense = False
-            leftRed = False
-            rightRed = False
             return "straightOn"
         if (sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1):
+            robot.move(sped,sped) 
             leftSense == False
             rightSense == False
-            leftRed = False
-            rightRed = False
             return "straightOn"
         if (sensorData['L45'] < 50 and sensorData['R45'] > 50):
             robot.constantRotate(sped)
@@ -235,6 +236,8 @@ def algorithm(robot, time, events):
 
     def RT():
         global is_yellow
+        #if (is_blue == True and ):
+            #return "straightOn"
         if (isColorInSplit(camera[0], blue)):
             return "leftTurn"
         if (isColorInSplit(camera[2], yellow) == True):
@@ -251,17 +254,36 @@ def algorithm(robot, time, events):
         return "rightTurn"
 
     def SO():
-        if (isColorInSplit(camera[0], blue) == True or
-        isColorInSplit(camera[1], blue) == True or
-        isColorInSplit(camera[2], blue) == True):
-            return "leftTurn"
-        if (isColorInSplit(camera[0], red) == True or
-        isColorInSplit(camera[1], red) == True or
-        isColorInSplit(camera[2], red) == True):
-            return "threadNeedle"
-        if (isColorInSplit(camera[0], red) == False or
-        isColorInSplit(camera[1], red) == False or
-        isColorInSplit(camera[2], red) == False):
+        global leftRed
+        global rightRed
+        global is_blue
+        if (is_blue == False):
+            if (isColorInSplit(camera[0], blue) == True or
+            isColorInSplit(camera[1], blue) == True or
+            isColorInSplit(camera[2], blue) == True):
+                if (isColorInSplit(camera[0], blue) == True):
+                    is_blue = True
+                return "leftTurn"
+        else:
+            if (isColorInSplit(camera[0], blue) == False):
+                is_blue == False
+        if ((sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1)):
+            robot.move(sped,sped) 
+            return "straightOn"
+        if (leftRed == False and rightRed == False):
+
+            if (isColorInSplit(camera[0], red) == True or
+            isColorInSplit(camera[1], red) == True or
+            isColorInSplit(camera[2], red) == True):
+                return "threadNeedle"
+        else:  
+            if (isColorInSplit(camera[0], red) == False):
+                leftRed = False
+            if (isColorInSplit(camera[2], red) == False):
+                rightRed = False
+        if (isColorInSplit(camera[0], yellow) == False or
+        isColorInSplit(camera[1], yellow) == False or
+        isColorInSplit(camera[2], yellow) == False):
             return "rightTurn"
         #if (isColorInSplit(camera[0], green) == True or
         #isColorInSplit(camera[1], green) == True or
@@ -543,7 +565,7 @@ cameras = {
 
 # Location is pixel placement in display
 # Length and width are in pixels
-robot = robot_sim.RobotSim(location=(900,325),
+robot = robot_sim.RobotSim(location=(950,325),
                            length=19,
                            width=9,
                            algorithm=algorithm,
