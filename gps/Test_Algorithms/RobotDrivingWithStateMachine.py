@@ -16,6 +16,8 @@ is_blue = False
 is_yellow = False
 rightRed = False
 leftRed = False
+greenLeft = False
+greenLeft = False
 sped = 150
 state = "straightOn"
 
@@ -54,6 +56,8 @@ def algorithm(robot, time, events):
     global camera
     global sensorData
     global state
+    global greenLeft
+    global greenRight
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
@@ -134,6 +138,7 @@ def algorithm(robot, time, events):
 
     def stop():
         return "START"
+
 
     def LT():
         global is_blue
@@ -222,6 +227,11 @@ def algorithm(robot, time, events):
             return "rightTurn"
         robot.move(sped,sped)
         return "straightOn"
+
+    #def HOP():
+        #global greenLeft
+        #global greenRight
+        #if (isColorInSplit(camera[0], blue)):
 
     # example state machine:
 
@@ -412,6 +422,9 @@ course.circle(x =107,y=120,r=2,c=yellow)
 
 course.circle(x=107,y=10,r=2,c=red)
 course.circle(x=107,y=20,r=2,c=red)
+
+course.circle(x=30, y=70, r=2, c=green)
+
 
 # course.circle(x = 90, y=120, r=2, c=yellow)
 
