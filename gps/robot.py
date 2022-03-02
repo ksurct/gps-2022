@@ -1,4 +1,5 @@
 from motor import Motor
+from serialTeensyToPi import SerialInput
 import time
 
 class Robot():
@@ -8,19 +9,32 @@ class Robot():
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
+        self.serial = SerialInput()
 
     # Compass
     def getAngle(self):
-        pass
+        self.serial.receiveData()
+        return self.serial.getCourse() / 100
 
     # GPS Data
     def getPosition(self):
-        pass
+        self.serial.receiveData()
+        latitude = self.serial.getLatitude()
+        longitude = self.serial.getLongitude()
+        return latitude, longitude
 
     # Sensor data
     # Return Dictionary
     def getSensorData(self):
-        pass
+        self.serial.receiveData()
+        sensors = {
+            'Front': self.serial.getFrontSensorData(),
+            'Left': self.serial.getLeftSensorData(),
+            'Right': self.serial.getRightSensorData(),
+            'FrontRight': self.serial.getFrontRightSensorData(),
+            'FrontLeft': self.serial.getFrontLeftSensorData()
+        }
+        return sensors
 
     # Camera data, return camera -> splits -> objects
     def getCameraData(self):
@@ -92,14 +106,6 @@ class Robot():
             self.stop()
             return 0
         return 1
-
-class Camera():
-    def __init__(self):
-        pass
-
-    # Get data from camera
-    def getData(self):
-        pass
 
 if __name__ == '__main__':
     from RPi import GPIO

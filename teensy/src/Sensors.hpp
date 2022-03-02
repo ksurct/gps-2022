@@ -23,13 +23,13 @@ void fReceived();
 
 
 #define echoPinF1 32 // fr
-#define trigPinF1 31 // fr
+#define trigPinF1 29 // fr
 #define echoPinF2 30 // r
-#define trigPinF2 29 // r
+#define trigPinF2 28 // r
 #define echoPinF3 38 // l
 #define trigPinF3 37 // l
-#define echoPinF4 36 // fl
-#define trigPinF4 35 // fl
+#define echoPinF4 39 // fl
+#define trigPinF4 36 // fl
 #define echoPinF5 34 // f
 #define trigPinF5 33 // f
 
