@@ -44,7 +44,7 @@ class Robot():
         return 4 / 0.78 * speedMps
 
     def dpsToPercent(self, speedRps):
-        pass
+        return speedRps # do math
 
     # Tells wether the robot is executing a move
     def isMoving(self):
