@@ -4,8 +4,8 @@ import time
 
 class Robot():
     def __init__(self):
-        self.right = Motor(13,24)
-        self.left = Motor(12,23)
+        self.right = Motor(12,23)
+        self.left = Motor(13,24)
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
