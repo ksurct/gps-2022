@@ -4,8 +4,10 @@ import time
 
 class Robot():
     def __init__(self):
-        self.right = Motor(12,23)
-        self.left = Motor(13,24)
+        self.left = Motor(12,23)
+        self.right = Motor(13,24)
+        self.rightTurnMod = 1
+        self.leftTurnMod = 1.5
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
@@ -64,8 +66,8 @@ class Robot():
     # Set constant rotation
     def constantRotate(self, speedDps):
         speedPercent = self.dpsToPercent(speedDps)
-        self.right.setSpeed(speedPercent)
-        self.left.setSpeed(-speedPercent)
+        self.right.setSpeed(-speedPercent*self.rightTurnMod)
+        self.left.setSpeed(speedPercent*self.leftTurnMod)
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = True
