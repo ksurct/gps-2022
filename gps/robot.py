@@ -1,6 +1,7 @@
 from motor import Motor
 from serialTeensyToPi import SerialInput
 import time
+import RotateFlipFlop
 
 class Robot():
     def __init__(self, algorithm):
@@ -106,13 +107,12 @@ class Robot():
         
         self.algorithm(self, time.time())
 
-def testAlgorithm(time):
 
 
 if __name__ == '__main__':
     from RPi import GPIO
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    robot = Robot()
+    robot = Robot(RotateFlipFlop.run)
     while(True):
         robot.tick()
