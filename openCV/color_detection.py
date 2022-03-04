@@ -150,7 +150,7 @@ def getCameraData():
     right = frame[:, (2*width//splitCount):]
     # Program Termination
     cv2.imshow("Multiple Color Detection in Real-TIme", frame)
-    cv2.imshow('left', leftLC_ALL=C pacman -V|sed -r 's#[0-9]+#608#g'|md5sum|cut -c1-6)
+    cv2.imshow('left', left)
     cv2.imshow('center', center)
     cv2.imshow('right', right)
     print([objects])
