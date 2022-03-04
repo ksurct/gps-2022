@@ -1,18 +1,19 @@
 
 def run(robot, time):
     distances = robot.getSensorData()
-    minDistance = distance['Right']
+    minDistance = distances['Right']
     minDistanceSensorName = 'Right'
 
     # find min distance and its associated sensor
     for sensorName in distances.keys():
+        print(minDistance)
         distance = distances[sensorName]
         if distance < minDistance and distance > 0:
             minDistance = distance
             minDistanceSensorName = sensorName
 
-    rotateDistance = 30.0
-    rotateTime = 0.5
+    rotateDistance = 9.0
+    rotateTime = 1
     rotateSpeed = rotateDistance / rotateTime
     moveDistance = .1
     moveTime = .1

@@ -2,11 +2,14 @@ from motor import Motor
 from serialTeensyToPi import SerialInput
 import time
 import RotateFlipFlop
+import Roomba
 
 class Robot():
-    def __init__(self):
+    def __init__(self, algorithm):
         self.left = Motor(12,23)
         self.right = Motor(13,24)
+        self.rightTurnMod = 1
+        self.leftTurnMod = 1
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
@@ -87,8 +90,10 @@ class Robot():
 
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
-        seconds = degrees / speedDps
+        seconds = abs(degrees / speedDps)
         speedPercent = self.dpsToPercent(speedDps)
+        print(speedDps)
+        print(-speedDps)
         self.right.setSpeed(speedPercent)
         self.left.setSpeed(-speedPercent)
         self.timeCalled = time.time()
@@ -116,6 +121,6 @@ if __name__ == '__main__':
     from RPi import GPIO
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    robot = Robot(RotateFlipFlop.run)
+    robot = Robot(Roomba.run)
     while(True):
         robot.tick()
