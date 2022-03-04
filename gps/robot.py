@@ -3,13 +3,14 @@ from serialTeensyToPi import SerialInput
 import time
 
 class Robot():
-    def __init__(self):
+    def __init__(self, algorithm):
         self.right = Motor(12,23)
         self.left = Motor(13,24)
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
         self.serial = SerialInput()
+        self.algorithm = algorithm
 
     # Compass
     def getAngle(self):
@@ -102,16 +103,16 @@ class Robot():
     def tick(self):
         print("Time: ", time.time())
         print("Called time: ", self.timeCalled)
-        if (self.isNotMoving()):
-            self.stop()
-            return 0
-        return 1
+        
+        self.algorithm(self, time.time())
+
+def testAlgorithm(time):
+
 
 if __name__ == '__main__':
     from RPi import GPIO
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     robot = Robot()
-    robot.move(0.78/4, 2)
-    while(robot.tick()):
-        time.sleep(0.1)
+    while(True):
+        robot.tick()
