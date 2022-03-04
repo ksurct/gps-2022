@@ -1,17 +1,26 @@
 from motor import Motor
 from serialTeensyToPi import SerialInput
 import time
+import RotateFlipFlop
 
 class Robot():
+<<<<<<< HEAD
     def __init__(self):
         self.left = Motor(12,23)
         self.right = Motor(13,24)
         self.rightTurnMod = 1
         self.leftTurnMod = 1.5
+=======
+    def __init__(self, algorithm):
+        self.right = Motor(12,23)
+        self.left = Motor(13,24)
+>>>>>>> 5f3f6ee360170dc3371b9deb2d9597bbf95fe131
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
         self.serial = SerialInput()
+        self.algorithm = algorithm
+        self.moving = False
 
     # Compass
     def getAngle(self):
@@ -50,8 +59,7 @@ class Robot():
 
     # Tells wether the robot is executing a move
     def isMoving(self):
-        return self.constant or time.time() - self.timeCalled < self.timeToKill
-    
+        return self.moving
     # Set constant speed
     def constantMove(self, speedMps):
         speedPercent = self.mpsToPercent(speedMps)
@@ -102,18 +110,20 @@ class Robot():
         self.constant = False
 
     def tick(self):
-        print("Time: ", time.time())
+        t = time.time()
+        print("Time: ", t)
         print("Called time: ", self.timeCalled)
-        if (self.isNotMoving()):
+        self.moving  = self.constant or t - self.timeCalled < self.timeToKill
+        if not self.moving:
             self.stop()
-            return 0
-        return 1
+        self.algorithm(self, t)
+
+
 
 if __name__ == '__main__':
     from RPi import GPIO
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    robot = Robot()
-    robot.move(0.78/4, 2)
-    while(robot.tick()):
-        time.sleep(0.1)
+    robot = Robot(RotateFlipFlop.run)
+    while(True):
+        robot.tick()

@@ -18,6 +18,8 @@ rightRed = False
 leftRed = False
 greenLeft = False
 greenLeft = False
+leftSense = False
+rightSense = False
 sped = 150
 state = "straightOn"
 
@@ -58,6 +60,8 @@ def algorithm(robot, time, events):
     global state
     global greenLeft
     global greenRight
+    global leftSense
+    global rightSense
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
@@ -145,9 +149,14 @@ def algorithm(robot, time, events):
         if (isColorInSplit(camera[0], red) == True or
         isColorInSplit(camera[1], red) == True or
         isColorInSplit(camera[2], red) == True):
-            return "threadNeedle"
+            return "straightOn"
         if (isColorInSplit(camera[2], yellow) == True):
-            return "rightTurn"
+            robot.move(sped,sped)    
+            return "straightOn"
+        if (isColorInSplit(camera[1], green) == True):
+            return "greenBeam"
+        #if (robot.getAngle() == 0 and is_blue == False):
+            #return "straightOn"
         #turn left arround blue barrels
         if (isColorInSplit(camera[0], blue) == True):
             is_blue = True
@@ -164,12 +173,42 @@ def algorithm(robot, time, events):
     def TN():
         global leftRed
         global rightRed
+        global leftSense
+        global rightSense
         if (isColorInSplit(camera[0], blue) == True or
         isColorInSplit(camera[1], blue) == True or
         isColorInSplit(camera[2], blue) == True):
-            return "rightTurn"
-        if (sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1):
+            leftSense = False
+            rightSense = False
+            leftRed = False
+            rightRed = False
+            return "leftTurn"
+        if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True and isColorInSplit(camera[1], red) == False):
+            robot.move(sped,sped)       
+            return "threadNeedle"
+        if (sensorData['L'] < 15 and sensorData['L'] != -1):
+            leftSense = True
+        if (sensorData['R'] < 15 and sensorData['R'] != -1):
+            rightSense = True
+        if (leftSense == True and rightSense == True):
+            leftSense = False
+            rightSense = False
             return "straightOn"
+        if (sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1):
+            robot.move(sped,sped) 
+            leftSense == False
+            rightSense == False
+            return "straightOn"
+        if (sensorData['L45'] < 50 and sensorData['R45'] > 50):
+            robot.constantRotate(sped)
+        if (sensorData['L45'] > 50 and sensorData['R45'] < 50):
+            robot.constantRotate(-sped)
+        if(sensorData['L45'] > sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+            robot.constantRotate(-sped)
+        if(sensorData['L45'] < sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+            robot.constantRotate(sped)
+        if(sensorData['Front'] > 75):
+            robot.move(sped,sped) 
         if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True):     #if red in left and right
             robot.move(sped,sped)                                                                       #go straight
         #elif (isColorInSplit(camera[1], red) == True):
@@ -197,9 +236,11 @@ def algorithm(robot, time, events):
 
     def RT():
         global is_yellow
+        #if (is_blue == True and ):
+            #return "straightOn"
         if (isColorInSplit(camera[0], blue)):
             return "leftTurn"
-        if (isColorInSplit(camera[0], yellow) == True):
+        if (isColorInSplit(camera[2], yellow) == True):
             is_yellow = True
             robot.move(sped,sped)
             #if (isColorInSplit(camera[1], blue) == True):
@@ -213,25 +254,61 @@ def algorithm(robot, time, events):
         return "rightTurn"
 
     def SO():
-        if (isColorInSplit(camera[0], blue) == True or
-        isColorInSplit(camera[1], blue) == True or
-        isColorInSplit(camera[2], blue) == True):
-            return "leftTurn"
-        if (isColorInSplit(camera[0], red) == True or
-        isColorInSplit(camera[1], red) == True or
-        isColorInSplit(camera[2], red) == True):
-            return "threadNeedle"
-        if (isColorInSplit(camera[0], red) == False or
-        isColorInSplit(camera[1], red) == False or
-        isColorInSplit(camera[2], red) == False):
+        global leftRed
+        global rightRed
+        global is_blue
+        if (is_blue == False):
+            if (isColorInSplit(camera[0], blue) == True or
+            isColorInSplit(camera[1], blue) == True or
+            isColorInSplit(camera[2], blue) == True):
+                if (isColorInSplit(camera[0], blue) == True):
+                    is_blue = True
+                return "leftTurn"
+        else:
+            if (isColorInSplit(camera[0], blue) == False):
+                is_blue == False
+        if ((sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1)):
+            robot.move(sped,sped) 
+            return "straightOn"
+        if (leftRed == False and rightRed == False):
+
+            if (isColorInSplit(camera[0], red) == True or
+            isColorInSplit(camera[1], red) == True or
+            isColorInSplit(camera[2], red) == True):
+                return "threadNeedle"
+        else:  
+            if (isColorInSplit(camera[0], red) == False):
+                leftRed = False
+            if (isColorInSplit(camera[2], red) == False):
+                rightRed = False
+        if (isColorInSplit(camera[0], yellow) == False or
+        isColorInSplit(camera[1], yellow) == False or
+        isColorInSplit(camera[2], yellow) == False):
             return "rightTurn"
+        #if (isColorInSplit(camera[0], green) == True or
+        #isColorInSplit(camera[1], green) == True or
+        #isColorInSplit(camera[2], green) == True):
+            #return "greenBeam"
         robot.move(sped,sped)
         return "straightOn"
 
-    #def HOP():
-        #global greenLeft
-        #global greenRight
-        #if (isColorInSplit(camera[0], blue)):
+    def HOP():
+        global greenLeft
+        global greenRight
+        if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+            return "straightOn"
+        
+        if (isColorInSplit(camera[1], green) == True):
+            robot.move(sped,sped)
+        if (isColorInSplit(camera[0], blue) ):  #and is_blue == False
+            return "leftTurn"
+        if (isColorInSplit(camera[0], green) == True):
+            robot.constantRotate(-sped)
+        if (isColorInSplit(camera[2], green) == True):
+            robot.constantRotate(sped)
+        else:
+            robot.move(sped,sped)
+        return "greenBeam"
 
     # example state machine:
 
@@ -249,8 +326,11 @@ def algorithm(robot, time, events):
         state = TN()
     if (state == "rightTurn"):
         state = RT()
+    if (state == "greenBeam") :
+        state = HOP()    
     if (state == "straightOn"):
         state = SO()
+    
 
     
 
@@ -411,7 +491,7 @@ course = robot_sim.Course(pixelsX=1000,
 
 
 # -- Draw course --
-course.createOuterWalls(c=white)
+#course.createOuterWalls(c=white)
 
 course.circle(x=40, y=30, r=2, c=blue)
 course.circle(x=40,y=140,r=2,c=blue)
@@ -424,7 +504,7 @@ course.circle(x=107,y=10,r=2,c=red)
 course.circle(x=107,y=20,r=2,c=red)
 
 course.circle(x=30, y=70, r=2, c=green)
-
+course.circle(x=180, y=80, r=2, c=green)
 
 # course.circle(x = 90, y=120, r=2, c=yellow)
 
@@ -485,7 +565,7 @@ cameras = {
 
 # Location is pixel placement in display
 # Length and width are in pixels
-robot = robot_sim.RobotSim(location=(850,400),
+robot = robot_sim.RobotSim(location=(950,325),
                            length=19,
                            width=9,
                            algorithm=algorithm,
