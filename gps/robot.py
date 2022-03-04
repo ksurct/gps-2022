@@ -4,17 +4,9 @@ import time
 import RotateFlipFlop
 
 class Robot():
-<<<<<<< HEAD
     def __init__(self):
         self.left = Motor(12,23)
         self.right = Motor(13,24)
-        self.rightTurnMod = 1
-        self.leftTurnMod = 1.5
-=======
-    def __init__(self, algorithm):
-        self.right = Motor(12,23)
-        self.left = Motor(13,24)
->>>>>>> 5f3f6ee360170dc3371b9deb2d9597bbf95fe131
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = False
