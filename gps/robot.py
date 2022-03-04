@@ -11,6 +11,7 @@ class Robot():
         self.constant = False
         self.serial = SerialInput()
         self.algorithm = algorithm
+        self.moving = False
 
     # Compass
     def getAngle(self):
@@ -49,8 +50,7 @@ class Robot():
 
     # Tells wether the robot is executing a move
     def isMoving(self):
-        return self.constant or time.time() - self.timeCalled < self.timeToKill
-    
+        return self.moving
     # Set constant speed
     def constantMove(self, speedMps):
         speedPercent = self.mpsToPercent(speedMps)
@@ -101,10 +101,13 @@ class Robot():
         self.constant = False
 
     def tick(self):
-        print("Time: ", time.time())
+        t = time.time()
+        print("Time: ", t)
         print("Called time: ", self.timeCalled)
-        
-        self.algorithm(self, time.time())
+        self.moving  = self.constant or t - self.timeCalled < self.timeToKill
+        if not self.moving:
+            self.stop()
+        self.algorithm(self, t)
 
 def testAlgorithm(time):
 
