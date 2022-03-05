@@ -8,18 +8,19 @@ leds = [16, 20, 21, 18]
 
 class Button:
     
-    def __init__(self, pin, func):
+    def __init__(self, robot, pin, func):
+        self.robot = robot
         self.pin = pin
         self.func = func
         GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(pin, GPIO.RISING, 
-            callback=func, bouncetime=100)
+            callback=self.callFunc, bouncetime=500)
         
     def getPin(self):
         return self.pin
     
     def callFunc(self, aux):
-        self.func(self.getPin())
+        self.func(self.robot, self.getPin())
         
 def f(pin):
     print(pin)

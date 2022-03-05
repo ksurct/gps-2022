@@ -4,7 +4,7 @@ from time import sleep
 
 class Motor():
     def __init__(self, pwm_pin, dir_pin, mod=1):
-        GPIO.setmode(GPIO.BCM)
+        # GPIO.setmode(GPIO.BCM)
         self.mod = mod
         GPIO.setup(pwm_pin, GPIO.OUT)
         GPIO.setup(dir_pin, GPIO.OUT)
@@ -14,7 +14,7 @@ class Motor():
         self.pwmPin.start(0)
     def setSpeed(self, speed):
         # set speed of motor
-        print("set speed {} after mod {}".format(speed, self.mod * speed))
+        # print("set speed {} after mod {}".format(speed, self.mod * speed))
         self.pwmPin.ChangeDutyCycle(abs(speed*self.mod))
         if (speed > 0):
             GPIO.output(self.dirPin, GPIO.HIGH)
@@ -27,6 +27,7 @@ if __name__ == "__main__":
     num2 = int(input("2:"))
     num3 = float(input("3:")) 
     GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
     motor = Motor(13,24)
     motor2 = Motor(12,23)
     motor.setSpeed(num)
