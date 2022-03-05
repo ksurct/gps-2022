@@ -40,6 +40,6 @@ def run(robot, time):
     elif action == 'Left':
         robot.rotate(rotateSpeed, rotateDistance)
     elif action == 'Spin':
-        robot.rotate(180.0 / rotateTime)
+        robot.rotate(9.0 / rotateTime, 9)
     else:
         robot.move(moveSpeed, moveDistance)
