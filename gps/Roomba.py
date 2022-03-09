@@ -4,8 +4,6 @@ import time
 def run(robot, t):
     
     distances = robot.getSensorData()
-    robot.getSensorData
-    print(time.time()-t)
     minDistance = distances['Right']
     minDistanceSensorName = 'Right'
 

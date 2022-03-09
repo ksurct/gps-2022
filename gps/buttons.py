@@ -3,13 +3,14 @@ import signal
 import sys
 import time
 import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 
 leds = [16, 20, 21, 18]
 
 class Button:
     
-    def __init__(self, robot, pin, func):
-        self.robot = robot
+    def __init__(self, pin, func):
         self.pin = pin
         self.func = func
         GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -20,7 +21,7 @@ class Button:
         return self.pin
     
     def callFunc(self, aux):
-        self.func(self.robot, self.getPin())
+        self.func(self.getPin())
         
 def f(pin):
     print(pin)
