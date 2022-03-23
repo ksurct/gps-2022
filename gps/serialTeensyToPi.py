@@ -20,8 +20,8 @@ class SerialInput(object):
 
     def receiveData(self):
         self.pingTeensy()
-        print(json.loads(self.ser.readline().decode('utf-8').rstrip()))
         line = json.loads(self.ser.readline().decode('utf-8').rstrip())
+        # print(line)
         self.fr_data = line['fr_data']
         self.fl_data = line['fl_data']
         self.f_data = line['f_data']

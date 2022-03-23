@@ -7,7 +7,10 @@ GPIO.setmode(GPIO.BCM)
 led = 16
 GPIO.setup(led, GPIO.OUT)
 
-r = Robot()
+def a(t):
+    return
+
+r = Robot(a)
 initialMoveSpeed = .2
 initialRotateSpeed = 1
 stopped = True
