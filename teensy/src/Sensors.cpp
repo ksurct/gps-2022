@@ -34,7 +34,6 @@ void sensorsInit(Data* dataReference){
 }
 
 void getAccelData(){
-  Serial.println("AccelData");
   sensors_event_t aevent, mevent;
 
   /* Get a new sensor event */
