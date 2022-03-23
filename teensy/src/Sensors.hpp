@@ -7,7 +7,7 @@ using namespace json;
 
 void sensorsInit();
 int sensorDataFunction(int sizeOfDistances, int epin, int tpin);
-void collectData(int sizeOfDistances, Data& data);
+void collectSensorData(int sizeOfDistances, Data& data);
 
 #define echoPinF1 32 
 #define trigPinF1 31 

@@ -10,10 +10,11 @@ namespace json {
         int f_data;
         int l_data;
         int r_data;
-        double angle;//gps.course (10^-2 deg)
-        double latitude;
-        double longitude;
-        double speed;//gps.f_speed_mps()
+        double course;//gps.course (10^-2 deg)
+        float latitude;
+        float longitude;
+        float altitude;
+        float speed;//gps.f_speed_mps()
         void sendJson();
     };
 }

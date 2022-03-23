@@ -1,13 +1,12 @@
-#ifndef __SENSORS_HPP__
-#define __SENSORS_HPP__
+#ifndef __GPS_HPP__
+#define __GPS_HPP__
 #include <ArduinoJson.h>
 #include "Json.hpp"
 #include <TinyGPS.h>
 
-
 using namespace json;
 
-#define Uart Serial2
+#define Uart Serial1
 void init();
 void getGpsData(Data &data);
 void gpsUpdate();

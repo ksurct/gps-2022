@@ -45,7 +45,7 @@ int distance1; // variable for the distance measurement
   }
 }
 
-void collectData(int sizeOfDistances, Data& data){
+void collectSensorData(int sizeOfDistances, Data& data){
   data.fr_data = sensorDataFunction(sizeOfDistances, echoPinF1, trigPinF1);
   data.r_data = sensorDataFunction(sizeOfDistances, echoPinF2, trigPinF2);
   data.l_data = sensorDataFunction(sizeOfDistances, echoPinF3, trigPinF3);
