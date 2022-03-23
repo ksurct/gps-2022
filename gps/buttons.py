@@ -3,6 +3,8 @@ import signal
 import sys
 import time
 import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 
 leds = [16, 20, 21, 18]
 
@@ -13,7 +15,7 @@ class Button:
         self.func = func
         GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(pin, GPIO.RISING, 
-            callback=func, bouncetime=100)
+            callback=self.callFunc, bouncetime=500)
         
     def getPin(self):
         return self.pin
