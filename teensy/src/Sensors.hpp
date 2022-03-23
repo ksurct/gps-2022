@@ -1,23 +1,36 @@
 #ifndef __SENSORS_HPP__
 #define __SENSORS_HPP__
 #include <ArduinoJson.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 #include "Json.hpp"
 
 using namespace json;
 
-void sensorsInit();
-int sensorDataFunction(int sizeOfDistances, int epin, int tpin);
-void collectSensorData(int sizeOfDistances, Data& data);
+void sensorsInit(Data* dataReference);
+void sensorTrigger();
+void frReceived();
+void rReceived();
+void lReceived();
+void flReceived();
+void fReceived();
 
-#define echoPinF1 32 
-#define trigPinF1 31 
-#define echoPinF2 30
-#define trigPinF2 29
-#define echoPinF3 38
-#define trigPinF3 37
-#define echoPinF4 36
-#define trigPinF4 35
-#define echoPinF5 34
-#define trigPinF5 33
+//void basicInterruptFunction();
+//int sensorInterruptFunction(int epin, int tpin);
+//int sensorDataFunction(int sizeOfDistances, int epin, int tpin);
+//void getSonsorData(Data& data);
+//void updateSensorData(int sizeOfDistances, Data& data);
+
+
+#define echoPinF1 32 // fr
+#define trigPinF1 29 // fr
+#define echoPinF2 30 // r
+#define trigPinF2 28 // r
+#define echoPinF3 38 // l
+#define trigPinF3 37 // l
+#define echoPinF4 39 // fl
+#define trigPinF4 36 // fl
+#define echoPinF5 34 // f
+#define trigPinF5 33 // f
 
 #endif
