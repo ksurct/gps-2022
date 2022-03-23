@@ -141,12 +141,6 @@ class Robot():
 
         return ratio
 
-
-
-
-
-
-
     # Set constant rotation
     def constantRotate(self, speedDps):
         speedPercent = self.dpsToPercent(speedDps)
