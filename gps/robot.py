@@ -59,6 +59,41 @@ class Robot():
         self.timeToKill = 0
         self.constant = True
 
+    def PID(self, desiredHeading):
+        ratio = 0
+        
+        P = 0
+        I = 0
+        D = 0
+
+        #tuning variables
+        Kp = 0.1
+        Ki = 0.1
+        Kd = 0.001
+
+        position = 0 #Magnetometer data goes in this variable
+
+        desiredposition = 0 #Whatever heading it is currently at???
+
+        lastError = 0
+        error = desiredposition - position
+
+        P = error
+        I = I + error
+        D = error - lastError
+        lastError = error
+
+        motorspeed = P*Kp + I*Ki + D*Kd #PID algo
+
+        position = position + motorspeed #feedback into algo...will need to change
+
+        return ratio
+
+
+
+
+
+
 
 
     # Set constant rotation

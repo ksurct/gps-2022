@@ -28,12 +28,16 @@ D = 0
 
 Kp = 0.1
 Ki = 0.1
-Kd = 0.1
+Kd = 0.001
+
+right = 0
+left = 0
 
 lastError = 0
-position = 40
-desiredposition = 360
-motorspeed = 0
+position = 60
+desiredposition = 0
+percentpeed = 20
+Loopcount = 0
 
 error = 0
 
@@ -48,8 +52,11 @@ def PID_control():
     global lastError
     global position 
     global desiredposition
-    global motorspeed
+    global percentspeed
     global error
+    global Loopcount
+    global right
+    global left
 
     error = desiredposition - position
 
@@ -59,9 +66,19 @@ def PID_control():
     lastError = error
     
 
-    motorspeed = P*Kp + I*Ki + D*Kd
+    percentspeed = P*Kp + I*Ki + D*Kd
 
-    position = position + motorspeed
+    right = (100 - percentspeed)
+    left = (percentspeed)
+
+    if(right > left):
+        position = position + (percentspeed)
+    elif(left > right):
+        position = position - (percentspeed)
+
+
+    #if (percentspeed > 0.5):
+         
 
 Flag = True
 
@@ -74,10 +91,15 @@ while True:
     #     position = 360
     
     PID_control()
-    print("Motorspeed: ", motorspeed)
+    print("percentspeed: ", percentspeed)
     print("Position: ", position)
+
+    print("Right: ", right)
+    print("Left: ", left)
     print("Error: ", error)
+    print("Loopcount: ", Loopcount)
     input()
+    Loopcount = Loopcount + 1
 
 
 
