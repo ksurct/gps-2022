@@ -1,5 +1,6 @@
 from motor import Motor
 from serialTeensyToPi import SerialInput
+from camera import Camera
 import time
 
 class Robot():
@@ -10,6 +11,7 @@ class Robot():
         self.timeToKill = 0
         self.constant = False
         self.serial = SerialInput()
+        self.camera = Camera(3, False)
 
     # Compass
     def getAngle(self):
@@ -38,7 +40,7 @@ class Robot():
 
     # Camera data, return camera -> splits -> objects
     def getCameraData(self):
-        pass
+        return self.camera.getCameraData()
 
     def mpsToPercent(self, speedMps):
         return 4 / 0.78 * speedMps
@@ -58,7 +60,6 @@ class Robot():
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = True
-
 
 
     # Set constant rotation

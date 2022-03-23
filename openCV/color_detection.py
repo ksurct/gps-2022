@@ -79,13 +79,13 @@ def getCameraData():
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
             if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
-                objects.append(CameraObject(objectCount, "Yellow", x, width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Yellow", width//splitCount, x+w-width//splitCount))
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Yellow", "x": width//splitCount, "size": x+w-width//splitCount})
             elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
-                objects.append(CameraObject(objectCount, "Yellow", x, 2*width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Yellow", 2*width//splitCount, x+w-(2*width//splitCount)))
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Yellow", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
             else:
-                objects.append(CameraObject(objectCount, "Yellow", x, w))
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": w})
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
                                        (0, 0, 255), 2)
@@ -104,13 +104,13 @@ def getCameraData():
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
             if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
-                objects.append(CameraObject(objectCount, "Red", x, width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Red", width//splitCount, x+w-width//splitCount))
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Red", "x": width//splitCount, "size": x+w-width//splitCount})
             elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
-                objects.append(CameraObject(objectCount, "Red", x, 2*width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Red", 2*width//splitCount, x+w-(2*width//splitCount)))
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Red", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
             else:
-                objects.append(CameraObject(objectCount, "Red", x, w))
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": w})
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
                                        (0, 255, 0), 2)
@@ -128,13 +128,13 @@ def getCameraData():
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
             if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
-                objects.append(CameraObject(objectCount, "Blue", x, width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Blue", width//splitCount, x+w-width//splitCount))
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount,"color": "Blue", "x": width//splitCount, "size": x+w-width//splitCount})
             elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
-                objects.append(CameraObject(objectCount, "Blue", x, 2*width//splitCount-x))
-                objects.append(CameraObject(objectCount, "Blue", 2*width//splitCount, x+w-(2*width//splitCount)))
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Blue", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
             else:
-                objects.append(CameraObject(objectCount, "Blue", x, w))
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": w})
             objectCount+=1
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
@@ -156,7 +156,7 @@ def getCameraData():
     print([objects])
     if cv2.waitKey(10) & 0xFF == ord('q'):
         return None
-    return []
+    return objects
 
 if __name__ == "__main__":
     while(True):
