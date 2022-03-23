@@ -17,11 +17,17 @@ class SerialInput(object):
         self.latitude = ""
         self.altitude = ""
         self.speed = ""
+        self.accelX= ""
+        self.accelY= ""
+        self.accelZ= ""
+        self.magX = ""
+        self.magY = ""
+        self.magZ = ""
 
     def receiveData(self):
         self.pingTeensy()
-        print(json.loads(self.ser.readline().decode('utf-8').rstrip()))
         line = json.loads(self.ser.readline().decode('utf-8').rstrip())
+        # print(line)
         self.fr_data = line['fr_data']
         self.fl_data = line['fl_data']
         self.f_data = line['f_data']
@@ -31,6 +37,12 @@ class SerialInput(object):
         self.latitude = line['latitude']
         self.altitude = line['altitude']
         self.course = line['course']
+        self.accelX = line['accelX']
+        self.accelY = line['accelY']
+        self.accelZ = line['accelZ']
+        self.magZ = line['magX']
+        self.magY = line['magY']
+        self.magZ = line['magZ']
         
     def pingTeensy(self):
         self.ser.write(b'r')
@@ -61,6 +73,12 @@ class SerialInput(object):
         
     def getCourse(self):
         return self.course
+
+    def getAccel(self):
+        return [self.accelX, self.accelY, self.accelZ]
+
+    def getMag(self):
+        return [self.magX, self.magY, self.magZ]
 
 if __name__ == '__main__':
     # ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)

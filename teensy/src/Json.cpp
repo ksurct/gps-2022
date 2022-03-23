@@ -25,6 +25,16 @@ void json::Data::sendJson() {
     //GPS Speed (in mps)
     doc["speed"] = speed;
 
+    //Accel Data (in m/s^2)
+    doc["accelX"] = accelX;
+    doc["accelY"] = accelY;
+    doc["accelZ"] = accelZ;
+
+    //Accel Data (in uT)
+    doc["magX"] = magX;
+    doc["magY"] = magY;
+    doc["magZ"] = magZ;
+
     serializeJson(doc, Serial);
     Serial.println("");
 }

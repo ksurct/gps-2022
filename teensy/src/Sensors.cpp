@@ -10,6 +10,7 @@ unsigned long echoRTime;
 unsigned long echoLTime;
 unsigned long echoFLTime;
 unsigned long echoFTime;
+Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
 
 void sensorsInit(Data* dataReference){
     pinMode(trigPinF1, OUTPUT);
@@ -24,6 +25,27 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF4, flReceived, CHANGE);
     attachInterrupt(echoPinF5, fReceived, CHANGE);
     data = dataReference;
+    if (!accelmag.begin()) {
+        /* There was a problem detecting the FXOS8700 ... check your connections */
+        Serial.println("Ooops, no FXOS8700 detected ... Check your wiring!");
+        while (1)
+            ;
+    }
+}
+
+void getAccelData(){
+  sensors_event_t aevent, mevent;
+
+  /* Get a new sensor event */
+  accelmag.getEvent(&aevent, &mevent);
+
+  data->accelX = aevent.acceleration.x;
+  data->accelY = aevent.acceleration.y;
+  data->accelZ = aevent.acceleration.z;
+  
+  data->magX = mevent.magnetic.x;
+  data->magY = mevent.magnetic.y;
+  data->magZ = mevent.magnetic.z;
 }
 
 void sensorTrigger(){

@@ -15,6 +15,12 @@ namespace json {
         float longitude;
         float altitude;
         float speed;//gps.f_speed_mps()
+        float accelX;
+        float accelY;
+        float accelZ;
+        float magX;
+        float magY;
+        float magZ;
         void sendJson();
     };
 }
