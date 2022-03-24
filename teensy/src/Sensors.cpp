@@ -27,9 +27,6 @@ void sensorsInit(Data* dataReference){
     data = dataReference;
     if (!accelmag.begin()) {
         /* There was a problem detecting the FXOS8700 ... check your connections */
-        Serial.println("Ooops, no FXOS8700 detected ... Check your wiring!");
-        while (1)
-            ;
     }
 }
 
