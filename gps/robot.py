@@ -25,7 +25,7 @@ class Robot():
         self.timeToKill = 0
         self.constant = False
         self.serial = SerialInput()
-        self.camera = Camera(3, False)
+        self.camera = Camera(3, False, "main")
 
         self.algorithm = algorithm
         self.moving = False
@@ -91,7 +91,7 @@ class Robot():
 
     # Camera data, return camera -> splits -> objects
     def getCameraData(self):
-        return self.camera.getCameraData()
+        return {self.camera.name: self.camera.getCameraData()}
 
     def mpsToPercent(self, speedMps):
         return 13 * speedMps

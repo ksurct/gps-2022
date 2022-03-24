@@ -4,10 +4,11 @@ import cv2
 
 class Camera():
 
-    def __init__(self, splits, show):
+    def __init__(self, splits, show, name):
         self.show = show
         self.cam = cv2.VideoCapture(0)
         self.splitCount = splits
+        self.name = name
 
     def end(self):
         self.cam.release()
