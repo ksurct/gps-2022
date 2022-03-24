@@ -57,10 +57,10 @@ def algorithm(robot, time, events = None):
     if (sensorData['Front'] < 100 and sensorData['Front'] != -1):
         while (mod == 0):
             mod = random.randrange(-1,2)
-        robot.rotate(700 * mod, 35)
+        robot.rotate(2 * mod, 35)
     elif (robot.isNotMoving()):
         mod = 0
-        robot.constantMove(400)
+        robot.constantMove(2)
 
 
 
