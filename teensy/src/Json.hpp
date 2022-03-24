@@ -21,6 +21,7 @@ namespace json {
         float magX;
         float magY;
         float magZ;
+        float magCourse;
         void sendJson();
     };
 }

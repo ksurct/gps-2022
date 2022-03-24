@@ -298,8 +298,8 @@ def algorithm(robot, time, events):
         if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
             return "straightOn"
         
-        if (isColorInSplit(camera[1], green) == True):
-            robot.move(sped,sped)
+        #if (isColorInSplit(camera[1], green) == True):
+        #    robot.move(sped,sped)
         if (isColorInSplit(camera[0], blue) ):  #and is_blue == False
             return "leftTurn"
         if (isColorInSplit(camera[0], green) == True):
@@ -552,14 +552,15 @@ sensors = {
 #      (0,0)x-----------
 #
 cameras = {
-    'main': robot_sim.Camera(x=4.5,
+    'main': robot_sim.Camera(
+                   x=4.5,
                    y=9.5,
                    angle=0,
                    fieldOfView=90,
                    splitCount=3, # How many splits are in the camera when showing object colors
                    resolution=40, # How many rays are in the field of view
                    debug=True,
-                   maxDistance=300
+                   #maxDistance=300
                    )
 }
 
@@ -570,7 +571,13 @@ robot = robot_sim.RobotSim(location=(950,325),
                            width=9,
                            algorithm=algorithm,
                            sensors=sensors,
+<<<<<<< HEAD
+                           cameras=cameras,
+                           #debugPrint=True
+                           )
+=======
                            cameras=cameras)
+>>>>>>> 2ce51e5b97c4e62da11c8008e7967cd280a44e58
 
 robot_sim.run(course, robot, FPS)
 
