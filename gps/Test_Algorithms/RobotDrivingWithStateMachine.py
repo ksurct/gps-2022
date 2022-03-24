@@ -311,8 +311,8 @@ def algorithm(robot, time, events):
         if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
             return "straightOn"
         
-        if (isColorInSplit(camera[1], green) == True):
-            robot.move(sped,sped)
+        #if (isColorInSplit(camera[1], green) == True):
+        #    robot.move(sped,sped)
         if (isColorInSplit(camera[0], blue) ):  #and is_blue == False
             return "leftTurn"
         if (isColorInSplit(camera[0], green) == True):
@@ -594,14 +594,6 @@ else:
     while(True):
         robot.tick()
     
-
-
-
-
-
-
-
-
 
 
 
