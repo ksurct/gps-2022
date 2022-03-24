@@ -11,6 +11,7 @@
 using namespace json;
 
 void sensorsInit(Data* dataReference);
+void setNorm();
 void getAccelData();
 void sensorTrigger();
 void frReceived();

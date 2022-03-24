@@ -8,6 +8,9 @@ json::Data::Data() {
 void json::Data::sendJson() {
     StaticJsonDocument<1000> doc;
     // Distance Sensors
+    
+    doc["magCourse"] = magCourse;
+    
     doc["fr_data"] = fr_data;
     doc["fl_data"] = fl_data;
     doc["f_data"] = f_data;
@@ -34,6 +37,8 @@ void json::Data::sendJson() {
     doc["magX"] = magX;
     doc["magY"] = magY;
     doc["magZ"] = magZ;
+
+    
 
     serializeJson(doc, Serial);
     Serial.println("");

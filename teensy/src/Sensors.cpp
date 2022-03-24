@@ -10,7 +10,11 @@ unsigned long echoRTime;
 unsigned long echoLTime;
 unsigned long echoFLTime;
 unsigned long echoFTime;
+float normX;
+float normY;
+float normZ;
 Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
+
 
 void sensorsInit(Data* dataReference){
     pinMode(trigPinF1, OUTPUT);
@@ -23,7 +27,7 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF2, rReceived, CHANGE);
     attachInterrupt(echoPinF3, lReceived, CHANGE);
     attachInterrupt(echoPinF4, flReceived, CHANGE);
-    attachInterrupt(echoPinF5, fReceived, CHANGE);
+    attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
     if (!accelmag.begin()) {
         /* There was a problem detecting the FXOS8700 ... check your connections */
@@ -31,6 +35,18 @@ void sensorsInit(Data* dataReference){
         while (1)
             ;
     }
+    setNorm();
+}
+
+void setNorm(){
+  sensors_event_t aevent, mevent;
+
+  /* Get a new sensor event */
+  accelmag.getEvent(&aevent, &mevent);
+
+  float normX = aevent.acceleration.x;
+  float normY = aevent.acceleration.x;
+  float normZ = aevent.acceleration.x;
 }
 
 void getAccelData(){
@@ -39,13 +55,20 @@ void getAccelData(){
   /* Get a new sensor event */
   accelmag.getEvent(&aevent, &mevent);
 
-  data->accelX = aevent.acceleration.x;
-  data->accelY = aevent.acceleration.y;
-  data->accelZ = aevent.acceleration.z;
-  
+  float accelX = aevent.acceleration.x - normX;
+  float accelY = aevent.acceleration.y - normY;
+  float accelZ = aevent.acceleration.z - normZ;
+
+
+  data->accelX = accelX;
+  data->accelY = accelY;
+  data->accelZ = accelZ;
+
   data->magX = mevent.magnetic.x;
   data->magY = mevent.magnetic.y;
   data->magZ = mevent.magnetic.z;
+
+  data->magCourse = atan(mevent.magnetic.x / mevent.magnetic.y); // don't use
 }
 
 void sensorTrigger(){
