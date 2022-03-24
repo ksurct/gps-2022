@@ -1,7 +1,7 @@
 
 
 
-SIM = True
+SIM = False
 
 flip = False
 white = (255,255,255,255)
@@ -29,20 +29,6 @@ def algorithm(robot, time, events = None):
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
     cameraData = robot.getCameraData()
-    for event in events:
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            return
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            robot.rotate(-90, 45)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            robot.move(100, 200)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            robot.move(-100, 200)
-        elif event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
-            robot.rotate(90, 45)
-        elif event.type == pygame.KEYUP and event.key == pygame.K_q:
-            robot.stop()
 
     # in degrees
     angle = robot.getAngle()
@@ -172,3 +158,6 @@ else:
 
     from robot import Robot
     r = Robot(algorithm)
+
+    while (True):
+        r.tick()

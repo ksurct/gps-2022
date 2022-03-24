@@ -102,6 +102,10 @@ class Robot():
     # Tells wether the robot is executing a move
     def isMoving(self):
         return self.moving
+
+    def isNotMoving(self):
+        return not self.moving
+
     # Set constant speed
     def constantMove(self, speedMps):
         speedPercent = self.mpsToPercent(speedMps)
@@ -185,8 +189,8 @@ class Robot():
 
     def tick(self):
         t = time.time()
-        # print("Time: ", t)
-        # print("Called time: ", self.timeCalled)
+        print("Time: ", t)
+        print("Called time: ", self.timeCalled)
         self.moving  = self.constant or t - self.timeCalled < self.timeToKill
         if not self.moving:
             self.stop()
