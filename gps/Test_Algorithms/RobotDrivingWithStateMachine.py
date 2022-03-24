@@ -571,9 +571,13 @@ robot = robot_sim.RobotSim(location=(950,325),
                            width=9,
                            algorithm=algorithm,
                            sensors=sensors,
+<<<<<<< HEAD
                            cameras=cameras,
                            #debugPrint=True
                            )
+=======
+                           cameras=cameras)
+>>>>>>> 2ce51e5b97c4e62da11c8008e7967cd280a44e58
 
 robot_sim.run(course, robot, FPS)
 
