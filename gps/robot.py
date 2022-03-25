@@ -41,7 +41,7 @@ class Robot():
         self.ki = 1
         self.kd = 1
         self.pid = PID(Kp=self.kp, Ki=self.ki, Kd=self.kd, setpoint=0)
-        self.pid.output_limits(-10, 10)
+        self.pid.output_limits = (-10, 10)
         self.pid.auto_mode = True
             
     # Callibration
