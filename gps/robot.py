@@ -144,8 +144,8 @@ class Robot():
     # Set constant rotation
     def constantRotate(self, speedDps):
         speedPercent = self.dpsToPercent(speedDps)
-        self.right.setSpeed(-speedPercent*self.rightTurnMod)
-        self.left.setSpeed(speedPercent*self.leftTurnMod)
+        self.right.setSpeed(speedPercent*self.rightTurnMod)
+        self.left.setSpeed(-speedPercent*self.leftTurnMod)
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = True
@@ -172,7 +172,7 @@ class Robot():
         # print(speedDps)
         # print(-speedDps)
         self.right.setSpeed(speedPercent)
-        self.left.setSpeed(-speedPercent)
+        self.left.setSpeed(speedPercent)
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
