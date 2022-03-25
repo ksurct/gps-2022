@@ -27,15 +27,15 @@ def run(robot, t):
     # turn away from min distance
     # Right side is closest
     if minDistanceSensorName == 'Right' or minDistanceSensorName == 'FrontRight':
-        if minDistance < 60:
+        if minDistance < .6:
             action = 'Left'
     # Left side is closest
     if minDistanceSensorName == 'Left' or minDistanceSensorName == 'FrontLeft':
-        if minDistance < 60:
+        if minDistance < .6:
             action = 'Right'
     # Front side is closest
     if minDistanceSensorName == 'Front':
-        if minDistance < 60:
+        if minDistance < .6:
             action = 'Spin'
         
     if action == 'Right':
