@@ -22,7 +22,7 @@ is_yellow = False
 rightRed = False
 leftRed = False
 greenLeft = False
-greenLeft = False
+greenRight = False
 leftSense = False
 rightSense = False
 sped = 150
@@ -309,17 +309,38 @@ def algorithm(robot, time, events):
     def HOP():
         global greenLeft
         global greenRight
-        if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+        if (isColorInSplit(camera[0], green) == False and isColorInSplit(camera[1], green) == False and isColorInSplit(camera[2], green) == False):
+            greenLeft = False
+            greenRight = False
             return "straightOn"
+
+        if (sensorData['Front'] < 20 and sensorData['Front'] != -1 and (isColorInSplit(camera[1], green) == True)):
+            greenLeft = False
+            greenRight = False
+            robot.move(sped,sped)
+            #return "straightOn"
         
         #if (isColorInSplit(camera[1], green) == True):
         #    robot.move(sped,sped)
-        if (isColorInSplit(camera[0], blue) ):  #and is_blue == False
+        if (isColorInSplit(camera[0], blue) and (sensorData['Left'] > 100)):  #and is_blue == False
+            greenLeft = False
+            greenRight = False
             return "leftTurn"
-        if (isColorInSplit(camera[0], green) == True):
-            robot.constantRotate(-sped)
-        if (isColorInSplit(camera[2], green) == True):
-            robot.constantRotate(sped)
+        if ((isColorInSplit(camera[0], green) == True or isColorInSplit(camera[2], green) == True)
+            and not (isColorInSplit(camera[0], green) == True and isColorInSplit(camera[2], green) == True)):
+            if (isColorInSplit(camera[0], green) == True and greenRight == False):
+                robot.constantRotate(-sped)
+                greenLeft = True
+                #break
+            if (isColorInSplit(camera[2], green) == True and greenLeft == False):
+                robot.constantRotate(sped)
+                greenRight = True
+            #if (isColorInSplit(camera[0], green) == True):
+            #    greenLeft = False
+            #if (isColorInSplit(camera[2], green) == True):
+            #    greenLeft = True
+        #if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+        #    return "straightOn"
         else:
             robot.move(sped,sped)
         return "greenBeam"
@@ -506,7 +527,7 @@ if (ideal == True):
 
 
     # -- Draw course --
-    course.createOuterWalls(c=white)
+    #course.createOuterWalls(c=white)
 
     course.circle(x=40, y=30, r=2, c=blue)
     course.circle(x=40,y=140,r=2,c=blue)
@@ -546,11 +567,7 @@ if (ideal == True):
     #
     sensors = {
         "Left": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
-<<<<<<< HEAD
         "FrontLeft": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
-=======
-        "Front": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
->>>>>>> ed0748f0ff1b7498a5d715a1bffaaaa4208aeda0
         "Right": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
         "FrontRight": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
         "Front": robot_sim.Sensor(x=4.5,y=19,d=300,angle=0,debug=True)
@@ -586,7 +603,7 @@ if (ideal == True):
     robot = robot_sim.RobotSim(location=(950,325),
                             length=19,
                             width=9,
-                            algorithm=Roomba.run,
+                            algorithm=algorithm,#Roomba.run,
                             sensors=sensors,
                             cameras=cameras)
 
