@@ -11,12 +11,14 @@ from buttons import Button
 import numpy as np
 import cv2
 from CameraObject import CameraObject
+from simple_pid import PID
 
 class Robot():
     def __init__(self, algorithm):
         GPIO.setmode(GPIO.BCM)
         self.left = Motor(12,23)
         self.right = Motor(13,24)
+        self.speed = 0
         self.forwardDistanceMod = 3
         self.backwardDistanceMod = 1
         self.rightTurnMod = 1
@@ -29,11 +31,18 @@ class Robot():
 
         self.algorithm = algorithm
         self.moving = False
+        self.forward = False
         self.leds = {'green':16,
                      'red':20,
                      'yellow':21,
                      'white':18,
                      }
+        self.kp = 1
+        self.ki = 1
+        self.kd = 1
+        self.pid = PID(Kp=self.kp, Ki=self.ki, Kd=self.kd, setpoint=0)
+        self.pid.output_limits(-10, 10)
+        self.pid.auto_mode = True
             
     # Callibration
     def getForwardDistanceMod(self):
@@ -152,16 +161,25 @@ class Robot():
 
     # Move a certain distance at a speed
     def move(self, speedMps, distanceMeters):
-        speedPercent = self.mpsToPercent(speedMps)
+        self.speed = self.mpsToPercent(speedMps)
         seconds = distanceMeters / speedMps
-        print('Right speed: %s', speedPercent)
-        self.right.setSpeed(speedPercent)
-        print('Left speed: %s', speedPercent)
-        self.left.setSpeed(speedPercent)
+        print('Right speed: %s', self.speed)
+        self.right.setSpeed(self.speed)
+        print('Left speed: %s', self.speed)
+        self.left.setSpeed(self.speed)
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
         # print("Kill after", self.timeToKill)
+
+    def motorPID(self):
+        output = self.pid(self.serial.getAccelY())
+        if output < 0:
+            self.left.setSpeed(self.speed + output)
+            self.right.setSpeed(self.speed)
+        elif output > 0:
+            self.right.setSpeed(self.speed - output)
+            self.left.setSpeed(self.speed)
 
 
 
@@ -190,6 +208,9 @@ class Robot():
         self.moving  = self.constant or t - self.timeCalled < self.timeToKill
         if not self.moving:
             self.stop()
+        if self.forward:
+            self.motorPID()
+
         self.algorithm(self, t)
 
 
