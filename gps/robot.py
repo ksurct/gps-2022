@@ -216,7 +216,7 @@ class Robot():
 
 
 if __name__ == '__main__':
-    robot = Robot(StopIfBlue.run)
+    robot = Robot(Roomba.run)
     robot.ledSetup()
     while(True):
         robot.tick()
