@@ -5,7 +5,7 @@ def run(robot, t, events=None):
     
     distances = robot.getSensorData()
     minDistance = 10000
-    minDistanceSensorName = 'Nothing Close'
+    minDistanceSensorName = "Nothing Close"
 
     # find min distance and its associated sensor
     for sensorName in distances.keys():
@@ -15,11 +15,11 @@ def run(robot, t, events=None):
             minDistance = distance
             minDistanceSensorName = sensorName
 
-    rotateDistance = 2.0
-    rotateTime = .1
+    rotateDistance = 2000
+    rotateTime = 1
     rotateSpeed = rotateDistance / rotateTime
-    moveDistance = .25
-    moveTime = .1
+    moveDistance = 2500
+    moveTime = 1
     moveSpeed = moveDistance / moveTime
 
     action = 'Forward'

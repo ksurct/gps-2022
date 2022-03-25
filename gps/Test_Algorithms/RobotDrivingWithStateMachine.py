@@ -2,6 +2,7 @@
 #import robot
 import random
 import pygame
+import Roomba
 
 ideal = True
 white = "White"
@@ -505,7 +506,7 @@ if (ideal == True):
 
 
     # -- Draw course --
-    #course.createOuterWalls(c=white)
+    course.createOuterWalls(c=white)
 
     course.circle(x=40, y=30, r=2, c=blue)
     course.circle(x=40,y=140,r=2,c=blue)
@@ -545,10 +546,10 @@ if (ideal == True):
     #      (0,0)x----------
     #
     sensors = {
-        "L": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
-        "L45": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
-        "R": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
-        "R45": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
+        "Left": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
+        "Front": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
+        "Right": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
+        "FrontRight": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
         "Front": robot_sim.Sensor(x=4.5,y=19,d=300,angle=0,debug=True)
     }
 
@@ -582,7 +583,7 @@ if (ideal == True):
     robot = robot_sim.RobotSim(location=(950,325),
                             length=19,
                             width=9,
-                            algorithm=algorithm,
+                            algorithm=Roomba.run,
                             sensors=sensors,
                             cameras=cameras,
                             debugPrint=True)
