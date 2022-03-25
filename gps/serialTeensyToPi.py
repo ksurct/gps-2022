@@ -75,13 +75,13 @@ class SerialInput(object):
         return self.course
 
     def getAccelX(self):
-        return self.accelX
+        return float(self.accelX)
 
     def getAccelY(self):
-        return self.accelY
+        return float(self.accelY)
 
     def getAccelZ(self):
-        return self.accelZ
+        return float(self.accelZ)
 
     def getMag(self):
         return [self.magX, self.magY, self.magZ]
