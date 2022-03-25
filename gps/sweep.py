@@ -11,6 +11,7 @@ speed = 15
 accel = 0
 
 for i in range(-10,10):
+    accel = 0
     count = 0
     if i < 0:
         roberto.left.setSpeed(speed + i)
@@ -21,6 +22,6 @@ for i in range(-10,10):
     t = time.time()
     while(time.time() - t < 5):
         roberto.serial.receiveData()
-        accel += roberto.serial.getAccelY()
+        accel = roberto.serial.getAccelY()
         count += 1
         print(f'speed: {i} accel y: {accel}')
