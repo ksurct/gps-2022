@@ -14,11 +14,11 @@ accel = 0
 for i in range(-10,10):
     count = 0
     if i < 0:
-        roberto.left.setSpeed(roberto.speed + i)
-        roberto.right.setSpeed(roberto.speed)
+        roberto.left.setSpeed(speed + i)
+        roberto.right.setSpeed(speed)
     elif i > 0:
-        roberto.right.setSpeed(roberto.speed - i)
-        roberto.left.setSpeed(roberto.speed)
+        roberto.right.setSpeed(speed - i)
+        roberto.left.setSpeed(speed)
     t = time.time()
     while(time.time() - t < 5):
         roberto.serial.receiveData()
