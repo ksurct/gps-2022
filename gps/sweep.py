@@ -23,4 +23,4 @@ for i in range(-10,10):
         roberto.serial.receiveData()
         accel += roberto.serial.getAccelY()
         count += 1
-    print(f'speed: {i} accel y: {accel / count}')
+        print(f'speed: {i} accel y: {accel}')
