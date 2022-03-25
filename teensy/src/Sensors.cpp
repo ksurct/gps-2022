@@ -41,9 +41,9 @@ void setNorm(){
   /* Get a new sensor event */
   accelmag.getEvent(&aevent, &mevent);
 
-  float normX = aevent.acceleration.x;
-  float normY = aevent.acceleration.x;
-  float normZ = aevent.acceleration.x;
+  normX = aevent.acceleration.x;
+  normY = aevent.acceleration.x;
+  normZ = aevent.acceleration.x;
 }
 
 void getAccelData(){
