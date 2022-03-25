@@ -23,8 +23,4 @@ for i in range(-10,10):
     while(time.time() - t < 5):
         accel += roberto.serial.getAccelY()
         count += 1
-    accel_vals.append(accel / count)
-    speed_changes.append(i)
-
-
-plt.plot(speed_changes, accel_vals)
+    print(f'speed: {i} accel y: {accel / count}')
