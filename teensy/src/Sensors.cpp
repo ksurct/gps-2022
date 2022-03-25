@@ -27,7 +27,7 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF2, rReceived, CHANGE);
     attachInterrupt(echoPinF3, lReceived, CHANGE);
     attachInterrupt(echoPinF4, flReceived, CHANGE);
-    attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
+    //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
     if (!accelmag.begin()) {
         /* There was a problem detecting the FXOS8700 ... check your connections */

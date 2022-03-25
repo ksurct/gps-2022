@@ -199,26 +199,26 @@ def algorithm(robot, time, events):
         if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True and isColorInSplit(camera[1], red) == False):
             robot.move(sped,sped)       
             return "threadNeedle"
-        if (sensorData['L'] < 15 and sensorData['L'] != -1):
+        if (sensorData['Left'] < 15 and sensorData['Left'] != -1):
             leftSense = True
-        if (sensorData['R'] < 15 and sensorData['R'] != -1):
+        if (sensorData['Right'] < 15 and sensorData['Right'] != -1):
             rightSense = True
         if (leftSense == True and rightSense == True):
             leftSense = False
             rightSense = False
             return "straightOn"
-        if (sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1):
+        if (sensorData['Left'] < 100 and sensorData['Left'] != -1 and sensorData['Right'] < 100 and sensorData['Right'] != -1):
             robot.move(sped,sped) 
             leftSense == False
             rightSense == False
             return "straightOn"
-        if (sensorData['L45'] < 50 and sensorData['R45'] > 50):
+        if (sensorData['FrontLeft'] < 50 and sensorData['FrontRight'] > 50):
             robot.constantRotate(sped)
-        if (sensorData['L45'] > 50 and sensorData['R45'] < 50):
+        if (sensorData['FrontLeft'] > 50 and sensorData['FrontRight'] < 50):
             robot.constantRotate(-sped)
-        if(sensorData['L45'] > sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+        if(sensorData['FrontLeft'] > sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
             robot.constantRotate(-sped)
-        if(sensorData['L45'] < sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+        if(sensorData['FrontLeft'] < sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
             robot.constantRotate(sped)
         if(sensorData['Front'] > 75):
             robot.move(sped,sped) 
@@ -280,7 +280,7 @@ def algorithm(robot, time, events):
         else:
             if (isColorInSplit(camera[0], blue) == False):
                 is_blue == False
-        if ((sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1)):
+        if ((sensorData['Left'] < 100 and sensorData['Left'] != -1 and sensorData['Right'] < 100 and sensorData['Right'] != -1)):
             robot.move(sped,sped) 
             return "straightOn"
         if (leftRed == False and rightRed == False):
@@ -521,8 +521,7 @@ if (ideal == True):
     course.circle(x=180, y=80, r=2, c=green)
 
     # course.circle(x = 90, y=120, r=2, c=yellow)
-
-
+#True
 
 
 
@@ -545,10 +544,10 @@ if (ideal == True):
     #      (0,0)x----------
     #
     sensors = {
-        "L": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
-        "L45": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
-        "R": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
-        "R45": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
+        "Left": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
+        "FrontLeft": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
+        "Right": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
+        "FrontRight": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
         "Front": robot_sim.Sensor(x=4.5,y=19,d=300,angle=0,debug=True)
     }
 
@@ -584,8 +583,7 @@ if (ideal == True):
                             width=9,
                             algorithm=algorithm,
                             sensors=sensors,
-                            cameras=cameras,
-                            debugPrint=True)
+                            cameras=cameras)
 
     robot_sim.run(course, robot, FPS)
 #end of simulation specific stuff
