@@ -319,30 +319,32 @@ def algorithm(robot, time, events):
             greenRight = False
             robot.move(sped,sped)
             #return "straightOn"
+        else:
+
         
         #if (isColorInSplit(camera[1], green) == True):
         #    robot.move(sped,sped)
-        if (isColorInSplit(camera[0], blue) and (sensorData['Left'] > 100)):  #and is_blue == False
-            greenLeft = False
-            greenRight = False
-            return "leftTurn"
-        if ((isColorInSplit(camera[0], green) == True or isColorInSplit(camera[2], green) == True)
-            and not (isColorInSplit(camera[0], green) == True and isColorInSplit(camera[2], green) == True)):
-            if (isColorInSplit(camera[0], green) == True and greenRight == False):
-                robot.constantRotate(-sped)
-                greenLeft = True
-                #break
-            if (isColorInSplit(camera[2], green) == True and greenLeft == False):
-                robot.constantRotate(sped)
-                greenRight = True
-            #if (isColorInSplit(camera[0], green) == True):
-            #    greenLeft = False
-            #if (isColorInSplit(camera[2], green) == True):
-            #    greenLeft = True
-        #if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
-        #    return "straightOn"
-        else:
-            robot.move(sped,sped)
+            if (isColorInSplit(camera[0], blue) and (sensorData['Left'] > 100)):  #and is_blue == False
+                greenLeft = False
+                greenRight = False
+                return "leftTurn"
+            if ((isColorInSplit(camera[0], green) == True or isColorInSplit(camera[2], green) == True)
+                and not (isColorInSplit(camera[0], green) == True and isColorInSplit(camera[2], green) == True)):
+                if (isColorInSplit(camera[0], green) == True and greenRight == False):
+                    robot.constantRotate(-sped)
+                    greenLeft = True
+                    #break
+                if (isColorInSplit(camera[2], green) == True and greenLeft == False):
+                    robot.constantRotate(sped)
+                    greenRight = True
+                #if (isColorInSplit(camera[0], green) == True):
+                #    greenLeft = False
+                #if (isColorInSplit(camera[2], green) == True):
+                #    greenLeft = True
+            #if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+            #    return "straightOn"
+            else:
+                robot.move(sped,sped)
         return "greenBeam"
 
     # example state machine:
