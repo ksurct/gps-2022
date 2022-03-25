@@ -94,7 +94,7 @@ void frReceived(){
     echoFRTime = micros();
   }
   else{
-    data->fr_data = (micros() - echoFRTime) * .034 / 2;
+    data->fr_data = (micros() - echoFRTime) * .034 / 200;
     if(data->fr_data > 1000){
       data->fr_data = -1;
     }
@@ -106,7 +106,7 @@ void rReceived(){
     echoRTime = micros();
   }
   else{
-    data->r_data = (micros() - echoRTime) * .034 / 2;
+    data->r_data = (micros() - echoRTime) * .034 / 200;
     if(data->r_data > 1000){
       data->r_data = -1;
     }
@@ -118,7 +118,7 @@ void lReceived(){
     echoLTime = micros();
   }
   else{
-    data->l_data = (micros() - echoLTime) * .034 / 2;
+    data->l_data = (micros() - echoLTime) * .034 / 200;
     if(data->l_data > 1000){
       data->l_data = -1;
     }
@@ -130,7 +130,7 @@ void flReceived(){
     echoFLTime = micros();
   }
   else{
-    data->fl_data = (micros() - echoFLTime) * .034 / 2;
+    data->fl_data = (micros() - echoFLTime) * .034 / 200;
     if(data->fl_data > 1000){
       data->fl_data = -1;
     }
@@ -142,7 +142,7 @@ void fReceived(){
     echoFTime = micros();
   }
   else{
-    data->f_data = (micros() - echoFTime) * .034 / 2;
+    data->f_data = (micros() - echoFTime) * .034 / 200;
     if(data->f_data > 1000){
       data->f_data = -1;
     }
