@@ -30,9 +30,6 @@ void loop()
         time += interval;
     }
     
-    delay(100);
-    data.sendJson();
-    
 }
 
 
