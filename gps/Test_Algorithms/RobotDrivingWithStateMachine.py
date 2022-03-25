@@ -160,6 +160,9 @@ def algorithm(robot, time, events):
 
     def LT():
         global is_blue
+        if ((isColorInSplit(camera[0], blue) == True or is_blue == True) and (sensorData['Left'] < 100 and sensorData['Left'] != -1)):
+            robot.move(sped,sped)  
+            return "leftTurn"
         if (isColorInSplit(camera[0], red) == True or
         isColorInSplit(camera[1], red) == True or
         isColorInSplit(camera[2], red) == True):
@@ -178,7 +181,7 @@ def algorithm(robot, time, events):
             #if (isColorInSplit(camera[1], blue) == True):
         elif (is_blue == True and isColorInSplit(camera[1], blue) == False):
             robot.constantRotate(-sped)
-        elif (isColorInSplit(camera[1], blue) == True):
+        elif (isColorInSplit(camera[1], blue) == True or (isColorInSplit(camera[2], blue) == True) ):
             robot.constantRotate(sped)
         else:
             robot.move(sped,sped)    
@@ -602,7 +605,7 @@ if (ideal == True):
 
     # Location is pixel placement in display
     # Length and width are in pixels
-    robot = robot_sim.RobotSim(location=(950,325),
+    robot = robot_sim.RobotSim(location=(700,325),          #
                             length=19,
                             width=9,
                             algorithm=algorithm,#Roomba.run,
