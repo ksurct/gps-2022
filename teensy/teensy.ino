@@ -29,7 +29,6 @@ void loop()
         data.sendJson();
         time += interval;
     }
-    
 }
 
 
