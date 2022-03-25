@@ -1,6 +1,5 @@
 from robot import Robot
 import time
-import matplotlib.pyplot as plt
 
 def no_algorithm():
     pass
