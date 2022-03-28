@@ -27,7 +27,7 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF2, rReceived, CHANGE);
     attachInterrupt(echoPinF3, lReceived, CHANGE);
     attachInterrupt(echoPinF4, flReceived, CHANGE);
-    attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
+    //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
     if (!accelmag.begin()) {
         /* There was a problem detecting the FXOS8700 ... check your connections */
@@ -41,9 +41,9 @@ void setNorm(){
   /* Get a new sensor event */
   accelmag.getEvent(&aevent, &mevent);
 
-  float normX = aevent.acceleration.x;
-  float normY = aevent.acceleration.x;
-  float normZ = aevent.acceleration.x;
+  normX = aevent.acceleration.x;
+  normY = aevent.acceleration.y;
+  normZ = aevent.acceleration.z;
 }
 
 void getAccelData(){
@@ -94,7 +94,7 @@ void frReceived(){
     echoFRTime = micros();
   }
   else{
-    data->fr_data = (micros() - echoFRTime) * .034 / 2;
+    data->fr_data = (micros() - echoFRTime) * .034 / 200.0;
     if(data->fr_data > 1000){
       data->fr_data = -1;
     }
@@ -106,7 +106,7 @@ void rReceived(){
     echoRTime = micros();
   }
   else{
-    data->r_data = (micros() - echoRTime) * .034 / 2;
+    data->r_data = (micros() - echoRTime) * .034 / 200.0;
     if(data->r_data > 1000){
       data->r_data = -1;
     }
@@ -118,7 +118,7 @@ void lReceived(){
     echoLTime = micros();
   }
   else{
-    data->l_data = (micros() - echoLTime) * .034 / 2;
+    data->l_data = (micros() - echoLTime) * .034 / 200.0;
     if(data->l_data > 1000){
       data->l_data = -1;
     }
@@ -130,7 +130,7 @@ void flReceived(){
     echoFLTime = micros();
   }
   else{
-    data->fl_data = (micros() - echoFLTime) * .034 / 2;
+    data->fl_data = (micros() - echoFLTime) * .034 / 200.0;
     if(data->fl_data > 1000){
       data->fl_data = -1;
     }
@@ -142,7 +142,7 @@ void fReceived(){
     echoFTime = micros();
   }
   else{
-    data->f_data = (micros() - echoFTime) * .034 / 2;
+    data->f_data = (micros() - echoFTime) * .034 / 200.0;
     if(data->f_data > 1000){
       data->f_data = -1;
     }
