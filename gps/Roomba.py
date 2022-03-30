@@ -1,7 +1,8 @@
 import timeit
 import time
+import run
 
-def run(robot, t, events=None):
+def algo(robot, t, events=None):
     
     distances = robot.getSensorData()
     minDistance = 10000
@@ -63,3 +64,7 @@ def run(robot, t, events=None):
         #robot.ledOn('green', True)
         print('Forward')
         print(minDistance)
+
+run.algo = algo
+# run.isSim = False
+run.run()
