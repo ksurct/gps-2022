@@ -3,8 +3,9 @@
 import random
 import pygame
 import Roomba
+import run
 
-isSim = True
+isSim2 = True
 white = "White"
 blue = "Blue"
 green = "Green"
@@ -27,14 +28,16 @@ leftSense = False
 rightSense = False
 sped = 150
 state = "straightOn"
-if (isSim == True):                     #set initial conditions for simulation 
+
+"""
+if (isSim2 == True):                     #set initial conditions for simulation 
     white = (255,255,255,255)
     blue = (0,0,255,255)
     green = (0,255,0,255)
     red = (255,0,0,255)
     yellow = (255, 255 , 0, 255)
     sped = 150
-    
+"""
 
 #state = {"leftTurn", "goStraight", "turnRight", "threadNeedle", "hop", "undefined"}
 
@@ -522,8 +525,8 @@ def keyboard(events):
             robot.move(-100, 200)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
             robot.rotate(90, 45)
-
-if (isSim == True): 
+"""
+if (isSim2 == True): 
     import robot_sim                                                     #if in the simultaion mode
     # Pixels is the resolution on screen
     # Course resolution is the grid count used to draw a course
@@ -620,7 +623,7 @@ else:
     import robot
     while(True):
         robot.tick()
-    
+"""
 
 
 
