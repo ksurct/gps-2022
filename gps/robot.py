@@ -1,3 +1,4 @@
+from cmath import pi
 from motor import Motor
 from serialTeensyToPi import SerialInput
 from camera import Camera
@@ -43,7 +44,9 @@ class Robot():
         self.pid = PID(Kp=self.kp, Ki=self.ki, Kd=self.kd, setpoint=0)
         self.pid.output_limits = (-10, 10)
         self.pid.auto_mode = True
-            
+        self.axilLength = .325 # meters
+        self.wheelDiameter = 0.086
+    
     # Callibration
     def getForwardDistanceMod(self):
         return self.forwardDistanceMod
@@ -57,6 +60,12 @@ class Robot():
     def getLeftTurnMod(self):
         return self.leftTurnMod
     
+    def setLeftMps(mps):
+        maxMotorRpm = 10500
+        maxMotorRps = 10500 / 60
+        maxOutputRps = maxMotorRps / 5 # gear ratio
+
+        
     
     # LEDs
     def ledSetup(self):
@@ -185,7 +194,11 @@ class Robot():
             self.right.setSpeed(self.speed - output)
             self.left.setSpeed(self.speed)
 
-
+    def constantArcMove(self, speed, radius):
+        ω = speed * 2 * pi / (2*radius*pi)
+        Vr = ω (radius + self.axilLength/2)
+        Vl = ω (radius - self.axilLength/2)
+        
 
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
