@@ -3,8 +3,9 @@
 import random
 import pygame
 import Roomba
+import run
 
-ideal = True
+isSim2 = True
 white = "White"
 blue = "Blue"
 green = "Green"
@@ -28,14 +29,15 @@ rightSense = False
 sped = 150
 state = "straightOn"
 
-if (ideal == True):                     #set initial conditions for simulation 
+"""
+if (isSim2 == True):                     #set initial conditions for simulation 
     white = (255,255,255,255)
     blue = (0,0,255,255)
     green = (0,255,0,255)
     red = (255,0,0,255)
     yellow = (255, 255 , 0, 255)
     sped = 150
-    
+"""
 
 #state = {"leftTurn", "goStraight", "turnRight", "threadNeedle", "hop", "undefined"}
 
@@ -322,6 +324,7 @@ def algorithm(robot, time, events):
             greenRight = False
             robot.move(sped,sped)
             #return "straightOn"
+            #return "straightOn"
         else:
 
         
@@ -337,9 +340,11 @@ def algorithm(robot, time, events):
                     robot.constantRotate(-sped)
                     greenLeft = True
                     #break
-                if (isColorInSplit(camera[2], green) == True and greenLeft == False):
+                elif (isColorInSplit(camera[2], green) == True and greenLeft == False):
                     robot.constantRotate(sped)
                     greenRight = True
+                else:
+                    robot.move(sped,sped)
                 #if (isColorInSplit(camera[0], green) == True):
                 #    greenLeft = False
                 #if (isColorInSplit(camera[2], green) == True):
@@ -520,8 +525,8 @@ def keyboard(events):
             robot.move(-100, 200)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
             robot.rotate(90, 45)
-
-if (ideal == True): 
+"""
+if (isSim2 == True): 
     import robot_sim                                                     #if in the simultaion mode
     # Pixels is the resolution on screen
     # Course resolution is the grid count used to draw a course
@@ -618,7 +623,7 @@ else:
     import robot
     while(True):
         robot.tick()
-    
+"""
 
 
 
