@@ -322,6 +322,7 @@ def algorithm(robot, time, events):
             greenRight = False
             robot.move(sped,sped)
             #return "straightOn"
+            #return "straightOn"
         else:
 
         
@@ -337,9 +338,11 @@ def algorithm(robot, time, events):
                     robot.constantRotate(-sped)
                     greenLeft = True
                     #break
-                if (isColorInSplit(camera[2], green) == True and greenLeft == False):
+                elif (isColorInSplit(camera[2], green) == True and greenLeft == False):
                     robot.constantRotate(sped)
                     greenRight = True
+                else:
+                    robot.move(sped,sped)
                 #if (isColorInSplit(camera[0], green) == True):
                 #    greenLeft = False
                 #if (isColorInSplit(camera[2], green) == True):
