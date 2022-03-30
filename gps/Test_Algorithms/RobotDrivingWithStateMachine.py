@@ -1,15 +1,20 @@
-import robot_sim
+#import robot_sim
+#import robot
 import random
 import pygame
+import Roomba
+
+ideal = True
+white = "White"
+blue = "Blue"
+green = "Green"
+red = "Red"
+yellow = "Yellow"
 
 # Target FPS
 FPS = 60
 flip = False
-white = (255,255,255,255)
-blue = (0,0,255,255)
-green = (0,255,0,255)
-red = (255,0,0,255)
-yellow = (255, 255 , 0, 255)
+
 mod = 0
 flag = 0
 is_blue = False
@@ -17,11 +22,20 @@ is_yellow = False
 rightRed = False
 leftRed = False
 greenLeft = False
-greenLeft = False
+greenRight = False
 leftSense = False
 rightSense = False
 sped = 150
 state = "straightOn"
+
+if (ideal == True):                     #set initial conditions for simulation 
+    white = (255,255,255,255)
+    blue = (0,0,255,255)
+    green = (0,255,0,255)
+    red = (255,0,0,255)
+    yellow = (255, 255 , 0, 255)
+    sped = 150
+    
 
 #state = {"leftTurn", "goStraight", "turnRight", "threadNeedle", "hop", "undefined"}
 
@@ -146,6 +160,9 @@ def algorithm(robot, time, events):
 
     def LT():
         global is_blue
+        if ((isColorInSplit(camera[0], blue) == True or is_blue == True) and (sensorData['Left'] < 100 and sensorData['Left'] != -1)):
+            robot.move(sped,sped)  
+            return "leftTurn"
         if (isColorInSplit(camera[0], red) == True or
         isColorInSplit(camera[1], red) == True or
         isColorInSplit(camera[2], red) == True):
@@ -164,7 +181,7 @@ def algorithm(robot, time, events):
             #if (isColorInSplit(camera[1], blue) == True):
         elif (is_blue == True and isColorInSplit(camera[1], blue) == False):
             robot.constantRotate(-sped)
-        elif (isColorInSplit(camera[1], blue) == True):
+        elif (isColorInSplit(camera[1], blue) == True or (isColorInSplit(camera[2], blue) == True) ):
             robot.constantRotate(sped)
         else:
             robot.move(sped,sped)    
@@ -186,26 +203,26 @@ def algorithm(robot, time, events):
         if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True and isColorInSplit(camera[1], red) == False):
             robot.move(sped,sped)       
             return "threadNeedle"
-        if (sensorData['L'] < 15 and sensorData['L'] != -1):
+        if (sensorData['Left'] < 15 and sensorData['Left'] != -1):
             leftSense = True
-        if (sensorData['R'] < 15 and sensorData['R'] != -1):
+        if (sensorData['Right'] < 15 and sensorData['Right'] != -1):
             rightSense = True
         if (leftSense == True and rightSense == True):
             leftSense = False
             rightSense = False
             return "straightOn"
-        if (sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1):
+        if (sensorData['Left'] < 100 and sensorData['Left'] != -1 and sensorData['Right'] < 100 and sensorData['Right'] != -1):
             robot.move(sped,sped) 
             leftSense == False
             rightSense == False
             return "straightOn"
-        if (sensorData['L45'] < 50 and sensorData['R45'] > 50):
+        if (sensorData['FrontLeft'] < 50 and sensorData['FrontRight'] > 50):
             robot.constantRotate(sped)
-        if (sensorData['L45'] > 50 and sensorData['R45'] < 50):
+        if (sensorData['FrontLeft'] > 50 and sensorData['FrontRight'] < 50):
             robot.constantRotate(-sped)
-        if(sensorData['L45'] > sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+        if(sensorData['FrontLeft'] > sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
             robot.constantRotate(-sped)
-        if(sensorData['L45'] < sensorData['R45'] and sensorData['L45'] < 55 and sensorData['R45'] < 55):
+        if(sensorData['FrontLeft'] < sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
             robot.constantRotate(sped)
         if(sensorData['Front'] > 75):
             robot.move(sped,sped) 
@@ -267,7 +284,7 @@ def algorithm(robot, time, events):
         else:
             if (isColorInSplit(camera[0], blue) == False):
                 is_blue == False
-        if ((sensorData['L'] < 100 and sensorData['L'] != -1 and sensorData['R'] < 100 and sensorData['R'] != -1)):
+        if ((sensorData['Left'] < 100 and sensorData['Left'] != -1 and sensorData['Right'] < 100 and sensorData['Right'] != -1)):
             robot.move(sped,sped) 
             return "straightOn"
         if (leftRed == False and rightRed == False):
@@ -295,19 +312,42 @@ def algorithm(robot, time, events):
     def HOP():
         global greenLeft
         global greenRight
-        if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+        if (isColorInSplit(camera[0], green) == False and isColorInSplit(camera[1], green) == False and isColorInSplit(camera[2], green) == False):
+            greenLeft = False
+            greenRight = False
             return "straightOn"
-        
-        if (isColorInSplit(camera[1], green) == True):
+
+        if (sensorData['Front'] < 20 and sensorData['Front'] != -1 and (isColorInSplit(camera[1], green) == True)):
+            greenLeft = False
+            greenRight = False
             robot.move(sped,sped)
-        if (isColorInSplit(camera[0], blue) ):  #and is_blue == False
-            return "leftTurn"
-        if (isColorInSplit(camera[0], green) == True):
-            robot.constantRotate(-sped)
-        if (isColorInSplit(camera[2], green) == True):
-            robot.constantRotate(sped)
+            #return "straightOn"
         else:
-            robot.move(sped,sped)
+
+        
+        #if (isColorInSplit(camera[1], green) == True):
+        #    robot.move(sped,sped)
+            if (isColorInSplit(camera[0], blue) and (sensorData['Left'] > 100)):  #and is_blue == False
+                greenLeft = False
+                greenRight = False
+                return "leftTurn"
+            if ((isColorInSplit(camera[0], green) == True or isColorInSplit(camera[2], green) == True)
+                and not (isColorInSplit(camera[0], green) == True and isColorInSplit(camera[2], green) == True)):
+                if (isColorInSplit(camera[0], green) == True and greenRight == False):
+                    robot.constantRotate(-sped)
+                    greenLeft = True
+                    #break
+                if (isColorInSplit(camera[2], green) == True and greenLeft == False):
+                    robot.constantRotate(sped)
+                    greenRight = True
+                #if (isColorInSplit(camera[0], green) == True):
+                #    greenLeft = False
+                #if (isColorInSplit(camera[2], green) == True):
+                #    greenLeft = True
+            #if (sensorData['Front'] < 10 and sensorData['Front'] != -1):
+            #    return "straightOn"
+            else:
+                robot.move(sped,sped)
         return "greenBeam"
 
     # example state machine:
@@ -481,107 +521,104 @@ def keyboard(events):
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
             robot.rotate(90, 45)
 
-
-# Pixels is the resolution on screen
-# Course resolution is the grid count used to draw a course
-course = robot_sim.Course(pixelsX=1000,
-                          pixelsY=800,
-                          courseResolutionX=220,
-                          courseResolutionY=180)
-
-
-# -- Draw course --
-#course.createOuterWalls(c=white)
-
-course.circle(x=40, y=30, r=2, c=blue)
-course.circle(x=40,y=140,r=2,c=blue)
-course.circle(x=170,y=30,r=2,c=blue)
-course.circle(x=170,y=140,r=2,c=blue)
-
-course.circle(x =107,y=120,r=2,c=yellow)
-
-course.circle(x=107,y=10,r=2,c=red)
-course.circle(x=107,y=20,r=2,c=red)
-
-course.circle(x=30, y=70, r=2, c=green)
-course.circle(x=180, y=80, r=2, c=green)
-
-# course.circle(x = 90, y=120, r=2, c=yellow)
+if (ideal == True): 
+    import robot_sim                                                     #if in the simultaion mode
+    # Pixels is the resolution on screen
+    # Course resolution is the grid count used to draw a course
+    course = robot_sim.Course(pixelsX=1000,
+                            pixelsY=800,
+                            courseResolutionX=220,
+                            courseResolutionY=180)
 
 
+    # -- Draw course --
+    #course.createOuterWalls(c=white)
 
+    course.circle(x=40, y=30, r=2, c=blue)
+    course.circle(x=40,y=140,r=2,c=blue)
+    course.circle(x=170,y=30,r=2,c=blue)
+    course.circle(x=170,y=140,r=2,c=blue)
 
+    course.circle(x =107,y=120,r=2,c=yellow)
 
-#course.box(x1=150,y1=10,x2=160,y2=180,c=green)
-#course.box(x1=30,y1=150,x2=40,y2=40,c=red)
+    course.circle(x=107,y=10,r=2,c=red)
+    course.circle(x=107,y=20,r=2,c=red)
+
+    course.circle(x=30, y=70, r=2, c=green)
+    course.circle(x=180, y=80, r=2, c=green)
+
+    # course.circle(x = 90, y=120, r=2, c=yellow)
+#True
 
 
 
-# Sensors:
-#                 | 0°
-#                 |
-#            __________
-#     -90°  |          |
-#    -------S <- (x,y) |
-#    |--d---|          |
-#           |          |
-#           |  Robot   |
-#           |          |
-#           |          |
-#      (0,0)x----------
-#
-sensors = {
-    "L": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
-    "L45": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
-    "R": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
-    "R45": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
-    "Front": robot_sim.Sensor(x=4.5,y=19,d=300,angle=0,debug=True)
-}
-
-# Cameras:
-#                 | 0°
-#                 |
-#            ___________
-#           |           |
-#           | \       / |
-#           |  \     /  |
-#           |   \   /   |
-#           |    \ϴ/ <---- fieldOfView
-#           |     C     |
-#           |   (x,y)   |
-#      (0,0)x-----------
-#
-cameras = {
-    'main': robot_sim.Camera(x=4.5,
-                   y=9.5,
-                   angle=0,
-                   fieldOfView=90,
-                   splitCount=3, # How many splits are in the camera when showing object colors
-                   resolution=40, # How many rays are in the field of view
-                   debug=True,
-                   maxDistance=300
-                   )
-}
-
-# Location is pixel placement in display
-# Length and width are in pixels
-robot = robot_sim.RobotSim(location=(950,325),
-                           length=19,
-                           width=9,
-                           algorithm=algorithm,
-                           sensors=sensors,
-                           cameras=cameras,
-                           debugPrint=True)
-
-robot_sim.run(course, robot, FPS)
+    #course.box(x1=150,y1=10,x2=160,y2=180,c=green)
+    #course.box(x1=30,y1=150,x2=40,y2=40,c=red)
 
 
 
+    # Sensors:
+    #                 | 0°
+    #                 |
+    #            __________
+    #     -90°  |          |
+    #    -------S <- (x,y) |
+    #    |--d---|          |
+    #           |          |
+    #           |  Robot   |
+    #           |          |
+    #           |          |
+    #      (0,0)x----------
+    #
+    sensors = {
+        "Left": robot_sim.Sensor(x=0,y=19,d=300,angle=-90,debug=True),
+        "FrontLeft": robot_sim.Sensor(x=0,y=19,d=300,angle=-45,debug=True),
+        "Right": robot_sim.Sensor(x=9,y=19,d=300,angle=90,debug=True),
+        "FrontRight": robot_sim.Sensor(x=9,y=19,d=300,angle=45,debug=True),
+        "Front": robot_sim.Sensor(x=4.5,y=19,d=300,angle=0,debug=True)
+    }
 
+    # Cameras:
+    #                 | 0°
+    #                 |
+    #            ___________
+    #           |           |
+    #           | \       / |
+    #           |  \     /  |
+    #           |   \   /   |
+    #           |    \ϴ/ <---- fieldOfView
+    #           |     C     |
+    #           |   (x,y)   |
+    #      (0,0)x-----------
+    #
+    cameras = {
+        'main': robot_sim.Camera(x=4.5,
+                    y=9.5,
+                    angle=0,
+                    fieldOfView=90,
+                    splitCount=3, # How many splits are in the camera when showing object colors
+                    resolution=40, # How many rays are in the field of view
+                    debug=True,
+                    maxDistance=300
+                    )
+    }
 
+    # Location is pixel placement in display
+    # Length and width are in pixels
+    robot = robot_sim.RobotSim(location=(700,325),          #
+                            length=19,
+                            width=9,
+                            algorithm=algorithm,#Roomba.run,
+                            sensors=sensors,
+                            cameras=cameras)
 
-
-
+    robot_sim.run(course, robot, FPS)
+#end of simulation specific stuff
+else:
+    import robot
+    while(True):
+        robot.tick()
+    
 
 
 

@@ -10,6 +10,11 @@ unsigned long echoRTime;
 unsigned long echoLTime;
 unsigned long echoFLTime;
 unsigned long echoFTime;
+float normX;
+float normY;
+float normZ;
+Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
+
 
 void sensorsInit(Data* dataReference){
     pinMode(trigPinF1, OUTPUT);
@@ -22,8 +27,45 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF2, rReceived, CHANGE);
     attachInterrupt(echoPinF3, lReceived, CHANGE);
     attachInterrupt(echoPinF4, flReceived, CHANGE);
-    attachInterrupt(echoPinF5, fReceived, CHANGE);
+    //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
+    if (!accelmag.begin()) {
+        /* There was a problem detecting the FXOS8700 ... check your connections */
+    }
+    setNorm();
+}
+
+void setNorm(){
+  sensors_event_t aevent, mevent;
+
+  /* Get a new sensor event */
+  accelmag.getEvent(&aevent, &mevent);
+
+  normX = aevent.acceleration.x;
+  normY = aevent.acceleration.y;
+  normZ = aevent.acceleration.z;
+}
+
+void getAccelData(){
+  sensors_event_t aevent, mevent;
+
+  /* Get a new sensor event */
+  accelmag.getEvent(&aevent, &mevent);
+
+  float accelX = aevent.acceleration.x - normX;
+  float accelY = aevent.acceleration.y - normY;
+  float accelZ = aevent.acceleration.z - normZ;
+
+
+  data->accelX = accelX;
+  data->accelY = accelY;
+  data->accelZ = accelZ;
+
+  data->magX = mevent.magnetic.x;
+  data->magY = mevent.magnetic.y;
+  data->magZ = mevent.magnetic.z;
+
+  data->magCourse = atan(mevent.magnetic.x / mevent.magnetic.y); // don't use
 }
 
 void sensorTrigger(){
@@ -52,7 +94,7 @@ void frReceived(){
     echoFRTime = micros();
   }
   else{
-    data->fr_data = (micros() - echoFRTime) * .034 / 2;
+    data->fr_data = (micros() - echoFRTime) * .034 / 200.0;
     if(data->fr_data > 1000){
       data->fr_data = -1;
     }
@@ -64,7 +106,7 @@ void rReceived(){
     echoRTime = micros();
   }
   else{
-    data->r_data = (micros() - echoRTime) * .034 / 2;
+    data->r_data = (micros() - echoRTime) * .034 / 200.0;
     if(data->r_data > 1000){
       data->r_data = -1;
     }
@@ -76,7 +118,7 @@ void lReceived(){
     echoLTime = micros();
   }
   else{
-    data->l_data = (micros() - echoLTime) * .034 / 2;
+    data->l_data = (micros() - echoLTime) * .034 / 200.0;
     if(data->l_data > 1000){
       data->l_data = -1;
     }
@@ -88,7 +130,7 @@ void flReceived(){
     echoFLTime = micros();
   }
   else{
-    data->fl_data = (micros() - echoFLTime) * .034 / 2;
+    data->fl_data = (micros() - echoFLTime) * .034 / 200.0;
     if(data->fl_data > 1000){
       data->fl_data = -1;
     }
@@ -100,7 +142,7 @@ void fReceived(){
     echoFTime = micros();
   }
   else{
-    data->f_data = (micros() - echoFTime) * .034 / 2;
+    data->f_data = (micros() - echoFTime) * .034 / 200.0;
     if(data->f_data > 1000){
       data->f_data = -1;
     }

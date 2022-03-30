@@ -12,12 +12,12 @@ void setup()
 }
 
 unsigned long time = millis();
-unsigned long interval = 500;
+unsigned long interval = 5000;
 
 void loop()
 {
-    // data.sendJson();
     gpsUpdate();
+    getAccelData();
     if (Serial.available()){
         while (Serial.available()) {
             Serial.read();
@@ -30,3 +30,6 @@ void loop()
         time += interval;
     }
 }
+
+
+

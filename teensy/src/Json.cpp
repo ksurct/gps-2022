@@ -8,6 +8,9 @@ json::Data::Data() {
 void json::Data::sendJson() {
     StaticJsonDocument<1000> doc;
     // Distance Sensors
+    
+    doc["magCourse"] = magCourse;
+    
     doc["fr_data"] = fr_data;
     doc["fl_data"] = fl_data;
     doc["f_data"] = f_data;
@@ -24,6 +27,18 @@ void json::Data::sendJson() {
 
     //GPS Speed (in mps)
     doc["speed"] = speed;
+
+    //Accel Data (in m/s^2)
+    doc["accelX"] = accelX;
+    doc["accelY"] = accelY;
+    doc["accelZ"] = accelZ;
+
+    //Accel Data (in uT)
+    doc["magX"] = magX;
+    doc["magY"] = magY;
+    doc["magZ"] = magZ;
+
+    
 
     serializeJson(doc, Serial);
     Serial.println("");
