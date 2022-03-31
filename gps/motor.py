@@ -12,6 +12,7 @@ class Motor():
         self.dirPin = dir_pin
         GPIO.output(self.dirPin, GPIO.HIGH)
         self.pwmPin.start(0)
+
     def setSpeed(self, speed):
         # set speed of motor
         # print("set speed {} after mod {}".format(speed, self.mod * speed))
@@ -20,7 +21,7 @@ class Motor():
             GPIO.output(self.dirPin, GPIO.HIGH)
         else:
             GPIO.output(self.dirPin, GPIO.LOW)
-    
+        print(abs(speed*self.mod))
     
 if __name__ == "__main__":
     num = int(input("1:"))

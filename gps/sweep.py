@@ -7,18 +7,18 @@ def no_algorithm():
 roberto = Robot(no_algorithm)
 accel_vals = []
 speed_changes = []
-speed = 15
+speed = 5
 accel = 0
 
-for i in range(-10,10):
+for i in range(-5,5):
     accel = 0
     count = 0
     if i < 0:
-        roberto.left.setSpeed(speed + i)
-        roberto.right.setSpeed(speed)
+        roberto.left.setSpeed(-50)
+        roberto.right.setSpeed(50)
     elif i > 0:
-        roberto.right.setSpeed(speed - i)
-        roberto.left.setSpeed(speed)
+        roberto.right.setSpeed(-50)
+        roberto.left.setSpeed(50)
     t = time.time()
     while(time.time() - t < 5):
         roberto.serial.receiveData()
