@@ -2,6 +2,8 @@
 import time
 import numpy as np
 import cv2
+import os
+import json
 
 class Camera():
 
@@ -12,16 +14,37 @@ class Camera():
         self.name = name
 
         # default value
-        self.red_lower = np.array([136, 100, 111], np.uint8)
-        self.red_upper = np.array([180, 255, 255], np.uint8)
+        self.default_red_lower = np.array([136, 100, 111], np.uint8)
+        self.default_red_upper = np.array([180, 255, 255], np.uint8)
 
         # default value
-        self.yellow_lower = np.array([20, 100, 100], np.uint8)
-        self.yellow_upper = np.array([30, 255, 255], np.uint8)
+        self.default_yellow_lower = np.array([20, 100, 100], np.uint8)
+        self.default_yellow_upper = np.array([30, 255, 255], np.uint8)
 
         #default value
-        self.blue_lower = np.array([91, 158, 145], np.uint8)
-        self.blue_upper = np.array([111, 193, 178], np.uint8)
+        self.default_blue_lower = np.array([91, 158, 145], np.uint8)
+        self.default_blue_upper = np.array([111, 193, 178], np.uint8)
+
+        if os.path.exists('camera.json'):
+            with open('camera.json', 'r') as camera_file:
+                camera_data = json.load(camera_file)
+                self.red_lower = camera_data['red lower']
+                self.red_upper = camera_data['red upper']
+
+                self.yellow_lower = camera_data['yellow lower']
+                self.yellow_upper = camera_data['yellow upper']
+
+                self.blue_lower = camera_data['blue lower']
+                self.blue_upper = camera_data['blue upper']
+        else:
+            self.red_lower = self.default_red_lower 
+            self.red_upper = self.default_red_upper 
+
+            self.yellow_lower = self.default_yellow_lower
+            self.yellow_upper = self.default_yellow_upper
+
+            self.blue_lower = self.default_blue_lower
+            self.blue_upper = self.default_blue_upper
 
     def end(self):
         self.cam.release()
@@ -172,19 +195,75 @@ class Camera():
         res = self.tune(tolerance)
         self.blue_lower = res[0]
         self.blue_upper = res[1]
+
+        if (camera_data):
+            camera_data['blue lower'] = self.blue_lower
+            camera_data['blue upper'] = self.blue_upper
+        else:
+            camera_data = {
+                'blue lower': self.blue_lower,
+                'blue upper': self.blue_upper
+            }
+        with open('camera.json', 'w') as camera_file:
+            json.dump(camera_data, camera_file)
+        
         print("Using", res, "for blue")
 
     def tuneRed(self, tolerance):
         res = self.tune(tolerance)
         self.red_lower = res[0]
         self.red_upper = res[1]
+
+        if (camera_data):
+            camera_data['red lower'] = self.red_lower
+            camera_data['red upper'] = self.red_upper
+        else:
+            camera_data = {
+                'red lower': self.red_lower,
+                'red upper': self.red_upper
+            }
+        with open('camera.json', 'w') as camera_file:
+            json.dump(camera_data, camera_file)
+        
         print("Using", res, "for red")
 
     def tuneGreen(self, tolerance):
         res = self.tune(tolerance)
         self.green_lower = res[0]
         self.green_upper = res[1]
+        camera_data = self.openjson()
+
+        if (camera_data):
+            camera_data['green lower'] = self.green_lower
+            camera_data['green upper'] = self.green_upper
+        else:
+            camera_data = {
+                'green lower': self.green_lower,
+                'green upper': self.green_upper
+            }
+        with open('camera.json', 'w') as camera_file:
+            json.dump(camera_data, camera_file)
+        
         print("Using", res, "for green")
+
+    def openjson(self):
+        if os.path.exists('camera.json'):
+            with open('camera.json', 'r') as camera_file:
+                return json.load(camera_file)
+        else:
+             return None
+
+    def createjson(self):
+        with open('camera.json', 'w') as camera_file:
+            stuff = {
+                'red lower': self.red_lower,
+                'red upper': self.red_upper,
+                'yellow lower': self.yellow_lower,
+                'yellow upper': self.yellow_upper,
+                'blue lower': self.blue_lower,
+                'blue upper': self.blue_upper
+            }
+            json.dump(stuff, camera_file)
 
 if __name__ == "__main__":
     camera = Camera(3, True, "main")
