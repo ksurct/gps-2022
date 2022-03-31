@@ -4,7 +4,6 @@ from serialTeensyToPi import SerialInput
 from camera import Camera
 import time
 import RotateFlipFlop
-import Roomba
 import Callibration
 import StopIfBlue
 import RPi.GPIO as GPIO
@@ -17,8 +16,8 @@ from simple_pid import PID
 class Robot():
     def __init__(self, algorithm):
         GPIO.setmode(GPIO.BCM)
-        self.left = Motor(12,23)
-        self.right = Motor(13,24)
+        self.left = Motor(12,23, 0.9)
+        self.right = Motor(13,24, 1.1)
         self.speed = 0
         self.forwardDistanceMod = 3
         self.backwardDistanceMod = 1
@@ -66,7 +65,7 @@ class Robot():
         maxOutputRps = maxMotorRps / 5 # gear ratio
         maxMps = maxOutputRps * self.wheelDiameter * pi
         # y = mx + b
-        self.right.setSpeed((mps/maxMps) * 100)
+        self.left.setSpeed((mps/maxMps) * 100)
 
     def setRightMps(self, mps):
         maxMotorRps = 10500 / 60
@@ -172,8 +171,10 @@ class Robot():
 
     def constantArcMove(self, speed, radius):
         ω = speed * 2 * pi / (2*radius*pi)
-        Vr = ω (radius + self.axilLength/2)
-        Vl = ω (radius - self.axilLength/2)
+        Vr = ω* (radius + self.axilLength/2)
+        Vl = ω* (radius - self.axilLength/2)
+        print("VL = ", Vl)
+        print("Vr = ", Vr)
         self.setLeftMps(Vl)
         self.setRightMps(Vr)
         self.timeCalled = time.time()
