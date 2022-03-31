@@ -267,7 +267,8 @@ class Camera():
 
 if __name__ == "__main__":
     camera = Camera(3, True, "main")
-    # camera.tuneBlue(0.1)
+    camera.tuneBlue(0.1)
+    exit()
     while(True):
         objs = camera.getCameraData()
         if(objs == None):
