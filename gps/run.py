@@ -19,7 +19,8 @@ def run():
         course = robot_sim.Course(pixelsX=1000,
                                 pixelsY=800,
                                 courseResolutionX=220,
-                                courseResolutionY=180)
+                                courseResolutionY=180,
+                                pixelsPerMeter=10)
 
 
         # -- Draw course --
