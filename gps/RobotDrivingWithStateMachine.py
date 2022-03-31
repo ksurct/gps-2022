@@ -1,8 +1,8 @@
 #import robot_sim
 #import robot
 import random
-import pygame
-import Roomba
+#import pygame
+#import Roomba
 import run
 
 isSim2 = True
@@ -26,7 +26,10 @@ greenLeft = False
 greenRight = False
 leftSense = False
 rightSense = False
-sped = 150
+sped = 1
+rotateSped = 720
+rotRad = 1
+rotDist = 10
 state = "straightOn"
 
 """
@@ -78,11 +81,14 @@ def algorithm(robot, time, events):
     global greenRight
     global leftSense
     global rightSense
+    global rotateSped
+    global rotRad
+    global rotDist
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
     cameraData = robot.getCameraData()
-    keyboard(events)
+    #keyboard(events)
     # in degrees
     angle = robot.getAngle()
     # Probable x,y coordinates
@@ -182,9 +188,13 @@ def algorithm(robot, time, events):
             robot.move(sped,sped)
             #if (isColorInSplit(camera[1], blue) == True):
         elif (is_blue == True and isColorInSplit(camera[1], blue) == False):
-            robot.constantRotate(-sped)
+            #robot.constantRotate(-sped)
+            #robot.Rotoate(-rotateSped)
+            robot.arcMove(-rotateSped, rotRad, rotDist)
         elif (isColorInSplit(camera[1], blue) == True or (isColorInSplit(camera[2], blue) == True) ):
-            robot.constantRotate(sped)
+            #robot.constantRotate(sped)
+            #robot.constantRotate(rotateSped)
+            robot.arcMove(rotateSped, rotRad, rotDist)
         else:
             robot.move(sped,sped)    
         return "leftTurn"
@@ -219,13 +229,17 @@ def algorithm(robot, time, events):
             rightSense == False
             return "straightOn"
         if (sensorData['FrontLeft'] < 50 and sensorData['FrontRight'] > 50):
-            robot.constantRotate(sped)
+            #robot.constantRotate(sped)
+            robot.arcMove(rotateSped, rotRad, rotDist)
         if (sensorData['FrontLeft'] > 50 and sensorData['FrontRight'] < 50):
-            robot.constantRotate(-sped)
+            #robot.constantRotate(-sped)
+            robot.arcMove(-rotateSped, rotRad, rotDist)
         if(sensorData['FrontLeft'] > sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
-            robot.constantRotate(-sped)
+            #robot.constantRotate(-sped)
+            robot.arcMove(-rotateSped, rotRad, rotDist)
         if(sensorData['FrontLeft'] < sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
-            robot.constantRotate(sped)
+            #robot.constantRotate(sped)
+            robot.arcMove(rotateSped, rotRad, rotDist)
         if(sensorData['Front'] > 75):
             robot.move(sped,sped) 
         if (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True):     #if red in left and right
@@ -236,11 +250,13 @@ def algorithm(robot, time, events):
             if (isColorInSplit(camera[1], red) == True):                                            #if red in mid + ^
                 robot.move(sped,sped)                                                                   #go forward
             #if ()
-            robot.constantRotate(-sped)                                                               #turn left
+            #robot.constantRotate(-sped)      
+            robot.arcMove(-rotateSped, rotRad, rotDist)                                                         #turn left
         elif (isColorInSplit(camera[0], red) == False and isColorInSplit(camera[2], red) == True and leftRed == False):  #if red not in left and in right and wasnt in left last time
             if (isColorInSplit(camera[1], red) == True):                                            #if red in mid + ^
                 robot.move(sped,sped)                                                                   #go forward
-            robot.constantRotate(sped)                                                                #turn right
+            #robot.constantRotate(sped) 
+            robot.arcMove(rotateSped, rotRad, rotDist)                                                               #turn right
         #elif (isColorInSplit(camera[0], red) == True and isColorInSplit(camera[2], red) == True and isColorInSplit(camera[1], red) == True):    #if all red
             #robot.move(150,150)                                                                     #go straight
         elif (isColorInSplit(camera[1], red) == True):                                              #if red mid and not left or right
@@ -265,9 +281,11 @@ def algorithm(robot, time, events):
             #if (isColorInSplit(camera[1], blue) == True):
 
         elif (is_yellow == True and isColorInSplit(camera[1], yellow) == False):
-            robot.constantRotate(sped)
+            #robot.constantRotate(sped)
+            robot.arcMove(rotateSped, rotRad, rotDist)
         elif (isColorInSplit(camera[1], yellow) == True):
-            robot.constantRotate(-sped)
+            #robot.constantRotate(-sped)
+            robot.arcMove(-rotateSped, rotRad, rotDist)
         else:
             robot.move(sped,sped)
         return "rightTurn"
@@ -337,11 +355,13 @@ def algorithm(robot, time, events):
             if ((isColorInSplit(camera[0], green) == True or isColorInSplit(camera[2], green) == True)
                 and not (isColorInSplit(camera[0], green) == True and isColorInSplit(camera[2], green) == True)):
                 if (isColorInSplit(camera[0], green) == True and greenRight == False):
-                    robot.constantRotate(-sped)
+                    #robot.constantRotate(-sped)
+                    robot.arcMove(-rotateSped, rotRad, rotDist)
                     greenLeft = True
                     #break
                 elif (isColorInSplit(camera[2], green) == True and greenLeft == False):
-                    robot.constantRotate(sped)
+                    #robot.constantRotate(sped)
+                    robot.arcMove(rotateSped, rotRad, rotDist)
                     greenRight = True
                 else:
                     robot.move(sped,sped)
@@ -511,7 +531,7 @@ def algorithm(robot, time, events):
     # elif (robot.isNotMoving()):
     #     mod = 0
     #     robot.constantMove(400)
-
+"""
 def keyboard(events):
     for event in events:
         if event.type == pygame.QUIT:
@@ -525,6 +545,7 @@ def keyboard(events):
             robot.move(-100, 200)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
             robot.rotate(90, 45)
+"""
 """
 if (isSim2 == True): 
     import robot_sim                                                     #if in the simultaion mode
@@ -742,8 +763,9 @@ if (state == "straightOn"):
 """
 
 
+run.algo = algorithm
 
-
+run.run()
 
 
 

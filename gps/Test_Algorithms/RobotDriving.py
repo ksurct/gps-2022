@@ -1,3 +1,4 @@
+from pickle import TRUE
 import robot_sim
 import random
 import pygame
@@ -108,9 +109,16 @@ def algorithm(robot, time, events):
         else:
             robot.move(30,30)
 
-            
+        
 
+    # robot.constantMove(30)
 
+    # if FoundBlue == True:
+    #     print("True")
+    # if FoundBlue == False:
+    #     print("False")
+    
+    
         
         #if(robot.getAngle() < 180):
             #robot.rotate(120, 182-robot.getAngle())
@@ -121,13 +129,20 @@ def algorithm(robot, time, events):
 
         
     
-    # if (sensorData['Front'] < 100 and sensorData['Front'] != -1):
-    #     while (mod == 0):
-    #         mod = random.randrange(-1,2)
-    #     robot.rotate(700 * mod, 35)
-    # elif (robot.isNotMoving()):
-    #     mod = 0
-    #     robot.constantMove(400)
+    if (sensorData['Front'] < 100 and sensorData['Front'] != -1):
+        if (white in camera[1] or white in camera[0]):
+            robot.constantMove(-50)
+            robot.constantRotate(300)
+            robot.rotate(300, 35)
+    elif (sensorData['TL'] < 3000 and sensorData['TL'] != -1):
+        if (blue in camera[1] or blue in camera[0]):
+            robot.rotate(-300,35)
+        #while (mod == 0):
+        #    mod = random.randrange(-1,2)
+        #robot.rotate(700 * mod, 35)
+    elif (robot.isNotMoving()):
+        mod = 0
+        robot.constantMove(400)
 
 def keyboard(events):
     for event in events:
@@ -187,10 +202,10 @@ course.circle(x =107,y=120,r=2,c=yellow)
 #      (0,0)x----------
 #
 sensors = {
-    "TL": robot_sim.Sensor(x=0,y=50,d=300,angle=-90,debug=False),
-    "BL": robot_sim.Sensor(x=0,y=0,d=300,angle=-90,debug=False),
-    "BR": robot_sim.Sensor(x=25,y=0,d=300,angle=90,debug=False),
-    "TR": robot_sim.Sensor(x=25,y=50,d=300,angle=90,debug=False),
+    "TL": robot_sim.Sensor(x=0,y=50,d=300,angle=-90,debug=True),
+    "BL": robot_sim.Sensor(x=0,y=0,d=300,angle=-90,debug=True),
+    "BR": robot_sim.Sensor(x=25,y=0,d=300,angle=90,debug=True),
+    "TR": robot_sim.Sensor(x=25,y=50,d=300,angle=90,debug=True),
     "Front": robot_sim.Sensor(x=4.5,y=9.5,d=300,angle=0,debug=True)
 }
 
