@@ -28,7 +28,7 @@ leftSense = False
 rightSense = False
 sped = 1
 rotateSped = 720
-rotRad = .3
+rotRad = 1
 rotDist = 10
 state = "straightOn"
 
@@ -81,6 +81,9 @@ def algorithm(robot, time, events):
     global greenRight
     global leftSense
     global rightSense
+    global rotateSped
+    global rotRad
+    global rotDist
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
