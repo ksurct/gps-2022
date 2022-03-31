@@ -1,7 +1,6 @@
 import run
 
 def sensorDebugAlgo(robot, t, events=None):
-
     print(robot.getSensorData())
 
 
