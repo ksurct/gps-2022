@@ -59,13 +59,21 @@ class Robot():
     
     def getLeftTurnMod(self):
         return self.leftTurnMod
-    
-    def setLeftMps(mps):
+
+    def setLeftMps(self, mps):
         maxMotorRpm = 10500
         maxMotorRps = 10500 / 60
         maxOutputRps = maxMotorRps / 5 # gear ratio
+        maxMps = maxOutputRps * self.wheelDiameter * pi
+        # y = mx + b
+        self.right.setSpeed((mps/maxMps) * 100)
 
-        
+    def setRightMps(self, mps):
+        maxMotorRps = 10500 / 60
+        maxOutputRps = maxMotorRps / 5 # gear ratio
+        maxMps = maxOutputRps * self.wheelDiameter * pi
+        # y = mx + b
+        self.right.setSpeed((mps/maxMps) * 100)
     
     # LEDs
     def ledSetup(self):
@@ -126,88 +134,63 @@ class Robot():
 
     # Set constant speed
     def constantMove(self, speedMps):
-        speedPercent = self.mpsToPercent(speedMps)
-        self.right.setSpeed(speedPercent)
-        self.left.setSpeed(speedPercent)
+        self.setRightMps(speedMps)
+        self.setLeftMps(speedMps)
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = True
 
-    def PID(self, desiredHeading):
-        ratio = 0
-        
-        P = 0
-        I = 0
-        D = 0
-
-        #tuning variables
-        Kp = 0.1
-        Ki = 0.1
-        Kd = 0.001
-
-        position = 0 #Magnetometer data goes in this variable
-
-        desiredposition = 0 #Whatever heading it is currently at???
-
-        lastError = 0
-        error = desiredposition - position
-
-        P = error
-        I = I + error
-        D = error - lastError
-        lastError = error
-
-        motorspeed = P*Kp + I*Ki + D*Kd #PID algo
-
-        position = position + motorspeed #feedback into algo...will need to change
-
-        return ratio
-
     # Set constant rotation
     def constantRotate(self, speedDps):
-        speedPercent = self.dpsToPercent(speedDps)
-        self.right.setSpeed(speedPercent*self.rightTurnMod)
-        self.left.setSpeed(-speedPercent*self.leftTurnMod)
+        circumferenceTurn = self.axilLength * pi
+        mpd = circumferenceTurn / 360
+        speedMps = speedDps * mpd
+        self.setLeftMps(speedMps)
+        self.setRightMps(-speedMps)
+
         self.timeCalled = time.time()
         self.timeToKill = 0
         self.constant = True
 
     # Move a certain distance at a speed
     def move(self, speedMps, distanceMeters):
-        self.speed = self.mpsToPercent(speedMps)
         seconds = distanceMeters / speedMps
-        print('Right speed: %s', self.speed)
-        self.right.setSpeed(self.speed)
-        print('Left speed: %s', self.speed)
-        self.left.setSpeed(self.speed)
+        self.constantMove(speedMps)
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
-        # print("Kill after", self.timeToKill)
 
     def motorPID(self):
-        output = self.pid(self.serial.getAccelY())
-        if output < 0:
-            self.left.setSpeed(self.speed + output)
-            self.right.setSpeed(self.speed)
-        elif output > 0:
-            self.right.setSpeed(self.speed - output)
-            self.left.setSpeed(self.speed)
+        pass
+        # output = self.pid(self.serial.getAccelY())
+        # if output < 0:
+        #     self.left.setSpeed(self.speed + output)
+        #     self.right.setSpeed(self.speed)
+        # elif output > 0:
+        #     self.right.setSpeed(self.speed - output)
+        #     self.left.setSpeed(self.speed)
 
     def constantArcMove(self, speed, radius):
         ω = speed * 2 * pi / (2*radius*pi)
         Vr = ω (radius + self.axilLength/2)
         Vl = ω (radius - self.axilLength/2)
-        
+        self.setLeftMps(Vl)
+        self.setRightMps(Vr)
+        self.timeCalled = time.time()
+        self.constant = True
+
+    def arcMove(self, speed, radius, distance):
+        # Gravity at center of circle = v^2 / r
+        # angular velocity = (360 / circumference) * v
+        self.constantArcMove(speed, radius)
+        self.timeToKill = distance / abs(speed)
+        self.timeCalled = time.time()
+        self.constant = False
 
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
+        self.constantRotate(speedDps)
         seconds = abs(degrees / speedDps)
-        speedPercent = self.dpsToPercent(speedDps)
-        # print(speedDps)
-        # print(-speedDps)
-        self.right.setSpeed(speedPercent)
-        self.left.setSpeed(speedPercent)
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
@@ -220,17 +203,10 @@ class Robot():
 
     def tick(self):
         t = time.time()
-        print("Time: ", t)
-        print("Called time: ", self.timeCalled)
         self.moving  = self.constant or t - self.timeCalled < self.timeToKill
         if not self.moving:
             self.stop()
-        if self.forward:
-            self.motorPID()
-
         self.algorithm(self, t)
-
-
 
 if __name__ == '__main__':
     robot = Robot(Roomba.run)
