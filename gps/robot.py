@@ -170,9 +170,10 @@ class Robot():
         #     self.left.setSpeed(self.speed)
 
     def constantArcMove(self, speed, radius):
+        radius = radius * 0.25
         ω = speed * 2 * pi / (2*radius*pi)
-        Vr = ω* (radius + self.axilLength/2)
-        Vl = ω* (radius - self.axilLength/2)
+        Vl = ω* (radius + self.axilLength/2)
+        Vr = ω* (radius - self.axilLength/2)
         print("VL = ", Vl)
         print("Vr = ", Vr)
         self.setLeftMps(Vl)
@@ -191,11 +192,12 @@ class Robot():
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
         self.constantRotate(speedDps)
+        speedDps = speedDps *  220 / 720
         seconds = abs(degrees / speedDps)
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
-
+        
     # Stop the robot
     def stop(self):
         self.left.setSpeed(0)

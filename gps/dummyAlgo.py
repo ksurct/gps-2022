@@ -17,8 +17,16 @@ def isColorIn(split, color):
 def algorithm(robot, time, events = None):
     global state
     data = robot.getCameraData()["main"]
-    if (isColorIn(data[1], "Red")):
-        robot.rotate(270, 270)        
+    print(robot.getPosition())
+    if (robot.isNotMoving()):
+    #if (isColorIn(data[1], "Blue")):
+        if (state == "MOVE"):
+            robot.move(1,0.1)
+            state = "STOP"
+        elif (state == "STOP"):
+            robot.rotate(720, 15)
+            state = "MOVE"
 run.algo = algorithm
-
+run.isSim = False
 run.run()
+
