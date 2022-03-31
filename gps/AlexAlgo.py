@@ -26,7 +26,7 @@ def isCorrectHeading(distances, cameraObjects, position, course, state):
 def checkState(distances, cameraObjects, position, course, state):
     #changes state once certain conditions are met
     if state == "Straight 1":
-        if distances["Front Right"] < .5:
+        if distances["FrontRight"] < .5:
             return "Turn 1"
         else:
             return state
