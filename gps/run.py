@@ -125,7 +125,7 @@ def run():
 
         # Location is pixel placement in display
         # Length and width are in pixels
-        robot = robot_sim.RobotSim(location=(midpointX + 30*feetToPixels,midpointY),          #
+        robot = robot_sim.RobotSim(location=(midpointX + 40*feetToPixels,midpointY),          #
                                 length=0.3556 * pixelsPerMeter,
                                 width=0.3556 * pixelsPerMeter,
                                 algorithm=algo,#Roomba.run,
