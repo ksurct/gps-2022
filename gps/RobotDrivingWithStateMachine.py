@@ -26,9 +26,9 @@ greenLeft = False
 greenRight = False
 leftSense = False
 rightSense = False
-sped = 1
-rotateSped = 720
-rotRad = 1
+sped = 10
+rotateSped = 10
+rotRad = 10
 rotDist = 10
 state = "straightOn"
 
