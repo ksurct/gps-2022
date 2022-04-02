@@ -27,7 +27,7 @@ greenLeft = False
 leftSense = False
 rightSense = False
 sped = 10
-rotateSped = 10
+rotateSped = 100
 rotRad = 10
 rotDist = 10
 state = "straightOn"
@@ -84,6 +84,8 @@ def algorithm(robot, time, events):
     global rotateSped
     global rotRad
     global rotDist
+
+    print(state)
     # 'events' from pygame
     # 'time' time since start of program in seconds
     sensorData = robot.getSensorData()
@@ -196,7 +198,7 @@ def algorithm(robot, time, events):
             return "jump"
             #if (robot.getAngle() == 0 and is_blue == False):
         #return "straightOn"
-        return 0
+        return "no"
 
     def turnRoundBlue():
         global is_blue
