@@ -15,6 +15,9 @@ def colorCount(split, color):
 class ReallyDumb():
     def __init__(self) -> None:
         self.state = "INIT"
+        self.standardSpeed = 5
+        self.standardRotateSpeed = 720
+        self.overrodeAction = False
         self.states = {
             "INIT": self.init,
             "CORNER1": self.corner1,
@@ -24,12 +27,19 @@ class ReallyDumb():
             "RED": self.red,
             "CORNER4": self.corner4
         }
+    
+    def overrideCheck(self, robot, time):
+        sensorData = robot.getSensorData()
+        if (sensorData["Front"] < 0.25):
+            robot.stop()
+            self.overrodeAction = True
+
 
     def init(self, robot, time):
-        robot.init()
         return "CORNER1"
 
     def corner1(self, robot, time):
+        robot.constantMove(self.standardSpeed)
         return "CORNER1"
 
     def corner2(self, robot, time):
@@ -49,6 +59,7 @@ class ReallyDumb():
 
     def run(self, robot, time):
         self.state = self.states[self.state](robot, time)
+
 
 algo = ReallyDumb()
 

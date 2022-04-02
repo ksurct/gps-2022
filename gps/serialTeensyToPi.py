@@ -20,6 +20,7 @@ class SerialInput(object):
         self.accelX= 0.0
         self.accelY= 0.0
         self.accelZ= 0.0
+        self.magCourse = 0.0
         self.magX = 0.0
         self.magY = 0.0
         self.magZ = 0.0
@@ -40,6 +41,7 @@ class SerialInput(object):
         self.accelX = line['accelX']
         self.accelY = line['accelY']
         self.accelZ = line['accelZ']
+        self.magCourse = line['magCourse']
         self.magZ = line['magX']
         self.magY = line['magY']
         self.magZ = line['magZ']
@@ -84,7 +86,7 @@ class SerialInput(object):
         return float(self.accelZ)
 
     def getMag(self):
-        return [self.magX, self.magY, self.magZ]
+        return self.magCourse
 
 if __name__ == '__main__':
     # ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
