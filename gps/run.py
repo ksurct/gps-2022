@@ -6,9 +6,25 @@ isSim = True
 
 algo = None
 
+error = False
+
 pixelsPerMeter = 40 #scaled to keep the size of the robot the same on screen, may need to change later if the course doesn't fit on screen
 
 sensorMaxDistance = 2 #in meters
+
+positionError=0
+angleError=0
+moveError=0
+rotationError=0
+sensorError=0
+
+if (error):
+    positionError=3
+    angleError=5
+    moveError=15
+    rotationError=15
+    sensorError=0.04
+
 
 def run():
     global pixlesPerMeter
@@ -131,7 +147,12 @@ def run():
                                 algorithm=algo,#Roomba.run,
                                 sensors=sensors,
                                 cameras=cameras,
-                                startingAngle=180)
+                                startingAngle=180,
+                                angleError=angleError,
+                                positionError=positionError,
+                                moveError=moveError,
+                                rotationError=rotationError,
+                                sensorError=sensorError)
 
         robot_sim.run(course, robot, FPS)
     else:
