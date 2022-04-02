@@ -1,7 +1,9 @@
 #include "Json.hpp"
+#include <string.h>
+
 
 json::Data::Data() {
-    
+    memset((uint8_t*)this, 0, sizeof(Data));
 }
 
 
