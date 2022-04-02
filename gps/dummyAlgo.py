@@ -36,7 +36,7 @@ class ReallyDumb():
 
     def init(self, robot, time):
         robot.initPosition()
-        return "CONRNER1"
+        return "CORNER1"
 
     def corner1(self, robot, time):
         print(robot.getPosition())
