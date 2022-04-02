@@ -45,6 +45,7 @@ class Robot():
         self.pid.auto_mode = True
         self.axilLength = .325 # meters
         self.wheelDiameter = 0.086
+        self.angleOff = 0.0
     
     # Callibration
     def getForwardDistanceMod(self):
@@ -197,6 +198,21 @@ class Robot():
         self.timeCalled = time.time()
         self.timeToKill = seconds
         self.constant = False
+
+    def initAngle(self):
+        self.serial.receiveData()
+        self.angleOff = self.serial.getMag()
+
+    def getAngle(self):
+        self.serial.receiveData()
+        preangle = self.serial.getMag()
+        angle = preangle + self.angleOff
+        if angle > 180:
+            angle -= 360
+        if angle < -180:
+            angle += 360
+        return angle
+
         
     # Stop the robot
     def stop(self):
