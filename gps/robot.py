@@ -121,6 +121,7 @@ class Robot():
     
     # Compass
     def getAngle(self):
+        return 0
         self.serial.receiveData()
         return self.serial.getCourse() / 100
 
