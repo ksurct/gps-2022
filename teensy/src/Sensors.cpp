@@ -65,7 +65,7 @@ void getAccelData(){
   data->magY = mevent.magnetic.y;
   data->magZ = mevent.magnetic.z;
 
-  data->magCourse = atan(mevent.magnetic.x / mevent.magnetic.y); // don't use
+  data->magCourse =  atan2(mevent.magnetic.y, mevent.magnetic.x) * (180/ PI); // don't use
 }
 
 void sensorTrigger(){
