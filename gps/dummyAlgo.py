@@ -34,9 +34,9 @@ class ReallyDumb():
             robot.stop()
             self.overrodeAction = True
 
-
     def init(self, robot, time):
-        return "CORNER1"
+        print(robot.getPosition())
+        return "INIT"
 
     def corner1(self, robot, time):
         robot.constantMove(self.standardSpeed)
