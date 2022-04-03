@@ -1,4 +1,5 @@
 
+import threading
 import time
 import numpy as np
 import cv2
@@ -20,10 +21,10 @@ class Camera():
         self.splitCount = splits
         self.name = name
         self.outFrame = []
-        self.defaultAreaRequire = 75
+        self.defaultAreaRequire = 50
         # internetCam.camera = self
         # internetCam.run()
-        self.areaRequired = 75
+        self.areaRequired = 50
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
@@ -35,7 +36,7 @@ class Camera():
         #default value
         #self.default_blue_lower = np.array([91, 158, 145], np.uint8)
         #self.default_blue_upper = np.array([111, 193, 178], np.uint8)
-        self.default_blue_lower = np.array([94, 80, 100], np.uint8)
+        self.default_blue_lower = np.array([94, 70, 100], np.uint8)
         self.default_blue_upper = np.array([120, 255, 255], np.uint8)
 
         if os.path.exists('camera.json'):
@@ -231,11 +232,63 @@ class Camera():
                 vH = maxLim((v / len(dataPoints)) * (1 + tolerance), 255)
                 return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
 
+
+    def dumTune(self, tolerance, color):
+        dataPoints = []
+        count = 0
+        self.tick()
+        self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+        y = len(self.hsvFrame) // 2
+        x = len(self.hsvFrame[0]) // 2
+        turnOff = False
+        def run():
+            while (not turnOff):
+                self.tick()
+                self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+                self.outFrame = cv2.rectangle(self.frame, (x - 5, y - 5),
+                            (x + 5, y + 5),
+                            (200, 200, 200), 2)
+        t = threading.Thread(target=run)
+        print("2")
+        t.start()
+        print("1")
+        while(True):
+
+            if (input("Count %d / 10, Is this Good? " % (count + 1)).upper() == "Y"):
+                count += 1
+                center = self.hsvFrame[x][y]
+                dataPoints.append(center)
+            if (count > 10):
+                turnOff = True
+                t.join()
+                break
+
+        print("Success")
+        h = 0
+        s = 0
+        v = 0
+        for d in dataPoints:
+            h += d[0]
+            s += d[1]
+            v += d[2]
+        def maxLim(var, limit):
+            return var if var < limit else limit
+        def minLim(var, limit):
+            return var if var > limit else limit
+        hL = minLim((h / len(dataPoints)) * (1 - tolerance), 0)
+        sL = minLim((s / len(dataPoints)) * (1 - tolerance), 0)
+        vL = minLim((v / len(dataPoints)) * (1 - tolerance), 0)
+        hH = maxLim((h / len(dataPoints)) * (1 + tolerance), 255)
+        sH = maxLim((s / len(dataPoints)) * (1 + tolerance), 255)
+        vH = maxLim((v / len(dataPoints)) * (1 + tolerance), 255)
+        return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
+        
+
     def tuneBlue(self, tolerance):
         self.areaRequired = 200
         self.blue_lower = self.default_blue_lower
         self.blue_upper = self.default_blue_upper
-        res = self.tune(tolerance, "Blue")
+        res = self.dumTune(tolerance, "Blue")
         self.blue_lower = res[0]
         self.blue_upper = res[1]
         self.areaRequired = self.defaultAreaRequire
@@ -259,7 +312,7 @@ class Camera():
         self.areaRequired = 200
         self.red_lower = self.default_red_lower
         self.red_upper = self.default_red_upper
-        res = self.tune(tolerance, "Red")
+        res = self.dumTune(tolerance, "Red")
         self.red_lower = res[0]
         self.red_upper = res[1]
         print(self.red_lower)
@@ -285,7 +338,7 @@ class Camera():
         self.areaRequired = 200
         self.yellow_lower = self.default_yellow_lower
         self.yellow_upper = self.default_yellow_upper
-        res = self.tune(tolerance, "Yellow")
+        res = self.dumTune(tolerance, "Yellow")
         self.yellow_lower = res[0]
         self.yellow_upper = res[1]
         self.areaRequired = self.defaultAreaRequire
@@ -336,16 +389,17 @@ if __name__ == "__main__":
     if (yn2 == "y"):
         show = "Internet"
     if (yn1 == "y"):
-        col = input("rgy? ")
+        col = input("rby? ")
+        tol = float(input("Tolerance = "))
         if (col == "r"):
             camera = Camera(1, show, "main")
-            camera.tuneRed(0.3)
+            camera.tuneRed(tol)
         if (col == "y"):
             camera = Camera(1, show, "main")
-            camera.tuneYellow(0.1)
+            camera.tuneYellow(tol)
         if (col == "b"):
             camera = Camera(1, show, "main")
-            camera.tuneBlue(0.1)
+            camera.tuneBlue(tol)
         exit()
     else:
         camera = Camera(3, show, "main")

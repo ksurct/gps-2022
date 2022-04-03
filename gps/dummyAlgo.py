@@ -102,8 +102,8 @@ class ReallyDumb():
             self.overrodeAction = True
 
     def init(self, robot, time):
-        self.addPeriodic("status", self.printUpdate, 0.5)
-        self.addPeriodic("camera", self.updateCamera, 0.2)
+        # self.addPeriodic("status", self.printUpdate, 0.5)
+        self.addPeriodic("camera", self.updateCamera, 0.1)
         self.wait(lambda r, t: r.rotate(720, 15), 5)
         return "RED"
 
@@ -128,18 +128,18 @@ class ReallyDumb():
             print("Red in front")
         elif (colorCount(self.cameraData[self.FRIGHT], "Blue") != 0):
             print("Red in FRIGHT")
-            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), 0.75)
+            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), 1.5)
         elif (colorCount(self.cameraData[self.RIGHT], "Blue") != 0):
             print("Red in RIGHT")
-            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), 0.75)
+            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), 1.5)
         elif (colorCount(self.cameraData[self.FLEFT], "Blue") != 0):
             print("Red in FLEFT")
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), 0.75)
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), 1.5)
         elif (colorCount(self.cameraData[self.LEFT], "Blue") != 0):
             print("Red in LEFT")
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 0.75)
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
         else:
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 0.75)
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
 
         return "RED"
 
