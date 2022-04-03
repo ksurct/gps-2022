@@ -13,7 +13,6 @@ void init(){
 bool isDataReady(){
     return dataReady;
 }
-unsigned long start = millis();
 
 void gpsUpdate(){
 
