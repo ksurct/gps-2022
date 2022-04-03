@@ -1,5 +1,6 @@
 from cmath import pi
 from motor import Motor
+import math
 from serialTeensyToPi import SerialInput
 from camera import Camera
 import time
@@ -11,7 +12,6 @@ from buttons import Button
 import numpy as np
 import cv2
 from CameraObject import CameraObject
-from simple_pid import PID
 
 class Robot():
     def __init__(self, algorithm):
@@ -40,23 +40,53 @@ class Robot():
         self.kp = 1
         self.ki = 1
         self.kd = 1
-        self.pid = PID(Kp=self.kp, Ki=self.ki, Kd=self.kd, setpoint=0)
-        self.pid.output_limits = (-10, 10)
-        self.pid.auto_mode = True
         self.axilLength = .325 # meters
         self.wheelDiameter = 0.086
-        self.angleOff = 0.0
-    
+
+        self.initialPosition = (0,0)
+        self.initialAngle = 0
+
+    def latLongDistance(self,lat1,lon1,lat2,lon2):
+        R = 6371 # Radius of the earth in km
+        dLat = math.radians(lat2-lat1)
+        dLon = math.radians(lon2-lon1)
+        a = (
+            math.sin(dLat/2) * math.sin(dLat/2) +
+            math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+            math.sin(dLon/2) * math.sin(dLon/2))
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        d = R * c # Distance in km
+        return d
+
+    def initAngle(self):
+        self.initialAngle = 0
+        for i in range(0,10):
+            self.initialAngle += self.getAngle()
+        self.initAngle /= 10
+
+    def convertToRelativeCoords(self, pos):
+        return (
+            math.cos(math.radians(self.initialAngle)) * pos[0] + math.sin(math.radians(self.initialAngle)) * pos[1],
+            math.sin(math.radians(self.initialAngle)) * pos[0] - math.cos(math.radians(self.initialAngle)) * pos[1]
+        )
+
+    def initPosition(self):
+        while (self.initialPosition[0] == 0):
+            self.serial.receiveData()
+            self.initialPosition = (self.serial.getLatitude(), self.serial.getLongitude())
+            print("Waiting for GPS")
+            time.sleep(0.1)
+
     # Callibration
     def getForwardDistanceMod(self):
         return self.forwardDistanceMod
-    
+
     def getBackwardDistanceMod(self):
         return self.backwardDistanceMod
-    
+
     def getRightTurnMod(self):
         return self.rightTurnMod
-    
+
     def getLeftTurnMod(self):
         return self.leftTurnMod
 
@@ -74,12 +104,11 @@ class Robot():
         maxMps = maxOutputRps * self.wheelDiameter * pi
         # y = mx + b
         self.right.setSpeed((mps/maxMps) * 100)
-    
-    # LEDs
+
     def ledSetup(self):
         for led in self.leds.keys():
             GPIO.setup(self.leds[led], GPIO.OUT)
-    
+
     def ledOn(self, led, alone): # bool alone => only this led should be on.
         if alone:
             self.ledOff()
@@ -92,6 +121,7 @@ class Robot():
     
     # Compass
     def getAngle(self):
+        return 0
         self.serial.receiveData()
         return self.serial.getCourse() / 100
 
@@ -100,7 +130,11 @@ class Robot():
         self.serial.receiveData()
         latitude = self.serial.getLatitude()
         longitude = self.serial.getLongitude()
-        return latitude, longitude
+        metersX = self.latLongDistance(self.initialPosition[0], self.initialPosition[1], self.initialPosition[0], longitude)
+        metersY = self.latLongDistance(self.initialPosition[0], self.initialPosition[1], latitude, self.initialPosition[1])
+        metersX, metersY = self.convertToRelativeCoords((metersX, metersY))
+
+        return metersX, metersY
 
     # Sensor data
     # Return Dictionary

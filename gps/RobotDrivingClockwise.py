@@ -26,12 +26,17 @@ greenRight = False
 greenLeft = False
 leftSense = False
 rightSense = False
-sped = 10
-rotateSped = 100
+sped = 35
+rotateSped = 510
 rotRad = 10
 rotDist = 10
-state = "straightOn"
-
+blueExitAng = 100
+yellowExitAng = 30
+angleOnBlueEntry = 0
+angleOnYellowEntry = 0
+useAngles = True
+startAngle = 0
+state = "START"
 """
 if (isSim2 == True):                     #set initial conditions for simulation 
     white = (255,255,255,255)
@@ -84,6 +89,11 @@ def algorithm(robot, time, events):
     global rotateSped
     global rotRad
     global rotDist
+    global blueExitAng
+    global angleOnBlueEntry
+    global angleOnYellowEntry
+    global useAngles
+    global startAngle
 
     print(state)
     # 'events' from pygame
@@ -160,6 +170,13 @@ def algorithm(robot, time, events):
         is_yellow = True
     robot.move(30,30)
     """
+    def angleMagnitude():
+        variable = robot.getAngle()
+        #if (variable < 0):
+        #    variable = variable * -1
+        #    variable = variable + 180
+        variable = variable + 180
+        return variable
 
     def leftTurn():
         robot.constantRotate(rotateSped)
@@ -177,14 +194,20 @@ def algorithm(robot, time, events):
 
     def start():
         #do stuff
+        startAngle = robot.initAngle()
+        startAngle = robot.initialAngle
+        robot.initAngle()
+        #algo(robot, time, events)
+        return "straightOn"
         return "STOP"
 
     def stop():
         return "START"
 
-    def checkToLeaveBlue():
+    def checkToLeaveBlue(angleOnBlueEntry):
         global is_blue
-        if ((isColorInSplit(camera[2], blue) == True or is_blue == True) and (sensorData['Left'] < 100 and sensorData['Left'] != -1)):
+        global blueExitAng
+        if ((isColorInSplit(camera[2], blue) == True or is_blue == True) and (sensorData['Right'] < 100 and sensorData['Right'] != -1)):
             goForward()
             return "blueTurn"
         if (isColorInSplit(camera[2], red) == True or
@@ -196,14 +219,32 @@ def algorithm(robot, time, events):
             return "straightOn"
         if (isColorInSplit(camera[1], green) == True):
             return "jump"
-            #if (robot.getAngle() == 0 and is_blue == False):
+        if (useAngles == True):
+            tempAng = angleMagnitude()
+            
+            if (tempAng > 360 and (isColorInSplit(camera[2], blue) == False)):
+                blueExitAng = 100
+                is_blue = False
+                goForward()
+                return "straightOn"
+            overflowProtection = angleOnBlueEntry + blueExitAng
+            if (overflowProtection > 360):
+                overflowProtection = overflowProtection - 360
+                if (tempAng > 90 and tempAng < 180):
+                    is_blue = False
+                    goForward()
+                    return "straightOn"
+            elif (tempAng > (overflowProtection) and (isColorInSplit(camera[2], blue) == False)):
+                is_blue = False
+                goForward()
+                return "straightOn"
+                #if (robot.getAngle() == 0 and is_blue == False):
         #return "straightOn"
         return "no"
 
-    def turnRoundBlue():
+    def turnRoundBlue(angleOnBlueEntry):
         global is_blue
         #turn left arround blue barrels
-
         if (isColorInSplit(camera[2], blue) == True):
             is_blue = True
             goForward()
@@ -219,14 +260,15 @@ def algorithm(robot, time, events):
             #leftTurn()
             rightTurn()
         else:
-            goForward   
+            goForward()   
         return "no"
 
     def BlueTurn():
         global is_blue
-        leave = checkToLeaveBlue()
+        global angleOnBlueEntry
+        leave = checkToLeaveBlue(angleOnBlueEntry)
         if(leave == "no"):
-            turnRoundBlue()
+            turnRoundBlue(angleOnBlueEntry)
             return "blueTurn"
         else:
             return leave
@@ -291,12 +333,12 @@ def algorithm(robot, time, events):
                 goForward()                                                                  #go forward
             #if ()
             #robot.constantRotate(-sped)      
-            rightTurn()                                                         #turn left
+            leftTurn()                                                         #turn left
         elif (isColorInSplit(camera[2], red) == False and isColorInSplit(camera[0], red) == True and leftRed == False):  #if red not in left and in right and wasnt in left last time
             if (isColorInSplit(camera[1], red) == True):                                            #if red in mid + ^
                 goForward()                                                                  #go forward
             #robot.constantRotate(sped) 
-            leftTurn()                                                               #turn right
+            rightTurn()                                                               #turn right
         #elif (isColorInSplit(camera[2], red) == True and isColorInSplit(camera[0], red) == True and isColorInSplit(camera[1], red) == True):    #if all red
             #robot.move(150,150)                                                                     #go straight
         elif (isColorInSplit(camera[1], red) == True):                                              #if red mid and not left or right
@@ -322,12 +364,27 @@ def algorithm(robot, time, events):
             return leave
         return "threadNeedle"
 
-    def checkToLeaveYellow():
+    def checkToLeaveYellow(angleOnYellowEntry):
         global is_yellow
+        global blueExitAng
+        global angleOnBlueEntry
         #if (is_blue == True and ):
             #return "straightOn"
-        if (isColorInSplit(camera[2], blue)):
-            return "blueTurn"
+        if ((isColorInSplit(camera[0], yellow) == True or is_yellow == True) and (sensorData['Left'] < 100 and sensorData['Left'] != -1)):
+            goForward()
+
+            return "yellowTurn"
+        #if (isColorInSplit(camera[2], blue)):
+            #blueExitAng = 170
+            #angleOnBlueEntry = angleMagnitude()
+            #return "blueTurn"
+        if (useAngles == True):
+            tempAng = angleMagnitude()
+            #if (tempAng > (angleOnYellowEntry + yellowExitAng)):
+            if (tempAng < (angleOnYellowEntry - yellowExitAng)):
+                #blueExitAng = 170
+                goForward()
+                return "straightOn"
         return "no"
 
     def turnRoundYellow():
@@ -339,17 +396,18 @@ def algorithm(robot, time, events):
 
         elif (is_yellow == True and isColorInSplit(camera[1], yellow) == False):
             #robot.constantRotate(sped)
-            leftTurn()
-        elif (isColorInSplit(camera[1], yellow) == True):
-            #robot.constantRotate(-sped)
             rightTurn()
+        elif (isColorInSplit(camera[1], yellow) == True or isColorInSplit(camera[2], yellow) == True):
+            #robot.constantRotate(-sped)
+            leftTurn()
         else:
             robot.move(sped,sped)
         return
 
     def YellowTurn():
         global is_yellow
-        leave = checkToLeaveYellow()
+        global angleOnYellowEntry
+        leave = checkToLeaveYellow(angleOnYellowEntry)
         if (leave == "no"):
             turnRoundYellow()
             return "yellowTurn"
@@ -360,16 +418,20 @@ def algorithm(robot, time, events):
 
     def checkBlue():
         global is_blue
+        global angleOnBlueEntry
         if (is_blue == False):
             if (isColorInSplit(camera[2], blue) == True or
             isColorInSplit(camera[1], blue) == True or
             isColorInSplit(camera[0], blue) == True):
                 if (isColorInSplit(camera[2], blue) == True):
                     is_blue = True
+                angleOnBlueEntry = angleMagnitude()
                 return "blueTurn"
         else:
             if (isColorInSplit(camera[2], blue) == False):
-                is_blue == False
+                is_blue = False
+        if (isColorInSplit(camera[2], blue) == False):
+            is_blue = False            
         return "no"
 
     def checkSurrounded():
@@ -395,10 +457,14 @@ def algorithm(robot, time, events):
         return "no"
 
     def checkYellow():
-        if (isColorInSplit(camera[2], yellow) == False or
-        isColorInSplit(camera[1], yellow) == False or
-        isColorInSplit(camera[0], yellow) == False):
+        if (isColorInSplit(camera[2], yellow) == True or
+        isColorInSplit(camera[1], yellow) == True):
+        #or isColorInSplit(camera[0], yellow) == True):
+            global angleOnYellowEntry
+            angleOnYellowEntry = angleMagnitude()
             return "yellowTurn"
+        else:
+            is_yellow = False
         
         return "no"
 
@@ -407,19 +473,21 @@ def algorithm(robot, time, events):
         global rightRed
         global is_blue
         
-        blue = checkBlue()
-        if (blue != "no"):
-            return blue
+        blueChecked = checkBlue()
+        if (blueChecked != "no"):
+            return blueChecked
 
-        surrounded = checkSurrounded()
-        if (surrounded != "no"):
-            return surrounded
+        surroundedChecked = checkSurrounded()
+        if (surroundedChecked != "no"):
+            return surroundedChecked
 
-        red = checkRed()
-        if (red != "no"):
-            return red
+        redChecked = checkRed()
+        if (redChecked != "no"):
+            return redChecked
 
-        yellow = checkYellow()
+        yellowChecked = checkYellow()
+        if (yellowChecked != "no"):
+            return yellowChecked
         #if (isColorInSplit(camera[2], green) == True or
         #isColorInSplit(camera[1], green) == True or
         #isColorInSplit(camera[0], green) == True):
@@ -873,6 +941,10 @@ if (state == "rightTurn"):
 if (state == "straightOn"):
     state = SO()
 """
+
+def algo(robot, time, test):
+    robot.initAngle()
+    print(robot.getAngle())
 
 
 run.algo = algorithm

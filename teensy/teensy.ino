@@ -13,6 +13,9 @@ void setup()
 
 unsigned long time = millis();
 unsigned long interval = 5000;
+bool constantOut = false;
+unsigned long constantOutTimer;
+uint16_t constantOutInterval = 200;
 
 void loop()
 {
@@ -20,7 +23,10 @@ void loop()
     getAccelData();
     if (Serial.available()){
         while (Serial.available()) {
-            Serial.read();
+            if (Serial.read() == 'c') {
+                constantOut = !constantOut;
+                constantOutTimer = millis();
+            }
         }
         if(isDataReady()){
             getGpsData(data);
@@ -28,6 +34,9 @@ void loop()
         // getSesnorData();
         data.sendJson();
         time += interval;
+    }
+    if (constantOut && millis() - constantOutTimer > constantOutInterval) {
+        data.sendJson();
     }
 }
 
