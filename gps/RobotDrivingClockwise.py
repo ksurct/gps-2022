@@ -180,16 +180,19 @@ def algorithm(robot, time, events):
 
     def leftTurn():
         robot.constantRotate(rotateSped)
+        print("leftTurn\n")
         #robot.arcMove(rotateSped, rotRad, rotDist)
         return
 
     def rightTurn():
         robot.constantRotate(-rotateSped)
+        print("rightTurn\n")
         #robot.arcMove(-rotateSped, rotRad, rotDist)
         return
 
     def goForward():
         robot.move(sped, sped)
+        print("goForward\n")
         return
 
     def start():
@@ -311,44 +314,61 @@ def algorithm(robot, time, events):
         global rightRed
         global leftSense
         global rightSense
+        print("entering goThrough function\n")
         if (sensorData['FrontLeft'] < 50 and sensorData['FrontRight'] > 50):
+            print("caught close FrontLeft sensor with far FrontRight sensor\n")
             #robot.constantRotate(sped)
             leftTurn()
         if (sensorData['FrontLeft'] > 50 and sensorData['FrontRight'] < 50):
+            print("caught close FrontRight sensor with far FrontLeft sensor\n")
             #robot.constantRotate(-sped)
             rightTurn()
         if(sensorData['FrontLeft'] > sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
+            print("caught FrontLeft sensor and FrontRight sensor as close, but FrontRight is closer than FrontLeft\n")
             #robot.constantRotate(-sped)
             rightTurn()
         if(sensorData['FrontLeft'] < sensorData['FrontRight'] and sensorData['FrontLeft'] < 55 and sensorData['FrontRight'] < 55):
+            print("caught FrontLeft sensor and FrontRight sensor as close, but FrontLeft is closer than FrontRight\n")
             #robot.constantRotate(sped)
             leftTurn()
         if(sensorData['Front'] > 75):
+            print("caught far in the front sensor\n")
             goForward()
         if (isColorInSplit(camera[2], red) == True and isColorInSplit(camera[0], red) == True):     #if red in left and right
+            print("saw red in the left and right panes\n")
             goForward()                                                                      #go straight
         #elif (isColorInSplit(camera[1], red) == True):
             #robot.move(30,30)
         elif (isColorInSplit(camera[2], red) == True and isColorInSplit(camera[0], red) == False and rightRed == False):  #if red in left and not in right and wasnt in right last time
-            if (isColorInSplit(camera[1], red) == True):                                            #if red in mid + ^
+            print("saw red in the right pane, but not the left pane ")
+            if (isColorInSplit(camera[1], red) == True):
+                print("and saw red in the mid pane")                                            #if red in mid + ^
                 goForward()                                                                  #go forward
+            print("\n")
             #if ()
             #robot.constantRotate(-sped)      
             leftTurn()                                                         #turn left
         elif (isColorInSplit(camera[2], red) == False and isColorInSplit(camera[0], red) == True and leftRed == False):  #if red not in left and in right and wasnt in left last time
+            print("saw red in the left pane, but not the right pane ")
             if (isColorInSplit(camera[1], red) == True):                                            #if red in mid + ^
+                print("and saw red in the mid pane")
                 goForward()                                                                  #go forward
+            print("\n")
             #robot.constantRotate(sped) 
             rightTurn()                                                               #turn right
         #elif (isColorInSplit(camera[2], red) == True and isColorInSplit(camera[0], red) == True and isColorInSplit(camera[1], red) == True):    #if all red
             #robot.move(150,150)                                                                     #go straight
         elif (isColorInSplit(camera[1], red) == True):                                              #if red mid and not left or right
+            print("saw red in the mid pane, but neither side pane\n")
             goForward()                                                                    #go straight
         if (isColorInSplit(camera[1], red) == True and isColorInSplit(camera[2], red) == False and isColorInSplit(camera[0], red) == False) :
+            print("saw red in the mid pane, but neither side pane\n")
             robot.move(sped,sped)
         if (isColorInSplit(camera[2], red) == True):
+            print("saw red int the right pane\n")
             leftRed = True
         if (isColorInSplit(camera[0], red) == True):
+            print("saw red in the left pane\n")
             rightRed = True
         return
 
@@ -357,6 +377,7 @@ def algorithm(robot, time, events):
         global rightRed
         global leftSense
         global rightSense
+        print("entering ThreadNeele Function")
         #leave = checkToLeaveThreadNeedle()
         #if(leave == "no"):
         #    goThrough()
