@@ -4,17 +4,25 @@ import numpy as np
 import cv2
 import os
 import json
+# import internetCam
 
 class Camera():
-
-    def __init__(self, splits, show, name):
+    cam = cv2.VideoCapture(0)
+    def __init__(self, splits, show, name, internet=False):
         self.show = show
         self.frame = []
-        self.cam = cv2.VideoCapture(0)
-        self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 0)
+        if (show == "Internet"):
+            import internetCam
+            internetCam.theCam = self
+            internetCam.run()
+        # self.cam = cv2.VideoCapture(0)
+        # self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         self.splitCount = splits
         self.name = name
+        self.outFrame = []
         self.defaultAreaRequire = 75
+        # internetCam.camera = self
+        # internetCam.run()
         self.areaRequired = 75
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
@@ -46,7 +54,12 @@ class Camera():
                     self.setDefaults()
         else:
             self.setDefaults()
-    
+
+    def getFrame(self):
+        if (len(self.outFrame) != 0):
+            return self.outFrame
+        return self.frame
+
     def setDefaults(self):
         self.red_lower = self.default_red_lower 
         self.red_upper = self.default_red_upper 
@@ -141,7 +154,7 @@ class Camera():
                                             cv2.CHAIN_APPROX_SIMPLE)
 
         frame = self.addObject(objects, objectCount, frame, width/self.splitCount, contours, "Blue", hsvFrame)
-        if (self.show):
+        if (self.show == True):
             width = frame.shape[1]
             for i in range(0, self.splitCount):
                 splitWidth = width//self.splitCount
@@ -149,6 +162,8 @@ class Camera():
                 # Program Termination
                 cv2.imshow("Multiple Color Detection in Real-TIme", frame)
                 cv2.imshow('split %d' % i, split)
+        elif(self.show == "Internet"):
+            self.outFrame = frame
         if cv2.waitKey(10) & 0xFF == ord('q'):
             return None
         return objects
@@ -309,21 +324,32 @@ class Camera():
             }
             json.dump(stuff, camera_file)
 
+    def __del__(self):
+        if (self.show == "Internet"):
+            import internetCam
+            internetCam.exit()
+
 if __name__ == "__main__":
-    yn = input("Tune? ")
-    if (yn == "y"):
+    yn1 = input("Tune? ")
+    yn2 = input("InternetCam? ")
+    show = True
+    if (yn2 == "y"):
+        show = "Internet"
+    if (yn1 == "y"):
         col = input("rgy? ")
         if (col == "r"):
-            camera = Camera(1, True, "main")
+            camera = Camera(1, show, "main")
             camera.tuneRed(0.3)
         if (col == "y"):
-            camera = Camera(1, True, "main")
+            camera = Camera(1, show, "main")
             camera.tuneYellow(0.1)
         if (col == "b"):
-            camera = Camera(1, True, "main")
+            camera = Camera(1, show, "main")
             camera.tuneBlue(0.1)
         exit()
-    camera = Camera(3, True, "main")
+    else:
+        camera = Camera(3, show, "main")
+
     while(True):
         objs = camera.getCameraData()
         if(objs == None):
