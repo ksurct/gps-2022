@@ -9,7 +9,9 @@ class Camera():
 
     def __init__(self, splits, show, name):
         self.show = show
+        self.frame = []
         self.cam = cv2.VideoCapture(0)
+        self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         self.splitCount = splits
         self.name = name
         self.defaultAreaRequire = 75
@@ -59,6 +61,9 @@ class Camera():
         self.cam.release()
         cv2.destroyAllWindows()
 
+    def tick(self):
+        _, self.frame = self.cam.read()
+
     def getCameraData(self):
         objects = []
         objectCount = 0
@@ -68,8 +73,11 @@ class Camera():
             return []
         # Reading the video from the
         # cam in image frames
-        _, frame = self.cam.read()
-
+        #_, frame = self.cam.read()
+        frame = self.frame
+        if (len(frame) == 0):
+            #self.tick()
+            _, frame = self.cam.read()
         frame = frame[0:int(len(frame)*0.75)]
         width = frame.shape[1]
         objectCount = 0
@@ -148,7 +156,7 @@ class Camera():
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
         for pic, contour in enumerate(contours):
             area = cv2.contourArea(contour)
-            if (area > 600):
+            if (area > self.areaRequired):
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
@@ -187,7 +195,7 @@ class Camera():
                 print("Waiting for 1 item in view")
                 # time.sleep(1)
                 dataPoints.clear()
-            elif len(dataPoints) > 9:
+            elif len(dataPoints) > 60:
                 print("Success")
                 h = 0
                 s = 0
@@ -209,7 +217,7 @@ class Camera():
                 return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
 
     def tuneBlue(self, tolerance):
-        self.areaRequired = 300
+        self.areaRequired = 200
         self.blue_lower = self.default_blue_lower
         self.blue_upper = self.default_blue_upper
         res = self.tune(tolerance, "Blue")
@@ -233,7 +241,7 @@ class Camera():
             print("Using", res, "for blue")
 
     def tuneRed(self, tolerance):
-        self.areaRequired = 300
+        self.areaRequired = 200
         self.red_lower = self.default_red_lower
         self.red_upper = self.default_red_upper
         res = self.tune(tolerance, "Red")
@@ -259,7 +267,7 @@ class Camera():
             print("Using", res, "for red")
 
     def tuneYellow(self, tolerance):
-        self.areaRequired = 300
+        self.areaRequired = 200
         self.yellow_lower = self.default_yellow_lower
         self.yellow_upper = self.default_yellow_upper
         res = self.tune(tolerance, "Yellow")
@@ -307,7 +315,7 @@ if __name__ == "__main__":
         col = input("rgy? ")
         if (col == "r"):
             camera = Camera(1, True, "main")
-            camera.tuneRed(0.1)
+            camera.tuneRed(0.3)
         if (col == "y"):
             camera = Camera(1, True, "main")
             camera.tuneYellow(0.1)

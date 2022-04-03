@@ -28,6 +28,13 @@ class ReallyDumb():
         self.waitCall = None
         self.waitCallTime = None
         self.time = 0
+        self.cameraData = [[],[],[],[],[]]
+        self.LEFT = 0
+        self.FLEFT = 1
+        self.FRONT = 2
+        self.FRIGHT = 3
+        self.RIGHT = 4
+
         self.periodic = {}
         self.states = {
             "INIT": self.init,
@@ -39,6 +46,8 @@ class ReallyDumb():
             "CORNER4": self.corner4
         }
 
+    def updateCamera(self, robot, time):
+        self.cameraData = robot.getCameraData()["main"]
 
     def printUpdate(self, robot, time):
         sensorData = robot.getSensorData()
@@ -49,13 +58,13 @@ class ReallyDumb():
             sensorData["FrontRight"],
             sensorData["FrontLeft"]
         ))
-        camera = robot.getCameraData()["main"]
+
         print("Camera: Left:{},FLeft:{},Front:{},FRight:{},Right:{}".format(
-            colorsInSplit(camera[0]),
-            colorsInSplit(camera[1]),
-            colorsInSplit(camera[2]),
-            colorsInSplit(camera[3]),
-            colorsInSplit(camera[4])
+            colorsInSplit(self.cameraData[0]),
+            colorsInSplit(self.cameraData[1]),
+            colorsInSplit(self.cameraData[2]),
+            colorsInSplit(self.cameraData[3]),
+            colorsInSplit(self.cameraData[4])
         ))
     
     def overrideCheck(self, robot, time):
@@ -65,9 +74,10 @@ class ReallyDumb():
             self.overrodeAction = True
 
     def init(self, robot, time):
-        self.addPeriodic("status", self.printUpdate, 0.5)
+        # self.addPeriodic("status", self.printUpdate, 0.5)
+        self.addPeriodic("camera", self.updateCamera, 0.2)
         self.wait(lambda r, t: r.rotate(720, 15), 5)
-        return "CORNER1"
+        return "RED"
 
     def corner1(self, robot, time):
         self.wait(lambda r, t: r.rotate(-720, 15), 5)
@@ -86,8 +96,24 @@ class ReallyDumb():
         return "RED"
 
     def red(self, robot, time):
-        self.wait(lambda r, t: r.rotate(720, 180), 5)
-        return "YELLOW"
+        if (colorCount(self.cameraData[self.FRONT], "Blue") != 0):
+            print("Red in front")
+        elif (colorCount(self.cameraData[self.FRIGHT], "Blue") != 0):
+            print("Red in FRIGHT")
+            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), 0.75)
+        elif (colorCount(self.cameraData[self.RIGHT], "Blue") != 0):
+            print("Red in RIGHT")
+            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), 0.75)
+        elif (colorCount(self.cameraData[self.FLEFT], "Blue") != 0):
+            print("Red in FLEFT")
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), 0.75)
+        elif (colorCount(self.cameraData[self.LEFT], "Blue") != 0):
+            print("Red in LEFT")
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 0.75)
+        else:
+            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 0.75)
+
+        return "RED"
 
     def yellow(self, robot, time):
         self.wait(lambda r, t: r.rotate(-720, 180), 5)
@@ -140,5 +166,7 @@ def algorithm(robot, time, events = None):
 run.cameraSplits = 5
 run.algo = algorithm
 run.isSim = False
+run.debugCamera = False
 run.run()
+
 

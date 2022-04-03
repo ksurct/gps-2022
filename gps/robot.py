@@ -249,6 +249,7 @@ class Robot():
 
     def tick(self):
         self.time = time.time()
+        self.camera.tick()
         if (self.moving and self.timeToKill != -1):
             if (self.time > self.timeToKill):
                 self.stop()

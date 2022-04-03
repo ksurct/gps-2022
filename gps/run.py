@@ -6,6 +6,8 @@ isSim = True
 
 algo = None
 
+debugCamera = False
+
 cameraSplits = 3
 
 error = False
@@ -160,7 +162,7 @@ def run():
     else:
         from robot import Robot
         from camera import Camera
-        r = Robot(algo, Camera(cameraSplits, False, "main"))
+        r = Robot(algo, Camera(cameraSplits, debugCamera, "main"))
 
         while (True):
             r.tick()
