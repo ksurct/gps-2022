@@ -1,6 +1,6 @@
+from multiprocessing.connection import wait
 import run
-import random
-import pygame
+import time
 
 mod = 0
 state = "MOVE"
@@ -18,6 +18,9 @@ class ReallyDumb():
         self.standardSpeed = 5
         self.standardRotateSpeed = 720
         self.overrodeAction = False
+        self.waitCall = None
+        self.waitCallTime = None
+        self.time = 0
         self.states = {
             "INIT": self.init,
             "CORNER1": self.corner1,
@@ -30,35 +33,57 @@ class ReallyDumb():
     
     def overrideCheck(self, robot, time):
         sensorData = robot.getSensorData()
-        if (sensorData["Front"] < 0.25):
+        if (sensorData["Front"] < 0.25 and sensorData["Front"] != -1):
             robot.stop()
             self.overrodeAction = True
 
     def init(self, robot, time):
-        robot.initPosition()
+        self.wait(lambda r, t: r.rotate(720, 15), 1)
         return "CORNER1"
 
     def corner1(self, robot, time):
-        print(robot.getPosition())
-        return "CORNER1"
-
-    def corner2(self, robot, time):
+        self.wait(lambda r, t: r.rotate(-720, 15), 1)
         return "CORNER2"
 
-    def corner3(self, robot, time):
+    def corner2(self, robot, time):
+        self.wait(lambda r, t: r.move(1, 1.5), 1)
         return "CORNER3"
 
-    def corner4(self, robot, time):
+    def corner3(self, robot, time):
+        self.wait(lambda r, t: r.move(-1, 1.5), 1)
         return "CORNER4"
 
-    def red(self, robot, time):
+    def corner4(self, robot, time):
+        self.wait(lambda r, t: r.move(1, 1.5), 1)
         return "RED"
 
-    def yellow(self, robot, time):
+    def red(self, robot, time):
+        self.wait(lambda r, t: r.rotate(720, 180), 1)
         return "YELLOW"
 
+    def yellow(self, robot, time):
+        self.wait(lambda r, t: r.rotate(-720, 180), 1)
+        return "CORNER1"
+
+    def wait(self, waitCall, delay):
+        self.waitCall = waitCall
+        self.waitCallTime = self.time + delay
+
+    def runWait(self, robot, time):
+        self.waitCall(robot, time)
+        self.waitCall = None
+
     def run(self, robot, time):
-        self.state = self.states[self.state](robot, time)
+        self.time = time
+        self.overrideCheck(robot, time)
+        if (self.waitCall != None):
+            if (self.waitCallTime < time):
+                self.runWait(robot, time)
+            else:
+                return
+        ret = self.states[self.state](robot, time)
+        if ret != None:
+            self.state = ret
 
 
 algo = ReallyDumb()
