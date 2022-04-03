@@ -26,8 +26,8 @@ greenRight = False
 greenLeft = False
 leftSense = False
 rightSense = False
-sped = 35
-rotateSped = 510
+sped = .5
+rotateSped = 720
 rotRad = 10
 rotDist = 10
 blueExitAng = 100
@@ -198,7 +198,8 @@ def algorithm(robot, time, events):
         startAngle = robot.initialAngle
         robot.initAngle()
         #algo(robot, time, events)
-        return "straightOn"
+        #return "straightOn"
+        return "threadNeedle"
         return "STOP"
 
     def stop():
@@ -356,12 +357,12 @@ def algorithm(robot, time, events):
         global rightRed
         global leftSense
         global rightSense
-        leave = checkToLeaveThreadNeedle()
-        if(leave == "no"):
-            goThrough()
-            return "threadNeedle"
-        else:
-            return leave
+        #leave = checkToLeaveThreadNeedle()
+        #if(leave == "no"):
+        #    goThrough()
+        #    return "threadNeedle"
+        #else:
+        #    return leave
         return "threadNeedle"
 
     def checkToLeaveYellow(angleOnYellowEntry):
