@@ -15,6 +15,29 @@ float normY;
 float normZ;
 Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
 
+class mag{
+  float x_hard;
+  float y_hard;
+  float z_hard;
+  float soft[3][3];
+  
+  static void calc(float& xout, float& yout, float& zout){
+    float xtemp = mevent.magnetic.x - x_hard;
+    float ytemp = mevent.magnetic.y - y_hard;
+    float ztemp = mevent.magnetic.z - z_hard;
+
+    xout = soft[0][0] * xtemp + soft[0][1] * ytemp + soft[0][2] * ztemp;
+    yout = soft[1][0] * xtemp + soft[1][1] * ytemp + soft[1][2] * ztemp;
+    zout = soft[2][0] * xtemp + soft[2][1] * ytemp + soft[2][2] * ztemp;
+  }
+}
+
+// \begin{equation}\label{eq:maghsipar}    m_c = \left[\begin{matrix}    .75 & -.1443 & 0\\    -.1443 & 0.9167 & 0\\    0 & 0 & 1.0\\    \end{matrix}\right]    \left[\begin{matrix}    \tilde{m_x} - 200\\    \tilde{m_y} - 100\\    \tilde{m_z} - 0\\    \end{matrix}\right]\end{equation}
+typedef struct soft_iron{
+  float x[3]
+}soft_t
+
+
 
 void sensorsInit(Data* dataReference){
     pinMode(trigPinF1, OUTPUT);
@@ -29,6 +52,11 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF4, flReceived, CHANGE);
     //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
+
+    mag_offset.x = -8.28;
+    mag_offset.y = -26.74;
+    mag_offset.z = -67.09;
+
     if (!accelmag.begin()) {
         /* There was a problem detecting the FXOS8700 ... check your connections */
     }
@@ -61,9 +89,7 @@ void getAccelData(){
   data->accelY = accelY;
   data->accelZ = accelZ;
 
-  data->magX = mevent.magnetic.x;
-  data->magY = mevent.magnetic.y;
-  data->magZ = mevent.magnetic.z;
+  mag.calc(&data->magX, &data->magY, &data->magZ);
 
   data->magCourse =  atan2(mevent.magnetic.y, mevent.magnetic.x) * (180/ PI); // don't use
 }
