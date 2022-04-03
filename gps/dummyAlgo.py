@@ -1,4 +1,5 @@
 from multiprocessing.connection import wait
+from readline import redisplay
 import run
 import time
 
@@ -17,6 +18,33 @@ def colorsInSplit(split):
     for obj in split:
         if (not obj["color"] in ret):
             ret.append(obj["color"])
+    return ret
+
+def bigestColors(splits):
+    redSplit = -1
+    redObj = {"size":-1}
+    blueObj = {"size":-1}
+    blueSplit = -1
+    yellowObj = {"size":-1}
+    yellowSplit = -1
+    for index, split in enumerate(splits):
+        for obj in split:
+            if (obj["color"] == "Red" and obj["size"] > redObj["size"]):
+                redObj = obj
+                redSplit = index
+            elif (obj["color"] == "Blue" and obj["size"] > blueObj["size"]):
+                blueObj = obj
+                blueSplit = index
+            elif (obj["color"] == "Yellow" and obj["size"] > yellowObj["size"]):
+                yellowObj = obj
+                yellowSplit = index
+    ret = [[],[],[],[],[]]
+    if (redSplit != -1):
+        ret[redSplit].append(redObj)
+    if (yellowSplit != -1):
+        ret[yellowSplit].append(yellowObj)
+    if (blueSplit != -1):
+        ret[blueSplit].append(blueObj)
     return ret
 
 class ReallyDumb():
@@ -47,7 +75,7 @@ class ReallyDumb():
         }
 
     def updateCamera(self, robot, time):
-        self.cameraData = robot.getCameraData()["main"]
+        self.cameraData = bigestColors(robot.getCameraData()["main"])
 
     def printUpdate(self, robot, time):
         sensorData = robot.getSensorData()
@@ -74,7 +102,7 @@ class ReallyDumb():
             self.overrodeAction = True
 
     def init(self, robot, time):
-        # self.addPeriodic("status", self.printUpdate, 0.5)
+        self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.2)
         self.wait(lambda r, t: r.rotate(720, 15), 5)
         return "RED"
@@ -166,7 +194,7 @@ def algorithm(robot, time, events = None):
 run.cameraSplits = 5
 run.algo = algorithm
 run.isSim = False
-run.debugCamera = False
+run.debugCamera = "Internet"
 run.run()
 
 
