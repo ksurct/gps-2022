@@ -12,7 +12,8 @@ class Camera():
         self.cam = cv2.VideoCapture(0)
         self.splitCount = splits
         self.name = name
-
+        self.defaultAreaRequire = 75
+        self.areaRequired = 75
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
@@ -31,14 +32,14 @@ class Camera():
             with open('camera.json', 'r') as camera_file:
                 try:
                     camera_data = json.load(camera_file)
-                    self.red_lower = camera_data['red lower']
-                    self.red_upper = camera_data['red upper']
+                    self.red_lower = np.array(camera_data['red lower'], np.uint8)
+                    self.red_upper = np.array(camera_data['red upper'], np.uint8)
 
-                    self.yellow_lower = camera_data['yellow lower']
-                    self.yellow_upper = camera_data['yellow upper']
+                    self.yellow_lower = np.array(camera_data['yellow lower'], np.uint8)
+                    self.yellow_upper = np.array(camera_data['yellow upper'], np.uint8)
 
-                    self.blue_lower = camera_data['blue lower']
-                    self.blue_upper = camera_data['blue upper']
+                    self.blue_lower = np.array(camera_data['blue lower'], np.uint8)
+                    self.blue_upper = np.array(camera_data['blue upper'], np.uint8)
                 except:
                     self.setDefaults()
         else:
@@ -148,7 +149,7 @@ class Camera():
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
         for pic, contour in enumerate(contours):
             area = cv2.contourArea(contour)
-            if (area > 75):
+            if (area > 600):
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
@@ -173,12 +174,17 @@ class Camera():
             data = self.getCameraData()
             print(data)
             count = 0
+            largestSize = 0
+            largest = None
             for split in data:
                 for obj in split:
                     if (obj["color"] == color):
                         count += 1
-                        dataPoints.append(obj["hsv"])
-            if (count != 1):
+                        if (largestSize < obj["size"]):
+                            largest = obj
+            if (largest != None):
+                dataPoints.append(largest["hsv"])
+            if (count < 1):
                 print("Waiting for 1 item in view")
                 # time.sleep(1)
                 dataPoints.clear()
@@ -204,11 +210,13 @@ class Camera():
                 return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
 
     def tuneBlue(self, tolerance):
+        self.areaRequired = 300
         self.blue_lower = self.default_blue_lower
         self.blue_upper = self.default_blue_upper
         res = self.tune(tolerance, "Blue")
         self.blue_lower = res[0]
         self.blue_upper = res[1]
+        self.areaRequired = self.defaultAreaRequire
 
         try:
             camera_data = self.openjson()
@@ -226,11 +234,15 @@ class Camera():
             print("Using", res, "for blue")
 
     def tuneRed(self, tolerance):
+        self.areaRequired = 300
+        self.red_lower = self.default_red_lower
+        self.red_upper = self.default_red_upper
         res = self.tune(tolerance, "Red")
         self.red_lower = res[0]
         self.red_upper = res[1]
         print(self.red_lower)
         print(self.red_upper)
+        self.areaRequired = self.defaultAreaRequire
         
         try:
             camera_data = self.openjson()
@@ -248,9 +260,13 @@ class Camera():
             print("Using", res, "for red")
 
     def tuneYellow(self, tolerance):
+        self.areaRequired = 300
+        self.yellow_lower = self.default_yellow_lower
+        self.yellow_upper = self.default_yellow_upper
         res = self.tune(tolerance, "Yellow")
         self.yellow_lower = res[0]
         self.yellow_upper = res[1]
+        self.areaRequired = self.defaultAreaRequire
 
         try:
             camera_data = self.openjson()
@@ -289,15 +305,15 @@ class Camera():
 if __name__ == "__main__":
     yn = input("Tune? ")
     if (yn == "y"):
-        col = input("rgb? ")
+        col = input("rgy? ")
         if (col == "r"):
-            camera = Camera(3, True, "main")
+            camera = Camera(1, True, "main")
             camera.tuneRed(0.1)
         if (col == "y"):
-            camera = Camera(3, True, "main")
+            camera = Camera(1, True, "main")
             camera.tuneYellow(0.1)
         if (col == "b"):
-            camera = Camera(3, True, "main")
+            camera = Camera(1, True, "main")
             camera.tuneBlue(0.1)
         exit()
     camera = Camera(3, True, "main")
