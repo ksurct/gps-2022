@@ -26,7 +26,7 @@ greenRight = False
 greenLeft = False
 leftSense = False
 rightSense = False
-sped = .5
+sped = 1.5
 rotateSped = 720
 rotRad = 10
 rotDist = 10
@@ -363,6 +363,7 @@ def algorithm(robot, time, events):
         #    return "threadNeedle"
         #else:
         #    return leave
+        goThrough()
         return "threadNeedle"
 
     def checkToLeaveYellow(angleOnYellowEntry):
