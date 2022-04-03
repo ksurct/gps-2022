@@ -1,18 +1,30 @@
 
+import threading
 import time
 import numpy as np
 import cv2
 import os
 import json
+# import internetCam
 
 class Camera():
-
-    def __init__(self, splits, show, name):
+    cam = cv2.VideoCapture(0)
+    def __init__(self, splits, show, name, internet=False):
         self.show = show
-        self.cam = cv2.VideoCapture(0)
+        self.frame = []
+        if (show == "Internet"):
+            import internetCam
+            internetCam.theCam = self
+            internetCam.run()
+        # self.cam = cv2.VideoCapture(0)
+        # self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         self.splitCount = splits
         self.name = name
-
+        self.outFrame = []
+        self.defaultAreaRequire = 50
+        # internetCam.camera = self
+        # internetCam.run()
+        self.areaRequired = 50
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
@@ -24,26 +36,31 @@ class Camera():
         #default value
         #self.default_blue_lower = np.array([91, 158, 145], np.uint8)
         #self.default_blue_upper = np.array([111, 193, 178], np.uint8)
-        self.default_blue_lower = np.array([94, 80, 100], np.uint8)
+        self.default_blue_lower = np.array([94, 70, 100], np.uint8)
         self.default_blue_upper = np.array([120, 255, 255], np.uint8)
 
         if os.path.exists('camera.json'):
             with open('camera.json', 'r') as camera_file:
                 try:
                     camera_data = json.load(camera_file)
-                    self.red_lower = camera_data['red lower']
-                    self.red_upper = camera_data['red upper']
+                    self.red_lower = np.array(camera_data['red lower'], np.uint8)
+                    self.red_upper = np.array(camera_data['red upper'], np.uint8)
 
-                    self.yellow_lower = camera_data['yellow lower']
-                    self.yellow_upper = camera_data['yellow upper']
+                    self.yellow_lower = np.array(camera_data['yellow lower'], np.uint8)
+                    self.yellow_upper = np.array(camera_data['yellow upper'], np.uint8)
 
-                    self.blue_lower = camera_data['blue lower']
-                    self.blue_upper = camera_data['blue upper']
+                    self.blue_lower = np.array(camera_data['blue lower'], np.uint8)
+                    self.blue_upper = np.array(camera_data['blue upper'], np.uint8)
                 except:
                     self.setDefaults()
         else:
             self.setDefaults()
-    
+
+    def getFrame(self):
+        if (len(self.outFrame) != 0):
+            return self.outFrame
+        return self.frame
+
     def setDefaults(self):
         self.red_lower = self.default_red_lower 
         self.red_upper = self.default_red_upper 
@@ -58,6 +75,9 @@ class Camera():
         self.cam.release()
         cv2.destroyAllWindows()
 
+    def tick(self):
+        _, self.frame = self.cam.read()
+
     def getCameraData(self):
         objects = []
         objectCount = 0
@@ -67,9 +87,11 @@ class Camera():
             return []
         # Reading the video from the
         # cam in image frames
-        _, frame = self.cam.read()
-        print(len(frame))
-
+        #_, frame = self.cam.read()
+        frame = self.frame
+        if (len(frame) == 0):
+            #self.tick()
+            _, frame = self.cam.read()
         frame = frame[0:int(len(frame)*0.75)]
         width = frame.shape[1]
         objectCount = 0
@@ -133,7 +155,7 @@ class Camera():
                                             cv2.CHAIN_APPROX_SIMPLE)
 
         frame = self.addObject(objects, objectCount, frame, width/self.splitCount, contours, "Blue", hsvFrame)
-        if (self.show):
+        if (self.show == True):
             width = frame.shape[1]
             for i in range(0, self.splitCount):
                 splitWidth = width//self.splitCount
@@ -141,6 +163,8 @@ class Camera():
                 # Program Termination
                 cv2.imshow("Multiple Color Detection in Real-TIme", frame)
                 cv2.imshow('split %d' % i, split)
+        elif(self.show == "Internet"):
+            self.outFrame = frame
         if cv2.waitKey(10) & 0xFF == ord('q'):
             return None
         return objects
@@ -148,7 +172,7 @@ class Camera():
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
         for pic, contour in enumerate(contours):
             area = cv2.contourArea(contour)
-            if (area > 75):
+            if (area > self.areaRequired):
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
@@ -173,16 +197,21 @@ class Camera():
             data = self.getCameraData()
             print(data)
             count = 0
+            largestSize = 0
+            largest = None
             for split in data:
                 for obj in split:
                     if (obj["color"] == color):
                         count += 1
-                        dataPoints.append(obj["hsv"])
-            if (count != 1):
+                        if (largestSize < obj["size"]):
+                            largest = obj
+            if (largest != None):
+                dataPoints.append(largest["hsv"])
+            if (count < 1):
                 print("Waiting for 1 item in view")
                 # time.sleep(1)
                 dataPoints.clear()
-            elif len(dataPoints) > 9:
+            elif len(dataPoints) > 60:
                 print("Success")
                 h = 0
                 s = 0
@@ -203,12 +232,66 @@ class Camera():
                 vH = maxLim((v / len(dataPoints)) * (1 + tolerance), 255)
                 return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
 
+
+    def dumTune(self, tolerance, color):
+        dataPoints = []
+        count = 0
+        self.tick()
+        self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+        y = len(self.hsvFrame) // 2
+        x = len(self.hsvFrame[0]) // 2
+        turnOff = False
+        def run():
+            while (not turnOff):
+                self.tick()
+                self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+                self.outFrame = cv2.rectangle(self.frame, (x - 5, y - 5),
+                            (x + 5, y + 5),
+                            (200, 200, 200), 2)
+        t = threading.Thread(target=run)
+        print("2")
+        t.start()
+        print("1")
+        while(True):
+
+            if (input("Count %d / 10, Is this Good? " % (count + 1)).upper() == "Y"):
+                count += 1
+                center = self.hsvFrame[x][y]
+                dataPoints.append(center)
+            if (count > 10):
+                turnOff = True
+                t.join()
+                break
+
+        print("Success")
+        h = 0
+        s = 0
+        v = 0
+        for d in dataPoints:
+            h += d[0]
+            s += d[1]
+            v += d[2]
+        def maxLim(var, limit):
+            return var if var < limit else limit
+        def minLim(var, limit):
+            return var if var > limit else limit
+        hL = minLim((h / len(dataPoints)) * (1 - tolerance), 0)
+        sL = minLim((s / len(dataPoints)) * (1 - tolerance), 0)
+        vL = minLim((v / len(dataPoints)) * (1 - tolerance), 0)
+        hH = maxLim((h / len(dataPoints)) * (1 + tolerance), 255)
+        sH = maxLim((s / len(dataPoints)) * (1 + tolerance), 255)
+        vH = maxLim((v / len(dataPoints)) * (1 + tolerance), 255)
+        return (np.array([hL, sL, vL], np.uint8), np.array([hH, sH, vH], np.uint8))
+        
+
     def tuneBlue(self, tolerance):
+        self.areaRequired = 200
         self.blue_lower = self.default_blue_lower
         self.blue_upper = self.default_blue_upper
-        res = self.tune(tolerance, "Blue")
+        res = self.dumTune(tolerance, "Blue")
         self.blue_lower = res[0]
         self.blue_upper = res[1]
+        self.areaRequired = self.defaultAreaRequire
 
         try:
             camera_data = self.openjson()
@@ -226,11 +309,15 @@ class Camera():
             print("Using", res, "for blue")
 
     def tuneRed(self, tolerance):
-        res = self.tune(tolerance, "Red")
+        self.areaRequired = 200
+        self.red_lower = self.default_red_lower
+        self.red_upper = self.default_red_upper
+        res = self.dumTune(tolerance, "Red")
         self.red_lower = res[0]
         self.red_upper = res[1]
         print(self.red_lower)
         print(self.red_upper)
+        self.areaRequired = self.defaultAreaRequire
         
         try:
             camera_data = self.openjson()
@@ -248,9 +335,13 @@ class Camera():
             print("Using", res, "for red")
 
     def tuneYellow(self, tolerance):
-        res = self.tune(tolerance, "Yellow")
+        self.areaRequired = 200
+        self.yellow_lower = self.default_yellow_lower
+        self.yellow_upper = self.default_yellow_upper
+        res = self.dumTune(tolerance, "Yellow")
         self.yellow_lower = res[0]
         self.yellow_upper = res[1]
+        self.areaRequired = self.defaultAreaRequire
 
         try:
             camera_data = self.openjson()
@@ -286,21 +377,33 @@ class Camera():
             }
             json.dump(stuff, camera_file)
 
+    def __del__(self):
+        if (self.show == "Internet"):
+            import internetCam
+            internetCam.exit()
+
 if __name__ == "__main__":
-    yn = input("Tune? ")
-    if (yn == "y"):
-        col = input("rgb? ")
+    yn1 = input("Tune? ")
+    yn2 = input("InternetCam? ")
+    show = True
+    if (yn2 == "y"):
+        show = "Internet"
+    if (yn1 == "y"):
+        col = input("rby? ")
+        tol = float(input("Tolerance = "))
         if (col == "r"):
-            camera = Camera(3, True, "main")
-            camera.tuneRed(0.1)
+            camera = Camera(1, show, "main")
+            camera.tuneRed(tol)
         if (col == "y"):
-            camera = Camera(3, True, "main")
-            camera.tuneYellow(0.1)
+            camera = Camera(1, show, "main")
+            camera.tuneYellow(tol)
         if (col == "b"):
-            camera = Camera(3, True, "main")
-            camera.tuneBlue(0.1)
+            camera = Camera(1, show, "main")
+            camera.tuneBlue(tol)
         exit()
-    camera = Camera(3, True, "main")
+    else:
+        camera = Camera(3, show, "main")
+
     while(True):
         objs = camera.getCameraData()
         if(objs == None):

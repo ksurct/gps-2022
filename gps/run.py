@@ -6,6 +6,10 @@ isSim = True
 
 algo = None
 
+debugCamera = False
+
+cameraSplits = 3
+
 error = False
 
 pixelsPerMeter = 40 #scaled to keep the size of the robot the same on screen, may need to change later if the course doesn't fit on screen
@@ -127,7 +131,7 @@ def run():
                         y=(robotLength / 2),
                         angle=0,
                         fieldOfView=160,
-                        splitCount=3, # How many splits are in the camera when showing object colors
+                        splitCount=cameraSplits, # How many splits are in the camera when showing object colors
                         resolution=140, # How many rays are in the field of view
                         debug=True,
                         maxDistance=25 * feetToPixels #come back to this
@@ -157,7 +161,8 @@ def run():
         robot_sim.run(course, robot, FPS)
     else:
         from robot import Robot
-        r = Robot(algo)
+        from camera import Camera
+        r = Robot(algo, Camera(cameraSplits, debugCamera, "main"))
 
         while (True):
             r.tick()

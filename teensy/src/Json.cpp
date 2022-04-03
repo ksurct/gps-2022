@@ -4,6 +4,11 @@
 
 json::Data::Data() {
     memset((uint8_t*)this, 0, sizeof(Data));
+    fr_data = -1;
+    f_data = -1;
+    fl_data = -1;
+    r_data = -1;
+    l_data = -1;
 }
 
 

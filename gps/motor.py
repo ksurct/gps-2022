@@ -21,7 +21,6 @@ class Motor():
             GPIO.output(self.dirPin, GPIO.HIGH)
         else:
             GPIO.output(self.dirPin, GPIO.LOW)
-        print(abs(speed*self.mod))
     
 if __name__ == "__main__":
     num = int(input("1:"))
