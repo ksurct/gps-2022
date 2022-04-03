@@ -23,20 +23,13 @@ void loop()
     getAccelData();
     if (Serial.available()){
         while (Serial.available()) {
-            if (Serial.read() == 'c') {
-                constantOut = !constantOut;
-                constantOutTimer = millis();
-            }
+            Serial.read();
         }
         if(isDataReady()){
             getGpsData(data);
         }
-        // getSesnorData();
         data.sendJson();
         time += interval;
-    }
-    if (constantOut && millis() - constantOutTimer > constantOutInterval) {
-        data.sendJson();
     }
 }
 
