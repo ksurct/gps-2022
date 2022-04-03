@@ -69,7 +69,6 @@ class Camera():
         # Reading the video from the
         # cam in image frames
         _, frame = self.cam.read()
-        print(len(frame))
 
         frame = frame[0:int(len(frame)*0.75)]
         width = frame.shape[1]
