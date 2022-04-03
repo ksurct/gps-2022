@@ -64,7 +64,7 @@ def isColorInSplit(split, color):
 # Algorithm
 # Called every 'tick' 1/FPS
 # This is a dummy algorithm that shows how to a control a robot
-def algorithm(robot, time, events):
+def algorithm(robot, time, events = None):
     global white
     global blue
     global flip
@@ -971,7 +971,8 @@ def algo(robot, time, test):
 
 
 run.algo = algorithm
-
+run.isSim = False
+run.debugCamera = "Internet"
 run.run()
 
 
