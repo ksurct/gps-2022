@@ -134,7 +134,7 @@ def run():
                         splitCount=cameraSplits, # How many splits are in the camera when showing object colors
                         resolution=140, # How many rays are in the field of view
                         debug=True,
-                        maxDistance=25 * feetToPixels #come back to this
+                        maxDistance=25*feetToPixels #come back to this
                         )
         }
 

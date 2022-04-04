@@ -1,6 +1,4 @@
-from multiprocessing.connection import wait
-from readline import redisplay
-from turtle import delay
+
 import run
 import time
 
@@ -115,11 +113,13 @@ class ReallyDumb():
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.1)
-        self.wait(lambda r, t: r.stop(), 2)
-        return "FIND_YELLOW"
+        robot.move(4,4)
+        #self.wait(lambda r, t: r.move(4,4), 2)
+        if (self.delay(1)):
+            return "CORNER1"
 
     def corner1(self, robot, time):
-        self.roundAndRound(robot, "Yellow")
+        self.roundAndRound(robot, "Blue")
         return "CORNER1"
 
     def corner2(self, robot, time):
@@ -217,14 +217,18 @@ class ReallyDumb():
             self.state = ret
     
     def roundAndRound(self, robot, col):
-        delayTime = 1
-        if (colorCount(self.cameraData[self.FRONT], col) != 0):
-            robot.rotate(-self.standardRotateSpeed, 20)
-            self.wait(lambda r, t: r.move(2,1), 1)
-            # if(self.delay(delayTime)):
-            #     robot.move(2, 1)
-        if (colorCount(self.cameraData[self.RIGHT], col) == 0 and colorCount(self.cameraData[self.FRIGHT], col) == 0):
-            robot.rotate(self.standardRotateSpeed, 20)
+        if(robot.isNotMoving()):
+            
+            if (colorCount(self.cameraData[self.FRONT], col) != 0):
+                robot.rotate(-self.standardRotateSpeed, 20)
+                
+                # if(self.delay(delayTime)):
+                #     robot.move(2, 1)
+            elif (colorCount(self.cameraData[self.RIGHT], col) == 0 and colorCount(self.cameraData[self.FRIGHT], col) == 0):
+                robot.rotate(self.standardRotateSpeed, 20)
+            else:
+                robot.move(2,1)
+        
 
 algo = ReallyDumb()
 
@@ -236,8 +240,8 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = False
-run.debugCamera = "Internet"
+run.isSim = True
+run.debugCamera = True
 run.run()
 
 
