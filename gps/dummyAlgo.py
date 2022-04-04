@@ -81,7 +81,7 @@ class ReallyDumb():
             "CORNER2": self.corner2,
             "CORNER3": self.corner3,
             "FIND_YELLOW": self.findYellow,
-            "RAM_YELLOW": self.findYellow,
+            "RAM_YELLOW": self.ramYellow,
             "CORNER4": self.corner4
         }
 
@@ -107,10 +107,11 @@ class ReallyDumb():
         ))
     
     def overrideCheck(self, robot, time):
-        sensorData = robot.getSensorData()
-        if (sensorData["Front"] < 0.25 and sensorData["Front"] != -1):
-            robot.stop()
-            self.overrodeAction = True
+        pass
+        # sensorData = robot.getSensorData()
+        # if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
+        #     robot.stop()
+        #     self.overrodeAction = True
 
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
@@ -135,16 +136,22 @@ class ReallyDumb():
         return "FIND_YELLOW"
 
     def ramYellow(self, robot, time):
-        if (not colorCount(self.cameraData[self.FRONT], "YELLOW") != 0):
+        sensorData = robot.getSensorData()
+        if (colorCount(self.cameraData[self.FRONT], "Yellow") == 0):
             return "FIND_YELLOW"
-        robot.move(1,1)
+        if (sensorData["Front"] != -1 and sensorData["Front"] < 0.5):
+            print("Stop")
+            robot.stop()
+        else:
+            print("Move")
+            robot.move(1,1)
 
     def findYellow(self, robot, time):
         col = "Yellow"
         delayTime = 1
         functionTimeDelay = 1
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
-            # return "RAM_YELLOW"
+            return "RAM_YELLOW"
             print("Red in front")
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
             print("Red in FRIGHT")
