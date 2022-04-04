@@ -9,6 +9,7 @@ import sys
 theCam = None
 
 t = None
+hasRun = False
 
 ds_factor=0.6
 class VideoCamera(object):
@@ -61,6 +62,10 @@ def exit():
     t.join()
 
 def run():
+    global hasRun
+    if (hasRun):
+        return
+    hasRun = True
     t = threading.Thread(target=lambda: app.run(host='0.0.0.0',port='5000'))
     t.start()
 

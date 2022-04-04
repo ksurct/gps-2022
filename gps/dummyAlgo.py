@@ -104,7 +104,8 @@ class ReallyDumb():
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.1)
-        self.wait(lambda r, t: r.rotate(720, 15), 5)
+        robot.constantMove(5)
+        self.wait(lambda r, t: r.stop(), 2)
         return "RED"
 
     def corner1(self, robot, time):
@@ -124,23 +125,23 @@ class ReallyDumb():
         return "RED"
 
     def red(self, robot, time):
-        if (colorCount(self.cameraData[self.FRONT], "Blue") != 0):
+        col = "Yellow"
+        if (colorCount(self.cameraData[self.FRONT], col) != 0):
             print("Red in front")
-        elif (colorCount(self.cameraData[self.FRIGHT], "Blue") != 0):
+        elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
             print("Red in FRIGHT")
             self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), 1.5)
-        elif (colorCount(self.cameraData[self.RIGHT], "Blue") != 0):
+        elif (colorCount(self.cameraData[self.RIGHT], col) != 0):
             print("Red in RIGHT")
             self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), 1.5)
-        elif (colorCount(self.cameraData[self.FLEFT], "Blue") != 0):
+        elif (colorCount(self.cameraData[self.FLEFT], col) != 0):
             print("Red in FLEFT")
             self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), 1.5)
-        elif (colorCount(self.cameraData[self.LEFT], "Blue") != 0):
+        elif (colorCount(self.cameraData[self.LEFT], col) != 0):
             print("Red in LEFT")
             self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
         else:
             self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
-
         return "RED"
 
     def yellow(self, robot, time):
@@ -181,7 +182,6 @@ class ReallyDumb():
         if ret != None and ret != self.state:
             print("Changing to state:", ret)
             self.state = ret
-
 
 algo = ReallyDumb()
 

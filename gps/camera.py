@@ -238,27 +238,31 @@ class Camera():
         count = 0
         self.tick()
         self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
-        y = len(self.hsvFrame) // 2
-        x = len(self.hsvFrame[0]) // 2
+        x = len(self.hsvFrame) // 2
+        y = len(self.hsvFrame[0]) // 2
         turnOff = False
         def run():
             while (not turnOff):
                 self.tick()
+                col = cv2.cvtColor(np.array([[self.hsvFrame[x][y]]], np.uint8), cv2.COLOR_HSV2BGR)
                 self.hsvFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
-                self.outFrame = cv2.rectangle(self.frame, (x - 5, y - 5),
-                            (x + 5, y + 5),
-                            (200, 200, 200), 2)
+                self.outFrame = cv2.rectangle(self.frame, (y - 5, x - 5),
+                            (y + 5, x + 5),
+                            (0,0,0), 2)
+                self.outFrame = cv2.rectangle(self.outFrame, (y - 100, x - 100),
+                            (y + 100, x + 100),
+                            col[0][0].tolist(), 2)
         t = threading.Thread(target=run)
         print("2")
         t.start()
         print("1")
+        total = 5
         while(True):
-
-            if (input("Count %d / 10, Is this Good? " % (count + 1)).upper() == "Y"):
+            if (input("Count %d / %d, Is this Good? " % (count + 1, total)).upper() == "Y"):
                 count += 1
                 center = self.hsvFrame[x][y]
                 dataPoints.append(center)
-            if (count > 10):
+            if (count >= total):
                 turnOff = True
                 t.join()
                 break
@@ -389,17 +393,15 @@ if __name__ == "__main__":
     if (yn2 == "y"):
         show = "Internet"
     if (yn1 == "y"):
-        col = input("rby? ")
-        tol = float(input("Tolerance = "))
-        if (col == "r"):
-            camera = Camera(1, show, "main")
-            camera.tuneRed(tol)
-        if (col == "y"):
-            camera = Camera(1, show, "main")
-            camera.tuneYellow(tol)
-        if (col == "b"):
-            camera = Camera(1, show, "main")
-            camera.tuneBlue(tol)
+        tol = float(input("Tuning red, tolerance = "))
+        camera = Camera(1, show, "main")
+        camera.tuneRed(tol)
+        tol = float(input("Tuning yellow, tolerance = "))
+        time.sleep(2)
+        camera.tuneYellow(tol)
+        tol = float(input("Tuning blue, tolerance = "))
+        time.sleep(2)
+        camera.tuneBlue(tol)
         exit()
     else:
         camera = Camera(3, show, "main")
