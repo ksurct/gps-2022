@@ -119,8 +119,8 @@ class ReallyDumb():
         return "RED"
 
     def corner1(self, robot, time):
-        self.wait(lambda r, t: r.rotate(-720, 15), 5)
-        return "CORNER2"
+        self.roundAndRound(robot, "Yellow")
+        return "CORNER1"
 
     def corner2(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
@@ -215,6 +215,16 @@ class ReallyDumb():
         if ret != None and ret != self.state:
             print("Changing to state:", ret)
             self.state = ret
+    
+    def roundAndRound(self, robot, col):
+        delayTime = 1
+        if (colorCount(self.cameraData[self.FRONT], col) != 0):
+            robot.rotate(-self.standardRotateSpeed, 20)
+            self.wait(lambda r, t: r.move(2,1), 1)
+            # if(self.delay(delayTime)):
+            #     robot.move(2, 1)
+        if (colorCount(self.cameraData[self.RIGHT], col) == 0 and colorCount(self.cameraData[self.FRIGHT], col) == 0):
+            robot.rotate(self.standardRotateSpeed, 20)
 
 algo = ReallyDumb()
 
