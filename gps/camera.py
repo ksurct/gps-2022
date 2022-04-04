@@ -178,8 +178,8 @@ class Camera():
                 size = w
                 if (x + w > (split+1)*width and split != self.splitCount):
                     size = (split+1)*width - x
-                    objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": w - size})
-                objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size})
+                    objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
+                objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
                 objectCount+=1
                 if (self.show):
                     frame = cv2.rectangle(frame, (x, y),

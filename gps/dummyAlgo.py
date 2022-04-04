@@ -80,7 +80,8 @@ class ReallyDumb():
             "YELLOW": self.yellow,
             "CORNER2": self.corner2,
             "CORNER3": self.corner3,
-            "RED": self.red,
+            "FIND_YELLOW": self.findYellow,
+            "RAM_YELLOW": self.findYellow,
             "CORNER4": self.corner4
         }
 
@@ -133,31 +134,37 @@ class ReallyDumb():
         self.wait(lambda r, t: r.move(1, 0.5), 5)
         return "RED"
 
-    def red(self, robot, time):
+    def ramYellow(self, robot, time):
+        if (not colorCount(self.cameraData[self.FRONT], "YELLOW") != 0):
+            return "FIND_YELLOW"
+        robot.move(1,1)
+
+    def findYellow(self, robot, time):
         col = "Yellow"
-        delayTime = 0.5
+        delayTime = 1
         functionTimeDelay = 1
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
+            return "RAM_YELLOW"
             print("Red in front")
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
             print("Red in FRIGHT")
             if (self.delay(delayTime)):
-                self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), functionTimeDelay)
+                robot.rotate(self.standardRotateSpeed, 20)
         elif (colorCount(self.cameraData[self.RIGHT], col) != 0):
             print("Red in RIGHT")
             if (self.delay(delayTime)):
-                self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), functionTimeDelay)
+                robot.rotate(self.standardRotateSpeed, 40)
         elif (colorCount(self.cameraData[self.FLEFT], col) != 0):
             print("Red in FLEFT")
             if (self.delay(delayTime)):
-                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), functionTimeDelay)
+                robot.rotate(-self.standardRotateSpeed, 20)
         elif (colorCount(self.cameraData[self.LEFT], col) != 0):
             print("Red in LEFT")
             if (self.delay(delayTime)):
-                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), functionTimeDelay)
+                robot.rotate(-self.standardRotateSpeed, 40)
         else:
             if (self.delay(delayTime)):
-                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), functionTimeDelay)
+                robot.rotate(-self.standardRotateSpeed, 40)
         return "RED"
 
     def yellow(self, robot, time):
@@ -170,12 +177,13 @@ class ReallyDumb():
 
     def delay(self, delay, name="default"):
         if (not name in self.delays):
-            self.delays[name] = self.time
+            self.delays[name] = self.time + delay
             return False
         else:
             if (self.delays[name] < self.time):
                 self.delays.pop(name, None)
                 return True
+            print("Waiting", self.time, self.delays[name])
             return False
     def runWait(self, robot, time):
         self.waitCall(robot, time)
