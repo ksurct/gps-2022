@@ -66,12 +66,9 @@ void sensorsInit(Data* dataReference){
     //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
 
-<<<<<<< HEAD
-=======
     // mag_offset.x = -8.28;
     // mag_offset.y = -26.74;
     // mag_offset.z = -67.09;
->>>>>>> d93cb4ab833368a5646160c9f5789c0b62ebbb8f
 
     // if (!accelmag.begin()) {
     //     /* There was a problem detecting the FXOS8700 ... check your connections */
@@ -105,15 +102,9 @@ void getAccelData(){
   // data->accelY = accelY;
   // data->accelZ = accelZ;
 
-<<<<<<< HEAD
   tune.calc(mevent.magnetic.x, mevent.magnetic.y, mevent.magnetic.z, data->magX, data->magY, data->magZ);
 
   data->magCourse =  atan2(data->magX, data->magY) * (180/ PI); // don't use
-=======
-  // mag.calc(&data->magX, &data->magY, &data->magZ);
-
-  // data->magCourse =  atan2(mevent.magnetic.y, mevent.magnetic.x) * (180/ PI); // don't use
->>>>>>> d93cb4ab833368a5646160c9f5789c0b62ebbb8f
 }
 
 void sensorTrigger(){
