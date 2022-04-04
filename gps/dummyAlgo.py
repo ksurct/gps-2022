@@ -116,7 +116,7 @@ class ReallyDumb():
         # self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.1)
         self.wait(lambda r, t: r.stop(), 2)
-        return "RED"
+        return "FIND_YELLOW"
 
     def corner1(self, robot, time):
         self.roundAndRound(robot, "Yellow")
@@ -132,7 +132,7 @@ class ReallyDumb():
 
     def corner4(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
-        return "RED"
+        return "FIND_YELLOW"
 
     def ramYellow(self, robot, time):
         if (not colorCount(self.cameraData[self.FRONT], "YELLOW") != 0):
@@ -144,7 +144,7 @@ class ReallyDumb():
         delayTime = 1
         functionTimeDelay = 1
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
-            return "RAM_YELLOW"
+            # return "RAM_YELLOW"
             print("Red in front")
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
             print("Red in FRIGHT")
@@ -165,7 +165,7 @@ class ReallyDumb():
         else:
             if (self.delay(delayTime)):
                 robot.rotate(-self.standardRotateSpeed, 40)
-        return "RED"
+        return "FIND_YELLOW"
 
     def yellow(self, robot, time):
         self.wait(lambda r, t: r.rotate(-720, 180), 5)
