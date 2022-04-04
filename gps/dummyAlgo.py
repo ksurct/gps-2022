@@ -1,11 +1,11 @@
 from multiprocessing.connection import wait
 from readline import redisplay
+from turtle import delay
 import run
 import time
 
 mod = 0
 state = "MOVE"
-
 
 def colorCount(split, color):
     for obj in split:
@@ -20,31 +20,40 @@ def colorsInSplit(split):
             ret.append(obj["color"])
     return ret
 
-def bigestColors(splits):
-    redSplit = -1
-    redObj = {"size":-1}
-    blueObj = {"size":-1}
-    blueSplit = -1
-    yellowObj = {"size":-1}
-    yellowSplit = -1
+def bigestColors(splits, objCount):
+    def initCol(col):
+        for i in range(objCount):
+            col.append({"size": -1, "color": "None"})
+    redObjs = []
+    blueObjs = []
+    yellowObjs = []
+    initCol(redObjs)
+    initCol(blueObjs)
+    initCol(yellowObjs)
+    def compare(obj):
+        return obj["size"]
     for index, split in enumerate(splits):
         for obj in split:
-            if (obj["color"] == "Red" and obj["size"] > redObj["size"]):
-                redObj = obj
-                redSplit = index
-            elif (obj["color"] == "Blue" and obj["size"] > blueObj["size"]):
-                blueObj = obj
-                blueSplit = index
-            elif (obj["color"] == "Yellow" and obj["size"] > yellowObj["size"]):
-                yellowObj = obj
-                yellowSplit = index
+            obj["split"] = index
+            if (obj["color"] == "Red" and obj["size"] > redObjs[0]["size"]):
+                redObjs[0] = obj
+                redObjs.sort(key=compare)
+            elif (obj["color"] == "Blue" and obj["size"] > blueObjs[0]["size"]):
+                blueObjs[0] = obj
+                yellowObjs.sort(key=compare)
+            elif (obj["color"] == "Yellow" and obj["size"] > yellowObjs[0]["size"]):
+                yellowObjs[0] = obj
+                yellowObjs.sort(key=compare)
     ret = [[],[],[],[],[]]
-    if (redSplit != -1):
-        ret[redSplit].append(redObj)
-    if (yellowSplit != -1):
-        ret[yellowSplit].append(yellowObj)
-    if (blueSplit != -1):
-        ret[blueSplit].append(blueObj)
+    for obj in redObjs:
+        if (obj["size"] != -1):
+            ret[obj["split"]].append(obj)
+    for obj in blueObjs:
+        if (obj["size"] != -1):
+            ret[obj["split"]].append(obj)
+    for obj in yellowObjs:
+        if (obj["size"] != -1):
+            ret[obj["split"]].append(obj)
     return ret
 
 class ReallyDumb():
@@ -62,6 +71,7 @@ class ReallyDumb():
         self.FRONT = 2
         self.FRIGHT = 3
         self.RIGHT = 4
+        self.delays = {}
 
         self.periodic = {}
         self.states = {
@@ -75,7 +85,7 @@ class ReallyDumb():
         }
 
     def updateCamera(self, robot, time):
-        self.cameraData = bigestColors(robot.getCameraData()["main"])
+        self.cameraData = bigestColors(robot.getCameraData()["main"], 1)
 
     def printUpdate(self, robot, time):
         sensorData = robot.getSensorData()
@@ -104,7 +114,6 @@ class ReallyDumb():
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.1)
-        robot.constantMove(5)
         self.wait(lambda r, t: r.stop(), 2)
         return "RED"
 
@@ -126,22 +135,29 @@ class ReallyDumb():
 
     def red(self, robot, time):
         col = "Yellow"
+        delayTime = 0.5
+        functionTimeDelay = 1
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
             print("Red in front")
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
             print("Red in FRIGHT")
-            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), 1.5)
+            if (self.delay(delayTime)):
+                self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 20), functionTimeDelay)
         elif (colorCount(self.cameraData[self.RIGHT], col) != 0):
             print("Red in RIGHT")
-            self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), 1.5)
+            if (self.delay(delayTime)):
+                self.wait(lambda r, t: robot.rotate(self.standardRotateSpeed, 40), functionTimeDelay)
         elif (colorCount(self.cameraData[self.FLEFT], col) != 0):
             print("Red in FLEFT")
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), 1.5)
+            if (self.delay(delayTime)):
+                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 20), functionTimeDelay)
         elif (colorCount(self.cameraData[self.LEFT], col) != 0):
             print("Red in LEFT")
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
+            if (self.delay(delayTime)):
+                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), functionTimeDelay)
         else:
-            self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), 1.5)
+            if (self.delay(delayTime)):
+                self.wait(lambda r, t: robot.rotate(-self.standardRotateSpeed, 40), functionTimeDelay)
         return "RED"
 
     def yellow(self, robot, time):
@@ -152,6 +168,15 @@ class ReallyDumb():
         self.waitCall = waitCall
         self.waitCallTime = self.time + delay
 
+    def delay(self, delay, name="default"):
+        if (not name in self.delays):
+            self.delays[name] = self.time
+            return False
+        else:
+            if (self.delays[name] < self.time):
+                self.delays.pop(name, None)
+                return True
+            return False
     def runWait(self, robot, time):
         self.waitCall(robot, time)
         self.waitCall = None
