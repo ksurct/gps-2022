@@ -14,7 +14,7 @@ import cv2
 from CameraObject import CameraObject
 
 class Robot():
-    def __init__(self, algorithm):
+    def __init__(self, algorithm, camera):
         GPIO.setmode(GPIO.BCM)
         self.left = Motor(12,23, 0.9)
         self.right = Motor(13,24, 1.1)
@@ -23,11 +23,11 @@ class Robot():
         self.backwardDistanceMod = 1
         self.rightTurnMod = 1
         self.leftTurnMod = 1
-        self.timeCalled = time.time()
         self.timeToKill = 0
+        self.time = 0
         self.constant = False
         self.serial = SerialInput()
-        self.camera = Camera(3, False, "main")
+        self.camera = camera
 
         self.algorithm = algorithm
         self.moving = False
@@ -170,9 +170,9 @@ class Robot():
     def constantMove(self, speedMps):
         self.setRightMps(speedMps)
         self.setLeftMps(speedMps)
-        self.timeCalled = time.time()
-        self.timeToKill = 0
-        self.constant = True
+        self.timeToKill = -1
+        self.moving = True
+
 
     # Set constant rotation
     def constantRotate(self, speedDps):
@@ -181,18 +181,15 @@ class Robot():
         speedMps = speedDps * mpd
         self.setLeftMps(speedMps)
         self.setRightMps(-speedMps)
-
-        self.timeCalled = time.time()
-        self.timeToKill = 0
-        self.constant = True
+        self.moving = True
+        self.timeToKill = -1
 
     # Move a certain distance at a speed
     def move(self, speedMps, distanceMeters):
-        seconds = distanceMeters / speedMps
+        seconds = abs(distanceMeters / speedMps)
         self.constantMove(speedMps)
-        self.timeCalled = time.time()
-        self.timeToKill = seconds
-        self.constant = False
+        self.timeToKill = self.time + seconds
+        self.moving = True
 
     def motorPID(self):
         pass
@@ -209,29 +206,24 @@ class Robot():
         ω = speed * 2 * pi / (2*radius*pi)
         Vl = ω* (radius + self.axilLength/2)
         Vr = ω* (radius - self.axilLength/2)
-        print("VL = ", Vl)
-        print("Vr = ", Vr)
         self.setLeftMps(Vl)
         self.setRightMps(Vr)
-        self.timeCalled = time.time()
-        self.constant = True
+        self.moving = True
 
     def arcMove(self, speed, radius, distance):
         # Gravity at center of circle = v^2 / r
         # angular velocity = (360 / circumference) * v
         self.constantArcMove(speed, radius)
-        self.timeToKill = distance / abs(speed)
-        self.timeCalled = time.time()
-        self.constant = False
+        self.timeToKill = self.time + distance / abs(speed)
+        self.moving = True
 
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
         self.constantRotate(speedDps)
-        speedDps = speedDps *  220 / 720
+        speedDps = speedDps *  220 / 690
         seconds = abs(degrees / speedDps)
-        self.timeCalled = time.time()
-        self.timeToKill = seconds
-        self.constant = False
+        self.moving = True
+        self.timeToKill = self.time + seconds
 
     def initAngle(self):
         self.serial.receiveData()
@@ -239,27 +231,29 @@ class Robot():
 
     def getAngle(self):
         self.serial.receiveData()
-        preangle = self.serial.getMag()
-        angle = preangle + self.angleOff
-        if angle > 180:
-            angle -= 360
-        if angle < -180:
-            angle += 360
-        return angle
+        #preangle = self.serial.getMag()
+        #angle = preangle + self.angleOff
+        #if angle > 180:
+        #    angle -= 360
+        #if angle < -180:
+        #    angle += 360
+        #return angle
 
         
     # Stop the robot
     def stop(self):
         self.left.setSpeed(0)
         self.right.setSpeed(0)
-        self.constant = False
+        self.moving = False
+        self.timeToKill = -1
 
     def tick(self):
-        t = time.time()
-        self.moving  = self.constant or t - self.timeCalled < self.timeToKill
-        if not self.moving:
-            self.stop()
-        self.algorithm(self, t)
+        self.time = time.time()
+        self.camera.tick()
+        if (self.moving and self.timeToKill != -1):
+            if (self.time > self.timeToKill):
+                self.stop()
+        self.algorithm(self, self.time)
 
 if __name__ == '__main__':
     robot = Robot(Roomba.run)
