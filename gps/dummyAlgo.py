@@ -144,7 +144,7 @@ class ReallyDumb():
             robot.stop()
         else:
             print("Move")
-            robot.move(1,1)
+            robot.move(0.6,0.5)
 
     def findYellow(self, robot, time):
         col = "Yellow"
