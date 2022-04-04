@@ -114,13 +114,13 @@ class ReallyDumb():
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
         self.addPeriodic("camera", self.updateCamera, 0.1)
-        robot.move(4,4)
-        #self.wait(lambda r, t: r.move(4,4), 2)
+        # robot.move(4,4)
+        self.wait(lambda r, t: r.time, 5)
         if (self.delay(1)):
-            return "CORNER1"
+            return "FIND_YELLOW"
 
     def corner1(self, robot, time):
-        self.roundAndRound(robot, "Blue")
+        self.roundAndRound(robot, "Yellow")
         return "CORNER1"
 
     def corner2(self, robot, time):
@@ -224,17 +224,15 @@ class ReallyDumb():
             self.state = ret
     
     def roundAndRound(self, robot, col):
-        if(robot.isNotMoving()):
-            
-            if (colorCount(self.cameraData[self.FRONT], col) != 0):
-                robot.rotate(-self.standardRotateSpeed, 20)
-                
+        if(robot.isNotMoving() and self.delay(0.5)):
+            if (colorCount(self.cameraData[self.FRONT], col) != 0 or colorCount(self.cameraData[self.FRIGHT], col) != 0):
+                robot.rotate(-self.standardRotateSpeed, 15)
                 # if(self.delay(delayTime)):
                 #     robot.move(2, 1)
-            elif (colorCount(self.cameraData[self.RIGHT], col) == 0 and colorCount(self.cameraData[self.FRIGHT], col) == 0):
-                robot.rotate(self.standardRotateSpeed, 20)
+            elif (colorCount(self.cameraData[self.RIGHT], col) == 0):
+                robot.rotate(self.standardRotateSpeed, 15)
             else:
-                robot.move(2,1)
+                robot.move(1,0.3)
         
 
 algo = ReallyDumb()
@@ -247,8 +245,8 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = True
-run.debugCamera = True
+run.isSim = False
+run.debugCamera = "Internet"
 run.run()
 
 

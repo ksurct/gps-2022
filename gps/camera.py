@@ -39,7 +39,7 @@ class Camera():
         self.default_blue_lower = np.array([94, 70, 100], np.uint8)
         self.default_blue_upper = np.array([120, 255, 255], np.uint8)
 
-        if os.path.exists('camera.json'):
+        if os.path.exists('camera.json') and False:
             with open('camera.json', 'r') as camera_file:
                 try:
                     camera_data = json.load(camera_file)
@@ -55,6 +55,7 @@ class Camera():
                     self.setDefaults()
         else:
             self.setDefaults()
+        self.setDefaults()
 
     def getFrame(self):
         if (len(self.outFrame) != 0):
@@ -393,8 +394,8 @@ if __name__ == "__main__":
     if (yn2 == "y"):
         show = "Internet"
     if (yn1 == "y"):
-        tol = float(input("Tuning red, tolerance = "))
         camera = Camera(1, show, "main")
+        tol = float(input("Tuning red, tolerance = "))
         camera.tuneRed(tol)
         tol = float(input("Tuning yellow, tolerance = "))
         time.sleep(2)
