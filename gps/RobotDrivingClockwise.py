@@ -27,7 +27,7 @@ greenLeft = False
 leftSense = False
 rightSense = False
 sped = 1.5
-rotateSped = 720
+rotateSped = 360
 rotRad = 10
 rotDist = 10
 blueExitAng = 100
@@ -266,16 +266,18 @@ def algorithm(robot, time, events = None):
         else:
             goForward()   
         return "no"
-
+    
     def BlueTurn():
         global is_blue
         global angleOnBlueEntry
-        leave = checkToLeaveBlue(angleOnBlueEntry)
-        if(leave == "no"):
-            turnRoundBlue(angleOnBlueEntry)
-            return "blueTurn"
-        else:
-            return leave
+        #leave = checkToLeaveBlue(angleOnBlueEntry)
+        #if(leave == "no"):
+        #    turnRoundBlue(angleOnBlueEntry)
+
+        #    return "blueTurn"
+        #else:
+        #    return leave
+        turnRoundBlue(0)
         return "blueTurn"
 
     def checkToLeaveThreadNeedle():
@@ -309,12 +311,11 @@ def algorithm(robot, time, events = None):
             return "straightOn"
         return "no"
 
-    def goThrough():
+    def redSensors():
         global leftRed
         global rightRed
         global leftSense
         global rightSense
-        print("entering goThrough function\n")
         if (sensorData['FrontLeft'] < 50 and sensorData['FrontRight'] > 50):
             print("caught close FrontLeft sensor with far FrontRight sensor\n")
             #robot.constantRotate(sped)
@@ -334,6 +335,15 @@ def algorithm(robot, time, events = None):
         if(sensorData['Front'] > 75):
             print("caught far in the front sensor\n")
             goForward()
+        return "no"
+
+    def goThrough():
+        global leftRed
+        global rightRed
+        global leftSense
+        global rightSense
+        print("entering goThrough function\n")
+        #redSensors()
         if (isColorInSplit(camera[2], red) == True and isColorInSplit(camera[0], red) == True):     #if red in left and right
             print("saw red in the left and right panes\n")
             goForward()                                                                      #go straight
