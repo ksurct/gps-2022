@@ -1,6 +1,7 @@
 
 from cmath import pi
-
+import math
+import random
 
 isSim = True
 
@@ -12,9 +13,13 @@ cameraSplits = 3
 
 error = False
 
-pixelsPerMeter = 40 #scaled to keep the size of the robot the same on screen, may need to change later if the course doesn't fit on screen
+pixelsPerMeter = 40
 
-sensorMaxDistance = 2 #in meters
+sensorMaxDistance = 2
+
+scenario = "MAIN"
+
+startingOffsetError = (0,0)
 
 positionError=0
 angleError=0
@@ -28,6 +33,7 @@ if (error):
     moveError=15
     rotationError=15
     sensorError=0.04
+
 
 
 def run():
@@ -45,7 +51,7 @@ def run():
         blue = (0,0,255,255)
         green = (0,255,0,255)
         red = (255,0,0,255)
-            # Pixels is the resolution on screen
+        # Pixels is the resolution on screen
         # Course resolution is the grid count used to draw a course
         course = robot_sim.Course(pixelsX=25*pixelsPerMeter,
                                 pixelsY=25*pixelsPerMeter,
@@ -56,7 +62,7 @@ def run():
 
         # -- Draw course --
         #defining some useful constants
-        bucketRadius = 0.0127   #in meters
+        bucketRadius = 0.07   #in meters
         brp = bucketRadius*pixelsPerMeter       #(b)ucket (r)adius in (p)ixels
         midpointX = (course.pixelsX)/2
         midpointY = (course.pixelsY)/2
@@ -73,23 +79,9 @@ def run():
         course.circle(x=(midpointX+(-30*feetToPixels)), y=(midpointY-(20*feetToPixels)), r=brp, c=blue, px=True)
         course.circle(x=(midpointX+(-30*feetToPixels)), y=(midpointY-(-20*feetToPixels)), r=brp, c=blue, px=True)
         course.circle(x=(midpointX+(30*feetToPixels)), y=(midpointY-(-20*feetToPixels)), r=brp, c=blue, px=True)
-
         course.circle(x=(midpointX), y=(midpointY-(-10*feetToPixels)), r=brp, c=yellow, px=True)
-
         course.circle(x=(midpointX), y=(midpointY-((20+(gateWidth/2))*feetToPixels)), r=brp, c=red, px=True) #top red barrel
         course.circle(x=(midpointX), y=(midpointY-((20-(gateWidth/2))*feetToPixels)), r=brp, c=red, px=True) #top red barrel
-
-        # course.circle(x=(midpointX+(-31*feetToPixels)), y=(midpointY), r=brp, c=green) #ramp placeholder
-        # course.circle(x=(midpointX+(31*feetToPixels)), y=(midpointY+(-2*feetToPixels)), r=brp, c=green, px=True) #just there for testing purposes
-
-        # course.circle(x = 90, y=120, r=2, c=yellow)
-    #True
-
-
-
-        #course.box(x1=150,y1=10,x2=160,y2=180,c=green)
-        #course.box(x1=30,y1=150,x2=40,y2=40,c=red)
-
 
 
         # Sensors:
@@ -106,11 +98,11 @@ def run():
         #      (0,0)x----------
         #
         sensors = {
-            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True),
-            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True),
-            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True),
-            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True),
-            "Front": robot_sim.Sensor(x=4.5,y=robotLength,d=sensorMaxDistance*pixelsPerMeter,angle=0,debug=True)
+            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True,coneAngle=5),
+            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True,coneAngle=5),
+            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True,coneAngle=5),
+            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True,coneAngle=5),
+            "Front": robot_sim.Sensor(x=robotWidth/2,y=robotLength,d=sensorMaxDistance*pixelsPerMeter,angle=0,debug=True,coneAngle=10),
         }
 
         # Cameras:
@@ -132,7 +124,7 @@ def run():
                         angle=0,
                         fieldOfView=160,
                         splitCount=cameraSplits, # How many splits are in the camera when showing object colors
-                        resolution=140, # How many rays are in the field of view
+                        resolution=400, # How many rays are in the field of view
                         debug=True,
                         maxDistance=25*feetToPixels #come back to this
                         )
@@ -145,13 +137,22 @@ def run():
 
         # Location is pixel placement in display
         # Length and width are in pixels
-        robot = robot_sim.RobotSim(location=(midpointX + 40*feetToPixels,midpointY),          #
+        angle = 0
+        if (scenario == "MAIN"):
+            angle = 180
+            sx = midpointX + 40*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
+            sy = midpointY + random.uniform(-startingOffsetError[1], startingOffsetError[1])*pixelsPerMeter
+        if (scenario == "RED"):
+            angle = 90
+            sx = 20*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
+            sy = 20*feetToPixels + random.uniform(-startingOffsetError[1], startingOffsetError[1])*pixelsPerMeter
+        robot = robot_sim.RobotSim(location=(sx,sy),          #
                                 length=0.3556 * pixelsPerMeter,
                                 width=0.3556 * pixelsPerMeter,
                                 algorithm=algo,#Roomba.run,
                                 sensors=sensors,
                                 cameras=cameras,
-                                startingAngle=180,
+                                startingAngle=angle,
                                 angleError=angleError,
                                 positionError=positionError,
                                 moveError=moveError,
