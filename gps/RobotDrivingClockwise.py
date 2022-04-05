@@ -26,8 +26,8 @@ greenRight = False
 greenLeft = False
 leftSense = False
 rightSense = False
-sped = 1.5
-rotateSped = 360
+sped = 1
+rotateSped = 520
 rotRad = 10
 rotDist = 10
 blueExitAng = 100
@@ -179,13 +179,13 @@ def algorithm(robot, time, events = None):
         return variable
 
     def leftTurn():
-        robot.constantRotate(rotateSped)
+        robot.rotate(rotateSped, 20)
         print("leftTurn\n")
         #robot.arcMove(rotateSped, rotRad, rotDist)
         return
 
     def rightTurn():
-        robot.constantRotate(-rotateSped)
+        robot.rotate(-rotateSped, 20)
         print("rightTurn\n")
         #robot.arcMove(-rotateSped, rotRad, rotDist)
         return
@@ -202,7 +202,7 @@ def algorithm(robot, time, events = None):
         robot.initAngle()
         #algo(robot, time, events)
         #return "straightOn"
-        return "threadNeedle"
+        return "yellowTurn"
         return "STOP"
 
     def stop():
@@ -438,16 +438,16 @@ def algorithm(robot, time, events = None):
         return
 
     def YellowTurn():
-        global is_yellow
-        global angleOnYellowEntry
-        leave = checkToLeaveYellow(angleOnYellowEntry)
-        if (leave == "no"):
-            turnRoundYellow()
-            return "yellowTurn"
-        else:
-            return leave
-        return
-        return "rightTurn"
+        # global is_yellow
+        # global angleOnYellowEntry
+        # leave = checkToLeaveYellow(angleOnYellowEntry)
+        # if (leave == "no"):
+        turnRoundYellow()
+        return "yellowTurn"
+        # else:
+        #     return leave
+        # return
+        # return "rightTurn"
 
     def checkBlue():
         global is_blue

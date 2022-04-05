@@ -117,12 +117,12 @@ class ReallyDumb():
 
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
-        robot.initPosition()
-        # self.addPeriodic("camera", self.updateCamera, 0.1)
+        # robot.initPosition()
+        self.addPeriodic("camera", self.updateCamera, 0.1)
         # # robot.move(4,4)
         # self.wait(lambda r, t: r.time, 5)
         # if (self.delay(1)):
-        return "TEST"
+        return "CORNER1"
 
     def corner1(self, robot, time):
         self.roundAndRound(robot, "Yellow")

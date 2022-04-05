@@ -25,6 +25,7 @@ class Robot():
         self.leftTurnMod = 1
         self.timeToKill = 0
         self.time = 0
+        self.angleOff = 0
         self.constant = False
         self.serial = SerialInput()
         self.camera = camera
