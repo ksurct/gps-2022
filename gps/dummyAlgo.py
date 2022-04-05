@@ -82,14 +82,10 @@ class ReallyDumb():
             "CORNER3": self.corner3,
             "FIND_YELLOW": self.findYellow,
             "RAM_YELLOW": self.ramYellow,
-<<<<<<< HEAD
-            "CORNER4": self.corner4,
             "FIND_RED": self.findRed,
-            "RED_SPLIT": self.redSplit
-=======
+            "RED_SPLIT": self.redSplit,
             "TEST": self.test,
             "CORNER4": self.corner4
->>>>>>> de84079e368a73d8b322cc26cd0f39b74e046cfa
         }
 
     def updateCamera(self, robot, time):
