@@ -82,9 +82,14 @@ class ReallyDumb():
             "CORNER3": self.corner3,
             "FIND_YELLOW": self.findYellow,
             "RAM_YELLOW": self.ramYellow,
+<<<<<<< HEAD
             "CORNER4": self.corner4,
             "FIND_RED": self.findRed,
             "RED_SPLIT": self.redSplit
+=======
+            "TEST": self.test,
+            "CORNER4": self.corner4
+>>>>>>> de84079e368a73d8b322cc26cd0f39b74e046cfa
         }
 
     def updateCamera(self, robot, time):
@@ -117,6 +122,9 @@ class ReallyDumb():
         # if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
         #     robot.stop()
         #     self.overrodeAction = True
+
+    def test(self, robot, time):
+        print(robot.getPosition())
 
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)

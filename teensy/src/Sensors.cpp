@@ -70,37 +70,37 @@ void sensorsInit(Data* dataReference){
     // mag_offset.y = -26.74;
     // mag_offset.z = -67.09;
 
-    // if (!accelmag.begin()) {
-    //     /* There was a problem detecting the FXOS8700 ... check your connections */
-    // }
-    // setNorm();
+    if (!accelmag.begin()) {
+         /* There was a problem detecting the FXOS8700 ... check your connections */
+     }
+    setNorm();
 }
 
 void setNorm(){
-  // sensors_event_t aevent, mevent;
+  sensors_event_t aevent, mevent;
 
   // /* Get a new sensor event */
-  // accelmag.getEvent(&aevent, &mevent);
+  accelmag.getEvent(&aevent, &mevent);
 
-  // normX = aevent.acceleration.x;
-  // normY = aevent.acceleration.y;
-  // normZ = aevent.acceleration.z;
+  normX = aevent.acceleration.x;
+  normY = aevent.acceleration.y;
+  normZ = aevent.acceleration.z;
 }
 
 void getAccelData(){
-  // sensors_event_t aevent, mevent;
+  sensors_event_t aevent, mevent;
 
-  // /* Get a new sensor event */
-  // accelmag.getEvent(&aevent, &mevent);
+  /* Get a new sensor event */
+  accelmag.getEvent(&aevent, &mevent);
 
-  // float accelX = aevent.acceleration.x - normX;
-  // float accelY = aevent.acceleration.y - normY;
-  // float accelZ = aevent.acceleration.z - normZ;
+  float accelX = aevent.acceleration.x - normX;
+  float accelY = aevent.acceleration.y - normY;
+  float accelZ = aevent.acceleration.z - normZ;
 
 
-  // data->accelX = accelX;
-  // data->accelY = accelY;
-  // data->accelZ = accelZ;
+  data->accelX = accelX;
+  data->accelY = accelY;
+  data->accelZ = accelZ;
 
   tune.calc(mevent.magnetic.x, mevent.magnetic.y, mevent.magnetic.z, data->magX, data->magY, data->magZ);
 

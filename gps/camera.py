@@ -39,23 +39,48 @@ class Camera():
         self.default_blue_lower = np.array([94, 70, 100], np.uint8)
         self.default_blue_upper = np.array([120, 255, 255], np.uint8)
 
-        if os.path.exists('camera.json') and False:
+        self.setDefaults()
+
+        if os.path.exists('camera.json'):
             with open('camera.json', 'r') as camera_file:
                 try:
                     camera_data = json.load(camera_file)
-                    self.red_lower = np.array(camera_data['red lower'], np.uint8)
-                    self.red_upper = np.array(camera_data['red upper'], np.uint8)
+                    if ("red lower" in camera_data):
+                        self.red_lower = np.array(camera_data['red lower'], np.uint8)
+                    else:
+                        print("Could not find red lower")
+                    if ("red upper" in camera_data):
+                        self.red_upper = np.array(camera_data['red upper'], np.uint8)
+                    else:
+                        print("Could not find red upper")
+                    if ("yellow lower" in camera_data):
+                        self.yellow_lower = np.array(camera_data['yellow lower'], np.uint8)
+                    else:
+                        print("Could not find yellow lower")
+                    if ("yellow upper" in camera_data):
+                        self.yellow_upper = np.array(camera_data['yellow upper'], np.uint8)
+                    else:
+                        print("Could not find yellow upper")
+                    if ("blue lower" in camera_data):
+                        self.blue_lower = np.array(camera_data['blue lower'], np.uint8)
+                    else:
+                        print("Could not find blue lower")
+                    if ("blue upper" in camera_data):
+                        self.blue_upper = np.array(camera_data['blue upper'], np.uint8)
+                    else:
+                        print("Could not find blue upper")
 
-                    self.yellow_lower = np.array(camera_data['yellow lower'], np.uint8)
-                    self.yellow_upper = np.array(camera_data['yellow upper'], np.uint8)
-
-                    self.blue_lower = np.array(camera_data['blue lower'], np.uint8)
-                    self.blue_upper = np.array(camera_data['blue upper'], np.uint8)
+                    print("Using self.red lower", self.red_lower)
+                    print("Using self.red upper", self.red_upper)
+                    print("Using self.yellow lower", self.yellow_lower)
+                    print("Using self.yellow upper", self.yellow_upper)
+                    print("Using self.blue lower", self.blue_lower)
+                    print("Using self.blue upper", self.blue_upper)
                 except:
-                    self.setDefaults()
+                    print("Failed to load values")
         else:
             self.setDefaults()
-        self.setDefaults()
+        # self.setDefaults()
 
     def getFrame(self):
         if (len(self.outFrame) != 0):
@@ -297,21 +322,8 @@ class Camera():
         self.blue_lower = res[0]
         self.blue_upper = res[1]
         self.areaRequired = self.defaultAreaRequire
-
-        try:
-            camera_data = self.openjson()
-            camera_data['blue lower'] = self.blue_lower.tolist()
-            camera_data['blue upper'] = self.blue_upper.tolist()
-        except:
-            camera_data = {
-                'blue lower': self.blue_lower.tolist(),
-                'blue upper': self.blue_upper.tolist()
-            }
-        finally: 
-            with open('camera.json', 'w') as camera_file:
-                json.dump(camera_data, camera_file)
-            
-            print("Using", res, "for blue")
+        return (self.blue_lower.tolist(),
+            self.blue_upper.tolist())
 
     def tuneRed(self, tolerance):
         self.areaRequired = 200
@@ -323,21 +335,8 @@ class Camera():
         print(self.red_lower)
         print(self.red_upper)
         self.areaRequired = self.defaultAreaRequire
-        
-        try:
-            camera_data = self.openjson()
-            camera_data['red lower'] = self.red_lower.tolist()
-            camera_data['red upper'] = self.red_upper.tolist()
-        except:
-            camera_data = {
-                'red lower': self.red_lower.tolist(),
-                'red upper': self.red_upper.tolist()
-            }
-        finally:
-            with open('camera.json', 'w') as camera_file:
-                json.dump(camera_data, camera_file)
-            
-            print("Using", res, "for red")
+        return (self.red_lower.tolist(),
+            self.red_upper.tolist())
 
     def tuneYellow(self, tolerance):
         self.areaRequired = 200
@@ -347,21 +346,8 @@ class Camera():
         self.yellow_lower = res[0]
         self.yellow_upper = res[1]
         self.areaRequired = self.defaultAreaRequire
-
-        try:
-            camera_data = self.openjson()
-            camera_data['yellow lower'] = self.green_lower.tolist()
-            camera_data['yellow upper'] = self.green_upper.tolist()
-        except:
-            camera_data = {
-                'yellow lower': self.yellow_lower.tolist(),
-                'yellow upper': self.yellow_upper.tolist()
-            }
-        finally:
-            with open('camera.json', 'w') as camera_file:
-                json.dump(camera_data, camera_file)
-            
-            print("Using", res, "for yellow")
+        return (self.yellow_lower.tolist(),
+            self.yellow_upper.tolist())
 
     def openjson(self):
         if os.path.exists('camera.json'):
@@ -394,15 +380,24 @@ if __name__ == "__main__":
     if (yn2 == "y"):
         show = "Internet"
     if (yn1 == "y"):
+        cameraTune = {}
         camera = Camera(1, show, "main")
         tol = float(input("Tuning red, tolerance = "))
-        camera.tuneRed(tol)
+        res = camera.tuneRed(tol)
+        cameraTune["red lower"] = res[0]
+        cameraTune["red upper"] = res[1]
         tol = float(input("Tuning yellow, tolerance = "))
         time.sleep(2)
-        camera.tuneYellow(tol)
+        res = camera.tuneYellow(tol)
+        cameraTune["yellow lower"] = res[0]
+        cameraTune["yellow upper"] = res[1]
         tol = float(input("Tuning blue, tolerance = "))
         time.sleep(2)
-        camera.tuneBlue(tol)
+        res = camera.tuneBlue(tol)
+        cameraTune["blue lower"] = res[0]
+        cameraTune["blue upper"] = res[1]
+        with open('camera.json', 'w') as camera_file:
+            json.dump(cameraTune, camera_file)
         exit()
     else:
         camera = Camera(3, show, "main")
@@ -414,6 +409,7 @@ if __name__ == "__main__":
         else:
             for split in objs:
                 for object in split:
-                    print(object["hsv"])
-            print(objs)
+                    pass
+                    # print(object["hsv"])
+            # print(objs)
 
