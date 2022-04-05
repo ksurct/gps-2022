@@ -255,8 +255,12 @@ class Robot():
                 self.stop()
         self.algorithm(self, self.time)
 
+def noAlgorithm():
+    pass
+
 if __name__ == '__main__':
-    robot = Robot(Roomba.run)
-    robot.ledSetup()
-    while(True):
-        robot.tick()
+    camera = Camera(1, False, "David")
+    robot = Robot(noAlgorithm)
+    robot.initAngle()
+    while True:
+        print(robot.getAngle())

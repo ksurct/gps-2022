@@ -15,29 +15,42 @@ float normY;
 float normZ;
 Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
 
-// class mag{
-//   float x_hard;
-//   float y_hard;
-//   float z_hard;
-//   float soft[3][3];
-  
-//   static void calc(float& xout, float& yout, float& zout){
-//     float xtemp = mevent.magnetic.x - x_hard;
-//     float ytemp = mevent.magnetic.y - y_hard;
-//     float ztemp = mevent.magnetic.z - z_hard;
-
-//     xout = soft[0][0] * xtemp + soft[0][1] * ytemp + soft[0][2] * ztemp;
-//     yout = soft[1][0] * xtemp + soft[1][1] * ytemp + soft[1][2] * ztemp;
-//     zout = soft[2][0] * xtemp + soft[2][1] * ytemp + soft[2][2] * ztemp;
-//   }
-// }
-
-// // \begin{equation}\label{eq:maghsipar}    m_c = \left[\begin{matrix}    .75 & -.1443 & 0\\    -.1443 & 0.9167 & 0\\    0 & 0 & 1.0\\    \end{matrix}\right]    \left[\begin{matrix}    \tilde{m_x} - 200\\    \tilde{m_y} - 100\\    \tilde{m_z} - 0\\    \end{matrix}\right]\end{equation}
-// typedef struct soft_iron{
-//   float x[3]
-// }soft_t
+class magnet{
+  float x_hard = -33.77;
+  float y_hard = -99;
+  float z_hard = -197.1;
+  float soft[3][3] = {
+    { 1.095, -0.017, 0.003 },
+    { 0.016, 1.013, 0.061 },
+    { 0.000, 0.062, 0.903 }
+  };
 
 
+/*
+  magnet(){
+    x_hard = -8.07;
+    y_hard = -26.33;
+    z_hard = -67.37;
+    soft = {
+      { 0.984, -0.3, 0.012 },
+      { -0.032, 1.014, 0.045 },
+      { 0.013, 0.042, 1.01 }
+    };
+  }
+  */
+  public:
+  void calc(float x, float y, float z, float& xout, float& yout, float& zout){
+    float xtemp = x - x_hard;
+    float ytemp = y - y_hard;
+    float ztemp = z - z_hard;
+
+    xout = soft[0][0] * xtemp + soft[0][1] * ytemp + soft[0][2] * ztemp;
+    yout = soft[1][0] * xtemp + soft[1][1] * ytemp + soft[1][2] * ztemp;
+    zout = soft[2][0] * xtemp + soft[2][1] * ytemp + soft[2][2] * ztemp;
+  }
+};
+
+magnet tune;
 
 void sensorsInit(Data* dataReference){
     pinMode(trigPinF1, OUTPUT);
@@ -89,9 +102,9 @@ void getAccelData(){
   // data->accelY = accelY;
   // data->accelZ = accelZ;
 
-  // mag.calc(&data->magX, &data->magY, &data->magZ);
+  tune.calc(mevent.magnetic.x, mevent.magnetic.y, mevent.magnetic.z, data->magX, data->magY, data->magZ);
 
-  // data->magCourse =  atan2(mevent.magnetic.y, mevent.magnetic.x) * (180/ PI); // don't use
+  data->magCourse =  atan2(data->magX, data->magY) * (180/ PI); // don't use
 }
 
 void sensorTrigger(){

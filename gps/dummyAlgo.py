@@ -6,10 +6,11 @@ mod = 0
 state = "MOVE"
 
 def colorCount(split, color):
+    count = 0
     for obj in split:
         if (obj["color"] == color):
-            return True
-    return False
+            count+=1 
+    return count
 
 def colorsInSplit(split):
     ret = []
@@ -70,6 +71,7 @@ class ReallyDumb():
         self.FRIGHT = 3
         self.RIGHT = 4
         self.delays = {}
+        self.objCount = 1
 
         self.periodic = {}
         self.states = {
@@ -80,11 +82,16 @@ class ReallyDumb():
             "CORNER3": self.corner3,
             "FIND_YELLOW": self.findYellow,
             "RAM_YELLOW": self.ramYellow,
-            "CORNER4": self.corner4
+            "CORNER4": self.corner4,
+            "FIND_RED": self.findRed,
+            "RED_SPLIT": self.redSplit
         }
 
     def updateCamera(self, robot, time):
-        self.cameraData = bigestColors(robot.getCameraData()["main"], 1)
+        self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
+        print("PENIS")
+
+
 
     def printUpdate(self, robot, time):
         sensorData = robot.getSensorData()
@@ -113,26 +120,27 @@ class ReallyDumb():
 
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
+        delayTime = 0.25
         robot.initAngle()
-        self.addPeriodic("camera", self.updateCamera, 0.1)
+        if(self.delay(delayTime)):
+            robot.rotate(-self.standardRotateSpeed, 40)
+        self.addPeriodic("camera", self.updateCamera, 0.1)                          #ted_iq >>>> 10
         robot.move(4,4)
-        self.wait(lambda r, t: r.time, 5)
-        if (self.delay(1)):
+        #self.wait(lambda r, t: r.time, 5)
+        if (self.delay(1, "Something")):
             return "CORNER1"
 
     def corner1(self, robot, time):
         self.roundAndRoundB(robot, "Blue")
         if(robot.getAngle() <= 130 and robot.getAngle() >= 105):
-            robot.move(4,5)
+            robot.move(5,8)
             return "CORNER2"
 
     def corner2(self, robot, time):
-        self.roundAndRoundY(robot, "Yellow")
-        # self.wait(lambda r, t: r.move(1, 0.5), 1)
-        if(robot.getAngle() <= 130 and robot.getAngle() >= 105):
-            self.wait(lambda r, t: robot.move(10,20), 5)
-            if(self.delay(5)):
-                return "CORNER3"
+        status = self.roundAndRoundY(robot, "Yellow")
+        if(robot.getAngle() <= 85 and robot.getAngle() >= 65 and status == "found"):
+            robot.move(5,8)
+            return "CORNER3"
 
     def corner3(self, robot, time):
         self.roundAndRoundB(robot, "Blue")
@@ -143,6 +151,30 @@ class ReallyDumb():
     def corner4(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
         return "FIND_YELLOW"
+
+    def redSplit(self, robot, time):
+        self.objCount = 2
+        self.updateCamera(robot, time)
+        if (colorCount(self.cameraData[self.FRONT], "Red") == 0):
+            if ((colorCount(self.cameraData[self.LEFT], "Red") == 1) and (colorCount(self.cameraData[self.RIGHT], "Red")==1)):
+                robot.move(4,4)
+                return "CORNER4"
+            else:
+                return "FIND_RED"
+        elif (colorCount(self.cameraData[self.FLEFT], "Red") == 0):
+            robot.constantRotate(self.standardRotateSpeed)
+            self.delay(2)
+            #robot.rotate(self.standardRotateSpeed, 30)
+            robot.move(2,2)
+            return "RED_SPLIT"
+        elif (colorCount(self.cameraData[self.FRIGHT], "Red") == 0):
+            robot.constantRotate(self.standardRotateSpeed)
+            self.delay(2)
+            #robot.rotate(self.standardRotateSpeed, 15)
+            robot.move(2,2)
+            return "RED_SPLIT"
+        else:
+            robot.move(4,4)
 
     def ramYellow(self, robot, time):
         sensorData = robot.getSensorData()
@@ -157,7 +189,7 @@ class ReallyDumb():
         else:
             print("Move")
             robot.move(0.6,0.5)
-
+    #Remeber to change find Red
     def findYellow(self, robot, time):
         col = "Yellow"
         delayTime = 0.25
@@ -185,6 +217,35 @@ class ReallyDumb():
             if (self.delay(delayTime)):
                 robot.rotate(-self.standardRotateSpeed, 40)
         return "FIND_YELLOW"
+    #Remeber to change findYellow
+    def findRed(self, robot, time):
+        col = "Red"
+        delayTime = 0.25
+        functionTimeDelay = 1
+        #self.objCount = 2
+        self.updateCamera(robot, time)
+        if (colorCount(self.cameraData[self.FRONT], col) != 0):
+            return "RED_SPLIT"
+        elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
+            if (self.delay(delayTime, "some")):
+                robot.rotate(self.standardRotateSpeed, 20)
+        elif (colorCount(self.cameraData[self.RIGHT], col) != 0):
+            if (self.delay(delayTime)):
+                robot.rotate(self.standardRotateSpeed, 40)
+        elif (colorCount(self.cameraData[self.FLEFT], col) != 0):
+            if (self.delay(delayTime)):
+                robot.rotate(-self.standardRotateSpeed, 20)
+        elif (colorCount(self.cameraData[self.LEFT], col) != 0):
+            if (self.delay(delayTime)):
+                robot.rotate(-self.standardRotateSpeed, 40)
+        else:
+            if (self.delay(delayTime)):
+                robot.rotate(-self.standardRotateSpeed, 40)
+        if ((colorCount(self.cameraData[self.LEFT], "Red") != 0) or (colorCount(self.cameraData[self.FRIGHT], "Red")!=0)):
+                robot.move(4,4)
+                print("DOPE")
+                return "CORNER1"
+        return "FIND_RED"
 
     def yellow(self, robot, time):
         self.wait(lambda r, t: r.rotate(-720, 180), 5)
@@ -246,12 +307,14 @@ class ReallyDumb():
                 robot.move(1,0.3)
 
     def roundAndRoundY(self, robot, col):
-        if(robot.isNotMoving() and self.delay(0.5)):
+        if(robot.isNotMoving()):
             if (colorCount(self.cameraData[self.FRONT], col) != 0 or colorCount(self.cameraData[self.FLEFT], col) != 0):
                 robot.rotate(self.standardRotateSpeed, 15)
+                return "found"
                 #robot.move(2, 1)
             elif (colorCount(self.cameraData[self.LEFT], col) == 0):
-                robot.rotate(-self.standardRotateSpeed, 15)
+                robot.rotate(self.standardRotateSpeed, 15)
+                return "lost"
             else:
                 robot.move(1,0.3)
         
