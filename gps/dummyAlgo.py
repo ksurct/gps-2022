@@ -72,6 +72,7 @@ class ReallyDumb():
         self.RIGHT = 4
         self.delays = {}
         self.objCount = 1
+        self.sdt = 1
 
         self.periodic = {}
         self.states = {
@@ -90,7 +91,7 @@ class ReallyDumb():
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
-        print("PENIS")
+        #print("PENIS")
 
 
 
@@ -111,6 +112,8 @@ class ReallyDumb():
             colorsInSplit(self.cameraData[3]),
             colorsInSplit(self.cameraData[4])
         ))
+
+        print("Angle: " + str(robot.getAngle()))
     
     def overrideCheck(self, robot, time):
         pass
@@ -123,7 +126,7 @@ class ReallyDumb():
         print(robot.getPosition())
 
     def init(self, robot, time):
-        # self.addPeriodic("status", self.printUpdate, 0.5)
+        self.addPeriodic("status", self.printUpdate, 0.5)
         delayTime = 0.25
         robot.initAngle()
         if(self.delay(delayTime)):
@@ -142,7 +145,8 @@ class ReallyDumb():
 
     def corner2(self, robot, time):
         status = self.roundAndRoundY(robot, "Yellow")
-        if(robot.getAngle() <= 85 and robot.getAngle() >= 65 and status == "found"):
+        sensorDat = robot.getSensorData()
+        if(robot.getAngle() <= 85 and robot.getAngle() >= 65 and status == "found" ):
             robot.move(5,8)
             return "CORNER3"
 
@@ -150,7 +154,7 @@ class ReallyDumb():
         self.roundAndRoundB(robot, "Blue")
         if(robot.getAngle() <= -170 and robot.getAngle() >= 170):
             robot.move(4,5)
-            return
+            return "CORNER4"
 
     def corner4(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
@@ -260,6 +264,7 @@ class ReallyDumb():
         self.waitCallTime = self.time + delay
 
     def delay(self, delay, name="default"):
+        delay = self.sdt * delay
         if (not name in self.delays):
             self.delays[name] = self.time + delay
             return False
@@ -267,7 +272,7 @@ class ReallyDumb():
             if (self.delays[name] < self.time):
                 self.delays.pop(name, None)
                 return True
-            print("Waiting", self.time, self.delays[name])
+            #print("Waiting", self.time, self.delays[name])
             return False
     def runWait(self, robot, time):
         self.waitCall(robot, time)
@@ -311,16 +316,17 @@ class ReallyDumb():
                 robot.move(1,0.3)
 
     def roundAndRoundY(self, robot, col):
-        if(robot.isNotMoving()):
+        if(robot.isNotMoving() and self.delay(0.1)):
             if (colorCount(self.cameraData[self.FRONT], col) != 0 or colorCount(self.cameraData[self.FLEFT], col) != 0):
                 robot.rotate(self.standardRotateSpeed, 15)
                 return "found"
                 #robot.move(2, 1)
             elif (colorCount(self.cameraData[self.LEFT], col) == 0):
-                robot.rotate(self.standardRotateSpeed, 15)
+                robot.rotate(-self.standardRotateSpeed, 15)
                 return "lost"
             else:
                 robot.move(1,0.3)
+                return "found"
         
 
 algo = ReallyDumb()
