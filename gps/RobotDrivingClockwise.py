@@ -26,8 +26,13 @@ greenRight = False
 greenLeft = False
 leftSense = False
 rightSense = False
+<<<<<<< HEAD
 sped = 5
 rotateSped = 360
+=======
+sped = 1
+rotateSped = 520
+>>>>>>> 65e9fa77a9cf417d9c054ffe5992858b694d4393
 rotRad = 10
 rotDist = 10
 blueExitAng = 100
@@ -201,7 +206,9 @@ def algorithm(robot, time, events = None):
         startAngle = robot.initialAngle
         robot.initAngle()
         #algo(robot, time, events)
+
         return "straightOn"
+
         return "STOP"
 
     def stop():
@@ -436,16 +443,16 @@ def algorithm(robot, time, events = None):
         return
 
     def YellowTurn():
-        global is_yellow
-        global angleOnYellowEntry
-        leave = checkToLeaveYellow(angleOnYellowEntry)
-        if (leave == "no"):
-            turnRoundYellow()
-            return "yellowTurn"
-        else:
-            return leave
-        return
-        return "rightTurn"
+        # global is_yellow
+        # global angleOnYellowEntry
+        # leave = checkToLeaveYellow(angleOnYellowEntry)
+        # if (leave == "no"):
+        turnRoundYellow()
+        return "yellowTurn"
+        # else:
+        #     return leave
+        # return
+        # return "rightTurn"
 
     def checkBlue():
         global is_blue
