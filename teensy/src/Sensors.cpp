@@ -63,6 +63,7 @@ void sensorsInit(Data* dataReference){
     attachInterrupt(echoPinF2, rReceived, CHANGE);
     attachInterrupt(echoPinF3, lReceived, CHANGE);
     attachInterrupt(echoPinF4, flReceived, CHANGE);
+    attachInterrupt(echoPinF5, fReceived, CHANGE);
     //attachInterrupt(echaevent.acceleration.xoPinF5, fReceived, CHANGE);
     data = dataReference;
 
