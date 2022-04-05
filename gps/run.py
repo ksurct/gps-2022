@@ -145,7 +145,6 @@ def run():
 
         # Location is pixel placement in display
         # Length and width are in pixels
-        #(midpointX - 20*feetToPixels,midpointY - 30*feetToPixels)
         robot = robot_sim.RobotSim(location=(midpointX + 40*feetToPixels,midpointY),          #
                                 length=0.3556 * pixelsPerMeter,
                                 width=0.3556 * pixelsPerMeter,

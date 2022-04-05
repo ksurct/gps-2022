@@ -179,13 +179,13 @@ def algorithm(robot, time, events = None):
         return variable
 
     def leftTurn():
-        robot.rotate(rotateSped, 20)
+        robot.constantRotate(rotateSped)
         print("leftTurn\n")
         #robot.arcMove(rotateSped, rotRad, rotDist)
         return
 
     def rightTurn():
-        robot.rotate(-rotateSped, 20)
+        robot.constantRotate(-rotateSped)
         print("rightTurn\n")
         #robot.arcMove(-rotateSped, rotRad, rotDist)
         return
@@ -201,8 +201,9 @@ def algorithm(robot, time, events = None):
         startAngle = robot.initialAngle
         robot.initAngle()
         #algo(robot, time, events)
-        #return "straightOn"
-        return "yellowTurn"
+
+        return "straightOn"
+
         return "STOP"
 
     def stop():
@@ -226,14 +227,14 @@ def algorithm(robot, time, events = None):
         if (useAngles == True):
             tempAng = angleMagnitude()
             
-            if (tempAng > 360 and (isColorInSplit(camera[2], blue) == False)):
+            if (tempAng > 720 and (isColorInSplit(camera[2], blue) == False)):
                 blueExitAng = 100
                 is_blue = False
                 goForward()
                 return "straightOn"
             overflowProtection = angleOnBlueEntry + blueExitAng
-            if (overflowProtection > 360):
-                overflowProtection = overflowProtection - 360
+            if (overflowProtection > 720):
+                overflowProtection = overflowProtection - 720
                 if (tempAng > 90 and tempAng < 180):
                     is_blue = False
                     goForward()
@@ -270,14 +271,13 @@ def algorithm(robot, time, events = None):
     def BlueTurn():
         global is_blue
         global angleOnBlueEntry
-        #leave = checkToLeaveBlue(angleOnBlueEntry)
-        #if(leave == "no"):
-        #    turnRoundBlue(angleOnBlueEntry)
+        leave = checkToLeaveBlue(angleOnBlueEntry)
+        if(leave == "no"):
+            turnRoundBlue(angleOnBlueEntry)
 
-        #    return "blueTurn"
-        #else:
-        #    return leave
-        turnRoundBlue(0)
+            return "blueTurn"
+        else:
+            return leave
         return "blueTurn"
 
     def checkToLeaveThreadNeedle():
@@ -375,7 +375,7 @@ def algorithm(robot, time, events = None):
             print("saw red in the mid pane, but neither side pane\n")
             robot.move(sped,sped)
         if (isColorInSplit(camera[2], red) == True):
-            print("saw red int the right pane\n")
+            print("saw red in the right pane\n")
             leftRed = True
         if (isColorInSplit(camera[0], red) == True):
             print("saw red in the left pane\n")
@@ -388,13 +388,13 @@ def algorithm(robot, time, events = None):
         global leftSense
         global rightSense
         print("entering ThreadNeele Function")
-        #leave = checkToLeaveThreadNeedle()
-        #if(leave == "no"):
-        #    goThrough()
-        #    return "threadNeedle"
-        #else:
-        #    return leave
-        goThrough()
+        leave = checkToLeaveThreadNeedle()
+        if(leave == "no"):
+            goThrough()
+            return "threadNeedle"
+        else:
+            return leave
+        #goThrough()
         return "threadNeedle"
 
     def checkToLeaveYellow(angleOnYellowEntry):
@@ -587,10 +587,11 @@ def algorithm(robot, time, events = None):
         if (leave != "no"):
             return leave
         return "jump"
+        
 
     # example state machine:
 
-    
+    #robot.move(0,0)
 
     # state = "START"
 
@@ -981,7 +982,7 @@ def algo(robot, time, test):
 
 
 run.algo = algorithm
-run.isSim = False
+run.isSim = True
 run.debugCamera = "Internet"
 run.run()
 
