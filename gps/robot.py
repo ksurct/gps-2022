@@ -56,7 +56,7 @@ class Robot():
             math.sin(dLon/2) * math.sin(dLon/2))
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
         d = R * c # Distance in km
-        return d
+        return d * 1000
 
     def initAngle(self):
         self.initialAngle = 0
@@ -132,7 +132,7 @@ class Robot():
         longitude = self.serial.getLongitude()
         metersX = self.latLongDistance(self.initialPosition[0], self.initialPosition[1], self.initialPosition[0], longitude)
         metersY = self.latLongDistance(self.initialPosition[0], self.initialPosition[1], latitude, self.initialPosition[1])
-        metersX, metersY = self.convertToRelativeCoords((metersX, metersY))
+        # metersX, metersY = self.convertToRelativeCoords((metersX, metersY))
 
         return metersX, metersY
 
@@ -231,13 +231,13 @@ class Robot():
 
     def getAngle(self):
         self.serial.receiveData()
-        #preangle = self.serial.getMag()
-        #angle = preangle + self.angleOff
-        #if angle > 180:
-        #    angle -= 360
-        #if angle < -180:
-        #    angle += 360
-        #return angle
+        preangle = self.serial.getMag()
+        angle = preangle - self.angleOff
+        if angle > 180:
+            angle -= 360
+        if angle < -180:
+            angle += 360
+        return angle
 
         
     # Stop the robot
@@ -260,7 +260,8 @@ def noAlgorithm():
 
 if __name__ == '__main__':
     camera = Camera(1, False, "David")
-    robot = Robot(noAlgorithm)
+    robot = Robot(noAlgorithm, camera)
     robot.initAngle()
     while True:
         print(robot.getAngle())
+        time.sleep(0.1)

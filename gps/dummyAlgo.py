@@ -80,6 +80,7 @@ class ReallyDumb():
             "CORNER3": self.corner3,
             "FIND_YELLOW": self.findYellow,
             "RAM_YELLOW": self.ramYellow,
+            "TEST": self.test,
             "CORNER4": self.corner4
         }
 
@@ -111,13 +112,17 @@ class ReallyDumb():
         #     robot.stop()
         #     self.overrodeAction = True
 
+    def test(self, robot, time):
+        print(robot.getPosition())
+
     def init(self, robot, time):
         # self.addPeriodic("status", self.printUpdate, 0.5)
-        self.addPeriodic("camera", self.updateCamera, 0.1)
-        # robot.move(4,4)
-        self.wait(lambda r, t: r.time, 5)
-        if (self.delay(1)):
-            return "FIND_YELLOW"
+        robot.initPosition()
+        # self.addPeriodic("camera", self.updateCamera, 0.1)
+        # # robot.move(4,4)
+        # self.wait(lambda r, t: r.time, 5)
+        # if (self.delay(1)):
+        return "TEST"
 
     def corner1(self, robot, time):
         self.roundAndRound(robot, "Yellow")
