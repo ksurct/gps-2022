@@ -132,9 +132,17 @@ class ReallyDumb():
 
     def leftRed(self, robot, time):
         self.goAround(robot, "Red", -1)
+        sensorData = robot.getSensorData()
+        if(not sensorData["Left"]):
+            robot.rotate(self.standardRotateSpeed, -90)
+            robot.move(self.standardSpeed, 1)
 
     def rightRed(self, robot, time):
         self.goAround(robot, "Red", 1)
+        sensorData = robot.getSensorData()
+        if(not sensorData["Right"]):
+            robot.rotate(self.standardRotateSpeed, 90)
+            robot.move(self.standardSpeed, 1)
 
     def findRed(self, robot, time):
         self.objCount = 2
@@ -346,7 +354,7 @@ def algorithm(robot, time, events = None):
 run.cameraSplits = 5
 run.algo = algorithm
 run.isSim = False
-run.debugCamera = "Internet"
+run.debugCamera = True
 run.scenario = "RED"
 run.startingOffsetError = (2,2)
 
