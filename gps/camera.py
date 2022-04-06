@@ -119,7 +119,7 @@ class Camera():
         if (len(frame) == 0):
             #self.tick()
             _, frame = self.cam.read()
-        frame = frame[0:int(len(frame)*0.75)]
+        frame = frame[int(len(frame)*0.35):int(len(frame)*0.65)]
         width = frame.shape[1]
         objectCount = 0
 

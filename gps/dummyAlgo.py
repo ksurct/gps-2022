@@ -8,6 +8,13 @@ state = "MOVE"
 def sCheck(value, distance):
     return value < distance and value != -1
 
+def anyColorOf(data, col):
+    for split in data:
+        for obj in split:
+            if (obj["color"] == col):
+                return True
+    return False
+
 def colorCount(split, color):
     for obj in split:
         if (obj["color"] == color):
@@ -60,7 +67,7 @@ def bigestColors(splits, objCount):
 class ReallyDumb():
     def __init__(self) -> None:
         self.state = "INIT"
-        self.standardSpeed = 2
+        self.standardSpeed = 1
         self.standardRotateSpeed = 720
         self.overrodeAction = False
         self.waitQueue = []
@@ -96,33 +103,30 @@ class ReallyDumb():
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
 
     def printUpdate(self, robot, time):
-        sensorData = robot.getSensorData()
-        print("Sensors: F:{},R:{},L:{},FR:{},FL:{}".format(
-            sensorData["Front"],
-            sensorData["Right"],
-            sensorData["Left"],
-            sensorData["FrontRight"],
-            sensorData["FrontLeft"]
-        ))
+        # sensorData = robot.getSensorData()
+        # print("Sensors: F:{},R:{},L:{},FR:{},FL:{}".format(
+        #     sensorData["Front"],
+        #     sensorData["Right"],
+        #     sensorData["Left"],
+        #     sensorData["FrontRight"],
+        #     sensorData["FrontLeft"]
+        # ))
 
-        print("Camera: Left:{},FLeft:{},Front:{},FRight:{},Right:{}".format(
-            colorsInSplit(self.cameraData[0]),
-            colorsInSplit(self.cameraData[1]),
-            colorsInSplit(self.cameraData[2]),
-            colorsInSplit(self.cameraData[3]),
-            colorsInSplit(self.cameraData[4])
-        ))
+        # print("Camera: Left:{},FLeft:{},Front:{},FRight:{},Right:{}".format(
+        #     colorsInSplit(self.cameraData[0]),
+        #     colorsInSplit(self.cameraData[1]),
+        #     colorsInSplit(self.cameraData[2]),
+        #     colorsInSplit(self.cameraData[3]),
+        #     colorsInSplit(self.cameraData[4])
+        # ))
 
         print("Angle: " + str(robot.getAngle()))
     
     def overrideCheck(self, robot, time):
-        pass
-        # sensorData = robot.getSensorData()
-        # if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
-        #     robot.stop()
-        #     self.overrodeAction = True
-
-
+        sensorData = robot.getSensorData()
+        if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
+            robot.stop()
+            self.overrodeAction = True
 
     def leftRed(self, robot, time):
         self.goAround(robot, "Red", -1)
@@ -134,6 +138,7 @@ class ReallyDumb():
         self.objCount = 2
         data = robot.getSensorData()
         if (sCheck(data["Front"], 0.5)):
+            print("Found")
             robot.stop()
             if (colorCount(self.cameraData[self.LEFT], "Red")):
                 return "LEFT_RED"
@@ -148,33 +153,35 @@ class ReallyDumb():
 
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
-        return "FIND_RED"
-        self.addPeriodic("status", self.printUpdate, 0.5)
+        # return "FIND_RED"
+        self.addPeriodic("status", self.printUpdate, 0.2)
         delayTime = 0.25
         robot.initAngle()
-        if(self.delay(delayTime)):
-            robot.rotate(-self.standardRotateSpeed, 40)
-        robot.move(4,4)
+        # if(self.delay(delayTime)):
+        #     robot.rotate(-self.standardRotateSpeed, 40)
+        robot.move(1,2)
         #self.wait(lambda r, t: r.time, 5)
         if (self.delay(1, "Something")):
             return "CORNER1"
 
     def corner1(self, robot, time):
-        self.roundAndRound(robot, "Yellow")
+        # self.roundAndRound(robot, "Blue")
+        ret = self.goAround(robot, "Blue", 1)
+        if (robot.getAngle() > 120 and ret == "move"):
+            print("MAG HAS WORKED")
+            return "CORNER2"
         return "CORNER1"
 
     def corner2(self, robot, time):
-        status = self.roundAndRoundY(robot, "Yellow")
-        sensorDat = robot.getSensorData()
-        if(robot.getAngle() <= 85 and robot.getAngle() >= 65 and status == "found" ):
-            robot.move(5,8)
+        status = self.goAround(robot, "Yellow", -1)
+        angle = robot.getAngle()
+        if(angle <= 60 and angle > 0 and status == "move"):
             return "CORNER3"
 
     def corner3(self, robot, time):
-        self.roundAndRoundB(robot, "Blue")
-        if(robot.getAngle() <= -170 and robot.getAngle() >= 170):
-            robot.move(4,5)
-            return "CORNER4"
+        self.goAround(robot, "Blue", 1)
+        # if(robot.getAngle() <= -170 and robot.getAngle() >= 170):
+        #     return "CORNER4"
 
     def corner4(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
@@ -293,7 +300,7 @@ class ReallyDumb():
     def goAround(self, robot, col, dir):
         if (robot.isNotMoving() and self.delay(0.1, "goRound")):
             checkClose = self.FLEFT if dir == -1 else self.FRIGHT 
-            checkFar = self.LEFT if dir == -1 else self.RIGHT 
+            checkFar = self.LEFT if dir == -1 else self.RIGHT
             if (colorCount(self.cameraData[self.FRONT], col)):
                 robot.rotate(-self.standardRotateSpeed * dir, 15)
                 return "front"
@@ -303,7 +310,10 @@ class ReallyDumb():
             elif (colorCount(self.cameraData[checkFar], col)):
                 robot.move(self.standardSpeed, 1)
                 return "move"
-            robot.rotate(self.standardRotateSpeed * dir, 15)
+            if (anyColorOf(self.cameraData, col)):
+                robot.rotate(-self.standardRotateSpeed * dir, 15)
+            else:
+                robot.rotate(self.standardRotateSpeed * dir, 15)
             return "lost"
 
 algo = ReallyDumb()
@@ -316,7 +326,7 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = True
+run.isSim = False
 run.debugCamera = "Internet"
 run.scenario = "RED"
 run.startingOffsetError = (2,2)

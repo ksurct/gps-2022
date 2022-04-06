@@ -16,8 +16,8 @@ from CameraObject import CameraObject
 class Robot():
     def __init__(self, algorithm, camera):
         GPIO.setmode(GPIO.BCM)
-        self.left = Motor(12,23, 0.9)
-        self.right = Motor(13,24, 1.1)
+        self.left = Motor(12,23, 1)
+        self.right = Motor(13,24, 1)
         self.speed = 0
         self.forwardDistanceMod = 3
         self.backwardDistanceMod = 1
@@ -220,7 +220,7 @@ class Robot():
     # Rotate a certain amount at a certain speed
     def rotate(self, speedDps, degrees):
         self.constantRotate(speedDps)
-        speedDps = speedDps *  220 / 690
+        speedDps = speedDps *  220 / 720
         seconds = abs(degrees / speedDps)
         self.moving = True
         self.timeToKill = self.time + seconds
@@ -237,7 +237,7 @@ class Robot():
             angle -= 360
         if angle < -180:
             angle += 360
-        return angle
+        return angle*-1
 
         
     # Stop the robot
