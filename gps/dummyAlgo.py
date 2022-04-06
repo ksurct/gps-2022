@@ -68,11 +68,12 @@ class ReallyDumb():
     def __init__(self) -> None:
         self.state = "INIT"
         self.standardSpeed = 1
-        self.standardRotateSpeed = 720
+        self.standardRotateSpeed = 900
         self.overrodeAction = False
         self.waitQueue = []
         self.currentWait = None
         self.vars = {}
+        self.var = None
         self.time = 0
         self.cameraData = [[],[],[],[],[]]
         self.LEFT = 0
@@ -88,6 +89,8 @@ class ReallyDumb():
         self.states = {
             "INIT": self.init,
             "CORNER1": self.corner1,
+            "FIND_CORNER1": self.findCorner1,
+            "FIND_CORNER2": self.findCorner2,
             "YELLOW": self.yellow,
             "CORNER2": self.corner2,
             "CORNER3": self.corner3,
@@ -123,7 +126,9 @@ class ReallyDumb():
         # ))
 
         print("Angle: " + str(robot.getAngle()))
-    
+        print("State: " + self.state)
+
+
     def overrideCheck(self, robot, time):
         sensorData = robot.getSensorData()
         if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
@@ -163,7 +168,7 @@ class ReallyDumb():
 
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
-        return "FIND_RED"
+        # return "FIND_RED"
         self.addPeriodic("status", self.printUpdate, 0.2)
         delayTime = 0.25
         robot.initAngle()
@@ -173,21 +178,42 @@ class ReallyDumb():
         #self.wait(lambda r, t: r.time, 5)
         if (self.delay(1, "Something")):
             print("FIRST STATE")
-            return "CORNER1"
+            return "FIND_CORNER1"
+
+    def findCorner1(self, robot, time):
+        if (self.findColor(robot, time, "Blue")):
+            ret = self.ramColor(robot, time, "Blue")
+            if (ret == "Done"):
+                return "CORNER1"
+
+    def findCorner2(self, robot, time):
+        if (self.findColor(robot, time, "Yellow")):
+            ret = self.ramColor(robot, time, "Yellow")
+            if (ret == "Done"):
+                return "CORNER2"
 
     def corner1(self, robot, time):
         # self.roundAndRound(robot, "Blue")
+        if (self.var == None):
+            self.var = 0
         ret = self.goAround(robot, "Blue", 1)
-        if (robot.getAngle() > 120 and ret == "move"):
+        if (ret == "move"):
+            self.var += 1
+            print("Here")
+        if (self.var > 3 ):
             print("MAG HAS WORKED")
-            return "STITCH"
-        return "CORNER1"
+            return "FIND_CORNER2"
 
     def corner2(self, robot, time):
-        status = self.goAround(robot, "Yellow", -1)
-        angle = robot.getAngle()
-        if(angle <= 60 and angle > 0 and status == "move"):
-            return "STITCH2"
+        # self.roundAndRound(robot, "Blue")
+        if (self.var == None):
+            self.var = 0
+        ret = self.goAround(robot, "Yellow", -1)
+        if (ret == "move"):
+            self.var += 1
+        if (self.var > 3 ):
+            print("MAG HAS WORKED")
+            return "CORNER3"
 
     def corner3(self, robot, time):
         self.goAround(robot, "Blue", 1)
@@ -329,18 +355,19 @@ class ReallyDumb():
             checkClose = self.FLEFT if dir == -1 else self.FRIGHT 
             checkFar = self.LEFT if dir == -1 else self.RIGHT
             if (colorCount(self.cameraData[self.FRONT], col)):
-                robot.rotate(-self.standardRotateSpeed * dir, 15)
+                robot.rotate(-self.standardRotateSpeed * dir, 20)
                 return "front"
             elif (colorCount(self.cameraData[checkClose], col)):
-                robot.rotate(-self.standardRotateSpeed * dir, 15)
+                robot.rotate(-self.standardRotateSpeed * dir, 20)
                 return "close"
             elif (colorCount(self.cameraData[checkFar], col)):
                 robot.move(self.standardSpeed, 1)
                 return "move"
             if (anyColorOf(self.cameraData, col)):
-                robot.rotate(-self.standardRotateSpeed * dir, 15)
+                robot.rotate(-self.standardRotateSpeed * dir, 20)
+                return "far"
             else:
-                robot.rotate(self.standardRotateSpeed * dir, 15)
+                robot.rotate(self.standardRotateSpeed * dir, 20)
             return "lost"
 
 algo = ReallyDumb()
@@ -354,7 +381,7 @@ def algorithm(robot, time, events = None):
 run.cameraSplits = 5
 run.algo = algorithm
 run.isSim = False
-run.debugCamera = True
+run.debugCamera = "Internet"
 run.scenario = "RED"
 run.startingOffsetError = (2,2)
 
