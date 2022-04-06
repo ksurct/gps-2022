@@ -91,21 +91,29 @@ class ReallyDumb():
             "CORNER1": self.corner1,
             "FIND_CORNER1": self.findCorner1,
             "FIND_CORNER2": self.findCorner2,
+            "FIND_CORNER3": self.findCorner3,
+            "FIND_CORNER4": self.findCorner4,
+            "FIND_CORNER5": self.findCorner4,
             "YELLOW": self.yellow,
             "CORNER2": self.corner2,
             "CORNER3": self.corner3,
+            "SPIN": self.spin,
             # "FIND_YELLOW": self.findYellow,
             # "RAM_YELLOW": self.ramYellow,
             "FIND_RED": self.findRed,
             "LEFT_RED": self.leftRed,
             "RIGHT_RED": self.rightRed,
             "CORNER4": self.corner4,
+            "CORNER5": self.corner5,
             "STITCH": self.stitch,
             "STITCH2": self.stitch2
         }
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
+
+    def spin(self, robot, time):
+        robot.constantRotate(self.standardRotateSpeed)
 
     def printUpdate(self, robot, time):
         # sensorData = robot.getSensorData()
@@ -136,18 +144,26 @@ class ReallyDumb():
             self.overrodeAction = True
 
     def leftRed(self, robot, time):
-        self.goAround(robot, "Red", -1)
-        sensorData = robot.getSensorData()
+        if (self.var == None):
+            self.var = 0
+        if (self.goAround(robot, "Red", -1) == "move"):
+            self.var += 1
+        if (self.var > 1):
+            return "FIND_CORNER5"
         #if(not sensorData["Left"]):
-         #   robot.rotate(self.standardRotateSpeed, -90)
-          #  robot.move(self.standardSpeed, 1)
+        #   robot.rotate(self.standardRotateSpeed, -90)
+        #  robot.move(self.standardSpeed, 1)
 
     def rightRed(self, robot, time):
-        self.goAround(robot, "Red", 1)
-        sensorData = robot.getSensorData()
+        if (self.var == None):
+            self.var = 0
+        if (self.goAround(robot, "Red", 1) == "move"):
+            self.var += 1
+        if (self.var > 1):
+            return "FIND_CORNER5"
         #if(not sensorData["Right"]):
-         #   robot.rotate(self.standardRotateSpeed, 90)
-          #  robot.move(self.standardSpeed, 1)
+        #   robot.rotate(self.standardRotateSpeed, 90)
+        #  robot.move(self.standardSpeed, 1)
 
     def findRed(self, robot, time):
         self.objCount = 2
@@ -174,7 +190,7 @@ class ReallyDumb():
         robot.initAngle()
         # if(self.delay(delayTime)):
         #     robot.rotate(-self.standardRotateSpeed, 40)
-        robot.move(1,2)
+        # robot.move(1,2)
         #self.wait(lambda r, t: r.time, 5)
         if (self.delay(1, "Something")):
             print("FIRST STATE")
@@ -192,6 +208,24 @@ class ReallyDumb():
             if (ret == "Done"):
                 return "CORNER2"
 
+    def findCorner3(self, robot, time):
+        if (self.findColor(robot, time, "Blue")):
+            ret = self.ramColor(robot, time, "Blue")
+            if (ret == "Done"):
+                return "CORNER3"
+
+    def findCorner4(self, robot, time):
+        if (self.findColor(robot, time, "Blue")):
+            ret = self.ramColor(robot, time, "Blue")
+            if (ret == "Done"):
+                return "CORNER4"
+
+    def findCorner5(self, robot, time):
+        if (self.findColor(robot, time, "Blue")):
+            ret = self.ramColor(robot, time, "Blue")
+            if (ret == "Done"):
+                return "CONER5"
+
     def corner1(self, robot, time):
         # self.roundAndRound(robot, "Blue")
         if (self.var == None):
@@ -202,7 +236,22 @@ class ReallyDumb():
             print("Here")
         if (self.var > 3 ):
             print("MAG HAS WORKED")
+            self.var = None
             return "FIND_CORNER2"
+
+
+    def corner5(self, robot, time):
+        # self.roundAndRound(robot, "Blue")
+        if (self.var == None):
+            self.var = 0
+        ret = self.goAround(robot, "Blue", 1)
+        if (ret == "move"):
+            self.var += 1
+            print("Here")
+        if (self.var > 3 ):
+            print("MAG HAS WORKED")
+            self.var = None
+            return "SPIN"
 
     def corner2(self, robot, time):
         # self.roundAndRound(robot, "Blue")
@@ -211,18 +260,36 @@ class ReallyDumb():
         ret = self.goAround(robot, "Yellow", -1)
         if (ret == "move"):
             self.var += 1
-        if (self.var > 3 ):
+        if (self.var > 2 ):
             print("MAG HAS WORKED")
-            return "CORNER3"
+            self.var = None
+            return "FIND_CORNER3"
 
     def corner3(self, robot, time):
-        self.goAround(robot, "Blue", 1)
-        # if(robot.getAngle() <= -170 and robot.getAngle() >= 170):
-        #     return "CORNER4"
+        # self.roundAndRound(robot, "Blue")
+        if (self.var == None):
+            self.var = 0
+        ret = self.goAround(robot, "Blue", 1)
+        if (ret == "move"):
+            self.var += 1
+            print("Here")
+        if (self.var > 3 ):
+            print("MAG HAS WORKED")
+            self.var = None
+            return "FIND_CORNER4"
 
     def corner4(self, robot, time):
-        self.wait(lambda r, t: r.move(1, 0.5), 5)
-        return "FIND_YELLOW"
+        # self.roundAndRound(robot, "Blue")
+        if (self.var == None):
+            self.var = 0
+        ret = self.goAround(robot, "Blue", 1)
+        if (ret == "move"):
+            self.var += 1
+            print("Here")
+        if (self.var > 3 ):
+            print("MAG HAS WORKED")
+            self.var = None
+            return "FIND_RED"
     
     def stitch(self, robot, time):
         col = "Yellow"
@@ -231,7 +298,7 @@ class ReallyDumb():
             robot.move(0.5, 0.5)
         else:
             return "CORNER2"
-    
+
     def stitch2(self, robot, time):
         col = "Blue"
         angle = robot.getAngle()
