@@ -141,7 +141,7 @@ class ReallyDumb():
         data = robot.getSensorData()
         if (sCheck(data["Front"], 0.5)):
             print("Found")
-            robot.stop()
+            #robot.stop()
             if (colorCount(self.cameraData[self.LEFT], "Red")):
                 return "LEFT_RED"
             elif (colorCount(self.cameraData[self.RIGHT], "Red")):
