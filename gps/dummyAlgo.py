@@ -155,7 +155,7 @@ class ReallyDumb():
 
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
-        # return "FIND_RED"
+        return "FIND_RED"
         self.addPeriodic("status", self.printUpdate, 0.2)
         delayTime = 0.25
         robot.initAngle()
@@ -192,9 +192,9 @@ class ReallyDumb():
     
     def stitch(self, robot, time):
         col = "Yellow"
-        angle = robot.getAngle()
+        #angle = robot.getAngle()
         if(not anyColorOf(self.cameraData, col)):
-            robot.move(1, 0.5)
+            robot.move(0.5, 0.5)
         else:
             return "CORNER2"
     
@@ -347,7 +347,7 @@ run.cameraSplits = 5
 run.algo = algorithm
 run.isSim = False
 run.debugCamera = "Internet"
-run.scenario = "MAIN"
+run.scenario = "RED"
 run.startingOffsetError = (2,2)
 
 
