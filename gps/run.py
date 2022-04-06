@@ -140,7 +140,7 @@ def run():
         angle = 0
         if (scenario == "MAIN"):
             angle = 180
-            sx = midpointX + 40*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
+            sx = midpointX + 25*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
             sy = midpointY + random.uniform(-startingOffsetError[1], startingOffsetError[1])*pixelsPerMeter
         if (scenario == "RED"):
             angle = 90

@@ -96,7 +96,9 @@ class ReallyDumb():
             "FIND_RED": self.findRed,
             "LEFT_RED": self.leftRed,
             "RIGHT_RED": self.rightRed,
-            "CORNER4": self.corner4
+            "CORNER4": self.corner4,
+            "STITCH": self.stitch,
+            "STITCH2": self.stitch2
         }
 
     def updateCamera(self, robot, time):
@@ -162,6 +164,7 @@ class ReallyDumb():
         robot.move(1,2)
         #self.wait(lambda r, t: r.time, 5)
         if (self.delay(1, "Something")):
+            print("FIRST STATE")
             return "CORNER1"
 
     def corner1(self, robot, time):
@@ -169,14 +172,14 @@ class ReallyDumb():
         ret = self.goAround(robot, "Blue", 1)
         if (robot.getAngle() > 120 and ret == "move"):
             print("MAG HAS WORKED")
-            return "CORNER2"
+            return "STITCH"
         return "CORNER1"
 
     def corner2(self, robot, time):
         status = self.goAround(robot, "Yellow", -1)
         angle = robot.getAngle()
         if(angle <= 60 and angle > 0 and status == "move"):
-            return "CORNER3"
+            return "STITCH2"
 
     def corner3(self, robot, time):
         self.goAround(robot, "Blue", 1)
@@ -186,6 +189,22 @@ class ReallyDumb():
     def corner4(self, robot, time):
         self.wait(lambda r, t: r.move(1, 0.5), 5)
         return "FIND_YELLOW"
+    
+    def stitch(self, robot, time):
+        col = "Yellow"
+        angle = robot.getAngle()
+        if(not anyColorOf(self.cameraData, col)):
+            robot.move(1, 0.5)
+        else:
+            return "CORNER2"
+    
+    def stitch2(self, robot, time):
+        col = "Blue"
+        angle = robot.getAngle()
+        if(not anyColorOf(self.cameraData, col)):
+            robot.move(1, 0.5)
+        else:
+            return "CORNER3"
 
     def ramColor(self, robot, time, color):
         sensorData = robot.getSensorData()
@@ -326,9 +345,9 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = False
-run.debugCamera = "Internet"
-run.scenario = "RED"
+run.isSim = True
+run.debugCamera = False
+run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
 
 
