@@ -345,9 +345,9 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = True
+run.isSim = False
 run.debugCamera = False
-run.scenario = "MAIN"
+run.scenario = "Internet"
 run.startingOffsetError = (2,2)
 
 
