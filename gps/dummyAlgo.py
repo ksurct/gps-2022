@@ -362,9 +362,12 @@ class ReallyDumb():
     def goAroundWithSensors(self, robot, col, dir):
         if (robot.isNotMoving() and self.delay(0.1, "goRound")):
             data = self.getSensorList() # {[],[],[],[],[]}
-            checkClose = data[0]["FrontLeft"] if dir == -1 else data[0]["FrontRight"]
-            checkFar = data[0]["Left"] if dir == -1 else data[0]["Right"]
-            checkFront = data[0]["Front"]
+            closeIndex = "FrontLeft" if dir == -1 else "FrontRight"
+            farIndex = "FrontLeft" if dir == -1 else "FrontRight"
+            frontIndex = "Front"
+            checkClose = data[0][closeIndex]
+            checkFar = data[0][farIndex]
+            checkFront = data[0][frontIndex]
             if not checkFront == -1:
                 robot.rotate(-self.standardRotateSpeed * dir, 2*20)
                 return "front"
@@ -375,8 +378,18 @@ class ReallyDumb():
                 robot.move(self.standardSpeed, 1)
                 return "move"
             elif checkFar + checkClose + checkFront == -3:
+                for s in data:
+                    if not s[frontIndex] == -1:
+                        robot.rotate(-self.standardRotateSpeed * dir, 2*20)
+                        return "front"
+                    elif not s[closeIndex] == -1:
+                        robot.rotate(-self.standardRotateSpeed * dir, 20)
+                        return "close"
+                    elif not s[farIndex] == -1:
+                        robot.move(self.standardSpeed, 1)
+                        return "move"
                 robot.rotate(self.standardRotateSpeed * dir, 20)
-                return "lost" 
+                return "lost"
 
 algo = ReallyDumb()
 
