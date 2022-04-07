@@ -7,20 +7,31 @@ json::Data data;
 void setup()
 {
     Serial.begin(115200);
-    sensorsInit();
+    sensorsInit(&data);
     init();
-    data.latitude = 90;
 }
+
+unsigned long time = millis();
+unsigned long interval = 5000;
+bool constantOut = false;
+unsigned long constantOutTimer;
+uint16_t constantOutInterval = 200;
 
 void loop()
 {
+    gpsUpdate();
+    getAccelData();
     if (Serial.available()){
-        // gpsUpdate();
+        while (Serial.available()) {
+            Serial.read();
+        }
         if(isDataReady()){
             getGpsData(data);
         }
-        collectSensorData(1, data);
         data.sendJson();
-        delay(10);
+        time += interval;
     }
 }
+
+
+

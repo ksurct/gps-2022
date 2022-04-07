@@ -1,0 +1,10 @@
+﻿"motor_diameter"= 38mm
+"motor_length"= 60mm
+"shaft_diameter"= 5mm
+"shaft_length"= 10mm
+"D1@Sketch2"="motor_diameter" + 10mm
+"planet_gear_diameter"= 10mm
+"D2@Sketch2"="planet_gear_diameter" + 2mm
+"solar_diameter"= 40mm
+"D1@Sketch3"="solar_diameter"
+"solar_thickness"= 10mm

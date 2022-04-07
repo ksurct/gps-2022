@@ -3,16 +3,26 @@
 
 import numpy as np
 import cv2
+from CameraObject import CameraObject
 
 # Capturing video through cam
 cam = cv2.VideoCapture(0)
 
-# Start a while loop
-while (cam.isOpened()):
+# Array of objects
+objects = []
+objectCount = 0
 
+splitCount = 3
+
+def getCameraData():
+    if(not cam.isOpened()):
+        return []
     # Reading the video from the
     # cam in image frames
     _, frame = cam.read()
+    width = frame.shape[1]
+    objects = []
+    objectCount = 0
 
     # Convert the frame in
     # BGR(RGB color space) to
@@ -68,6 +78,14 @@ while (cam.isOpened()):
         area = cv2.contourArea(contour)
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
+            if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Yellow", "x": width//splitCount, "size": x+w-width//splitCount})
+            elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Yellow", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
+            else:
+                objects.append({"id": objectCount, "color": "Yellow", "x": x, "size": w})
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
                                        (0, 0, 255), 2)
@@ -85,6 +103,14 @@ while (cam.isOpened()):
         area = cv2.contourArea(contour)
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
+            if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Red", "x": width//splitCount, "size": x+w-width//splitCount})
+            elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Red", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
+            else:
+                objects.append({"id": objectCount, "color": "Red", "x": x, "size": w})
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
                                        (0, 255, 0), 2)
@@ -101,6 +127,15 @@ while (cam.isOpened()):
         area = cv2.contourArea(contour)
         if (area > 300):
             x, y, w, h = cv2.boundingRect(contour)
+            if(x < width//splitCount and (x+w) > width//splitCount): # object split into left and center
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": width//splitCount-x})
+                objects.append({"id": objectCount,"color": "Blue", "x": width//splitCount, "size": x+w-width//splitCount})
+            elif(x < 2*width//splitCount and (x+w) > 2*width//splitCount): # object split into center and right
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": 2*width//splitCount-x})
+                objects.append({"id": objectCount, "color": "Blue", "x": 2*width//splitCount, "size": x+w-(2*width//splitCount)})
+            else:
+                objects.append({"id": objectCount, "color": "Blue", "x": x, "size": w})
+            objectCount+=1
             frame = cv2.rectangle(frame, (x, y),
                                        (x + w, y + h),
                                        (255, 0, 0), 2)
@@ -110,14 +145,23 @@ while (cam.isOpened()):
                         1.0, (255, 0, 0))
 
     width = frame.shape[1]
-    left = frame[:, :width//2]
-    right = frame[:, width//2:]
+    left = frame[:, :width//splitCount]
+    center = frame[:, width//splitCount:(2*width//splitCount)]
+    right = frame[:, (2*width//splitCount):]
     # Program Termination
     cv2.imshow("Multiple Color Detection in Real-TIme", frame)
     cv2.imshow('left', left)
+    cv2.imshow('center', center)
     cv2.imshow('right', right)
+    print([objects])
     if cv2.waitKey(10) & 0xFF == ord('q'):
-        break
+        return None
+    return objects
+
+if __name__ == "__main__":
+    while(True):
+        if(getCameraData() == None):
+            break
 
 cam.release()
 cv2.destroyAllWindows()
