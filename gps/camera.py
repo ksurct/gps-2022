@@ -21,10 +21,10 @@ class Camera():
         self.splitCount = splits
         self.name = name
         self.outFrame = []
-        self.defaultAreaRequire = 100
+        self.defaultAreaRequire = 125
         # internetCam.camera = self
         # internetCam.run()
-        self.areaRequired = 100
+        self.areaRequired = 125
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
@@ -119,7 +119,7 @@ class Camera():
         if (len(frame) == 0):
             #self.tick()
             _, frame = self.cam.read()
-        frame = frame[int(len(frame)*0.35):int(len(frame)*0.65)]
+        frame = frame[int(len(frame)*0.5):int(len(frame)*0.65)]
         width = frame.shape[1]
         objectCount = 0
 
