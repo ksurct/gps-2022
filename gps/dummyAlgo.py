@@ -78,8 +78,9 @@ def bigestColors(splits, objCount):
 class ReallyDumb():
     def __init__(self) -> None:
         self.state = "INIT"
-        self.standardSpeed = 3
+        self.standardSpeed = 1
         self.standardRotateSpeed = 900
+        self.sensorList = [None, None, None, None, None]
         self.overrodeAction = False
         self.waitQueue = []
         self.currentWait = None
@@ -94,7 +95,7 @@ class ReallyDumb():
         self.RIGHT = 4
         self.delays = {}
         self.objCount = 1
-        self.sdt = 0.5
+        self.sdt = 1
 
         self.periodic = {}
         self.states = {
@@ -104,7 +105,7 @@ class ReallyDumb():
             "FIND_CORNER3": self.findState("CORNER3", "Blue"),
             "FIND_CORNER4": self.findState("CORNER4", "Blue"),
             "FIND_CORNER5": self.findState("CORNER5", "Blue"),
-            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(100, 120)),
+            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(110, 130)),
             "CORNER2": self.turnState("CORNER3_STITCH", "Yellow", -1, Margin(35, 50)),
             "CORNER3": self.turnState("CORNER4_STITCH", "Blue", 1, Margin(165, -165 + 360)),
             "CORNER4": self.turnState("RED_STITCH", "Blue", 1, Margin(-100 + 360, -80 + 360)),
@@ -120,6 +121,14 @@ class ReallyDumb():
             "LEFT_RED": self.redTurnState("CORNER5_STITCH", -1),
             "RIGHT_RED": self.redTurnState("CORNER5_STITCH", 1)
         }
+
+    def updateSensors(self, robot, time):
+        self.sensorData = robot.getSensorData()
+
+    def getSensorList(self, robot, time):
+        data = self.sensorData
+        self.sensorList.insert(0, data)
+        self.sensorList.pop(len(self.sensorList) - 1)
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
@@ -151,7 +160,6 @@ class ReallyDumb():
 
     def stitchState(self, nexState, color, angleMargin):
         def fun(robot, time):
-            col = "Yellow"
             self.wait(lambda r, t: r.move(self.standardSpeed, 1), 1)
             #angle = robot.getAngle()
             if(not (colorCount(self.cameraData[self.FRONT], color) != 0
@@ -235,6 +243,7 @@ class ReallyDumb():
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
         self.addPeriodic("status", self.printUpdate, 0.2)
+        self.addPeriodic("sensors", self.updateSensors, 0.1)
         robot.initAngle()
         if (self.delay(1, "Something")):
             return "CORNER1_STITCH"
@@ -243,9 +252,9 @@ class ReallyDumb():
         sensorData = robot.getSensorData()
         if (colorCount(self.cameraData[self.FRONT], color) == 0):
             return "Lost"
-        if (sCheck(sensorData["Front"], 0.7)
-            or sCheck(sensorData["FrontLeft"], 0.4)
-            or sCheck(sensorData["FrontRight"], 0.4)):
+        if (sCheck(sensorData["Front"], 0.7)):
+            # or sCheck(sensorData["FrontLeft"], 0.4)
+            # or sCheck(sensorData["FrontRight"], 0.4)):
             robot.stop()
             return "Done"
         else:
@@ -357,8 +366,8 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = True
-run.debugCamera = False
+run.isSim = False
+run.debugCamera = "Internet"
 run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
 

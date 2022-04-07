@@ -17,7 +17,7 @@ class Robot():
     def __init__(self, algorithm, camera):
         GPIO.setmode(GPIO.BCM)
         self.left = Motor(12,23, 1)
-        self.right = Motor(13,24, 1)
+        self.right = Motor(13,24, 0.9)
         self.speed = 0
         self.forwardDistanceMod = 3
         self.backwardDistanceMod = 1
@@ -264,4 +264,5 @@ if __name__ == '__main__':
     robot.initAngle()
     while True:
         print(robot.getAngle())
+        print(robot.getSensorData())
         time.sleep(0.1)
