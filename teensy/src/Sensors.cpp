@@ -146,17 +146,17 @@ void getAccelData()
   euler e;
 
   // pitch = 180 * atan2(accelX, sqrt(accelY*accelY + accelZ*accelZ))/PI;
-  e.pitch = atan2(accel.x, sqrt(accel.y * accel.y + accel.z * accel.z)) * (180 / PI);
+  // e.pitch = atan2(accel.x, sqrt(accel.y * accel.y + accel.z * accel.z)) * (180 / PI);
   // roll = 180 * atan2(accelY, sqrt(accelX*accelX + accelZ*accelZ))/PI;
-  e.roll = atan2(accel.y, sqrt(accel.x * accel.x + accel.z * accel.z)) * (180 / PI);
+  // e.roll = atan2(accel.y, sqrt(accel.x * accel.x + accel.z * accel.z)) * (180 / PI);
 
   sensor mag_new;
   
 
   // mag_x = magReadX*cos(pitch) + magReadY*sin(roll)*sin(pitch) + magReadZ*cos(roll)*sin(pitch)
-  mag_new.x = mag.x * cos(e.pitch) + mag.y * sin(e.roll) * sin(e.pitch) + mag.z * cos(e.roll) * sin(e.pitch); 
+  // mag_new.x = mag.x * cos(e.pitch) + mag.y * sin(e.roll) * sin(e.pitch) + mag.z * cos(e.roll) * sin(e.pitch); 
   // mag_y = magReadY * cos(roll) - magReadZ * sin(roll)
-  mag_new.y = mag.y * cos(e.roll) - mag.z * sin(e.roll);
+  // mag_new.y = mag.y * cos(e.roll) - mag.z * sin(e.roll);
   
    e.yaw = atan2(mag.x, mag.y) * (180/PI);
   //e.yaw = atan2(mag_new.x, mag_new.y) * (180 / PI);
