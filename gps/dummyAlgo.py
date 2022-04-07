@@ -94,6 +94,7 @@ class ReallyDumb():
         self.FRIGHT = 3
         self.RIGHT = 4
         self.delays = {}
+        self.sensorData = None
         self.objCount = 1
         self.sdt = 1
 
@@ -123,12 +124,14 @@ class ReallyDumb():
         }
 
     def updateSensors(self, robot, time):
+        print("called")
         self.sensorData = robot.getSensorData()
 
-    def getSensorList(self, robot, time):
+    def getSensorList(self):
         data = self.sensorData
         self.sensorList.insert(0, data)
         self.sensorList.pop(len(self.sensorList) - 1)
+        return self.sensorList
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
@@ -220,7 +223,7 @@ class ReallyDumb():
 
     def findRed(self, robot, time):
         self.objCount = 2
-        data = robot.getSensorData()
+        data = self.getSensorList()[0]
         ret = None
         if (sCheck(data["Front"], 0.5)):
             val = self.var
@@ -249,7 +252,7 @@ class ReallyDumb():
             return "CORNER1_STITCH"
 
     def ramColor(self, robot, time, color):
-        sensorData = robot.getSensorData()
+        sensorData = self.getSensorList()[0]
         if (colorCount(self.cameraData[self.FRONT], color) == 0):
             return "Lost"
         if (sCheck(sensorData["Front"], 0.7)):
@@ -366,7 +369,7 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = False
+run.isSim = True
 run.debugCamera = "Internet"
 run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
