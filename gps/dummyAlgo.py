@@ -1,12 +1,22 @@
 
 import run
-import time
 
 mod = 0
 state = "MOVE"
 #sensor check
 def sCheck(value, distance):
     return value < distance and value != -1
+
+class Margin():
+    def __init__(self, a, b, standard=True):
+        self.a = a
+        self.b = b
+        self.standard = standard
+    
+    def contains(self, angle):
+        if (self.standard):
+            return angle > self.a and angle < self.b
+        return angle < self.a or angle > self.b
 
 def anyColorOf(data, col):
     for split in data:
@@ -16,10 +26,11 @@ def anyColorOf(data, col):
     return False
 
 def colorCount(split, color):
+    count = 0
     for obj in split:
         if (obj["color"] == color):
-            return True
-    return False
+            count += 1
+    return count
 
 def colorsInSplit(split):
     ret = []
@@ -67,7 +78,7 @@ def bigestColors(splits, objCount):
 class ReallyDumb():
     def __init__(self) -> None:
         self.state = "INIT"
-        self.standardSpeed = 1
+        self.standardSpeed = 3
         self.standardRotateSpeed = 900
         self.overrodeAction = False
         self.waitQueue = []
@@ -83,34 +94,73 @@ class ReallyDumb():
         self.RIGHT = 4
         self.delays = {}
         self.objCount = 1
-        self.sdt = 1
+        self.sdt = 0.5
 
         self.periodic = {}
         self.states = {
             "INIT": self.init,
-            "CORNER1": self.corner1,
-            "FIND_CORNER1": self.findCorner1,
-            "FIND_CORNER2": self.findCorner2,
-            "FIND_CORNER3": self.findCorner3,
-            "FIND_CORNER4": self.findCorner4,
-            "FIND_CORNER5": self.findCorner4,
-            "YELLOW": self.yellow,
-            "CORNER2": self.corner2,
-            "CORNER3": self.corner3,
+            "FIND_CORNER1": self.findState("CORNER1", "Blue"),
+            "FIND_CORNER2": self.findState("CORNER2", "Yellow"),
+            "FIND_CORNER3": self.findState("CORNER3", "Blue"),
+            "FIND_CORNER4": self.findState("CORNER4", "Blue"),
+            "FIND_CORNER5": self.findState("CORNER5", "Blue"),
+            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(100, 120)),
+            "CORNER2": self.turnState("CORNER3_STITCH", "Yellow", -1, Margin(35, 50)),
+            "CORNER3": self.turnState("CORNER4_STITCH", "Blue", 1, Margin(165, -165 + 360)),
+            "CORNER4": self.turnState("RED_STITCH", "Blue", 1, Margin(-100 + 360, -80 + 360)),
+            "CORNER5": self.turnState("CORNER1_STITCH", "Blue", 1, Margin(10, -10 + 360, False)),
+            "RED_STITCH": self.stitchState("FIND_RED", "Red", Margin(-100 + 360,-90 + 360)),
+            "CORNER1_STITCH": self.stitchState("FIND_CORNER1", "Blue", Margin(10, -10 + 360, False)),
+            "CORNER2_STITCH": self.stitchState("FIND_CORNER2", "Yellow", Margin(100,120)),
+            "CORNER3_STITCH": self.stitchState("FIND_CORNER3", "Blue", Margin(35,50)),
+            "CORNER4_STITCH": self.stitchState("FIND_CORNER4", "Blue", Margin(165, -165 + 360)),
+            "CORNER5_STITCH": self.stitchState("FIND_CORNER5", "Blue", Margin(-100 + 360,-80 + 360)),
             "SPIN": self.spin,
-            # "FIND_YELLOW": self.findYellow,
-            # "RAM_YELLOW": self.ramYellow,
             "FIND_RED": self.findRed,
-            "LEFT_RED": self.leftRed,
-            "RIGHT_RED": self.rightRed,
-            "CORNER4": self.corner4,
-            "CORNER5": self.corner5,
-            "STITCH": self.stitch,
-            "STITCH2": self.stitch2
+            "LEFT_RED": self.redTurnState("CORNER5_STITCH", -1),
+            "RIGHT_RED": self.redTurnState("CORNER5_STITCH", 1)
         }
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
+
+    def findState(self, nextState, color):
+        def fun(robot, time):
+            if (self.findColor(robot, time, color)):
+                ret = self.ramColor(robot, time, color)
+                if (ret == "Done"):
+                    return nextState
+        return fun
+
+    def turnState(self, nextState, color, dir, angleMargin):
+        def fun(robot, time):
+            if (self.var == None):
+                self.var = 0
+            ret = self.goAround(robot, color, dir)
+            angle = robot.getAngle()
+            if (angle < 0):
+                angle += 360
+            if (angleMargin.contains(angle)):
+                return nextState
+            # if (ret == "move"):
+            #     self.var += 1
+            # if (self.var > 3 ):
+            #     self.var = None
+            #     return nextState
+        return fun
+
+    def stitchState(self, nexState, color, angleMargin):
+        def fun(robot, time):
+            col = "Yellow"
+            self.wait(lambda r, t: r.move(self.standardSpeed, 1), 1)
+            #angle = robot.getAngle()
+            if(not (colorCount(self.cameraData[self.FRONT], color) != 0
+                or colorCount(self.cameraData[self.FLEFT], color) != 0
+                or colorCount(self.cameraData[self.FRIGHT], color) != 0)):
+                robot.move(self.standardSpeed, 1)
+            else:
+                return nexState
+        return fun
 
     def spin(self, robot, time):
         robot.constantRotate(self.standardRotateSpeed)
@@ -138,184 +188,68 @@ class ReallyDumb():
 
 
     def overrideCheck(self, robot, time):
-        sensorData = robot.getSensorData()
-        if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
-            robot.stop()
-            self.overrodeAction = True
+        pass
+        # sensorData = robot.getSensorData()
+        # if (sensorData["Front"] < 0.2 and sensorData["Front"] != -1):
+        #     robot.stop()
+        #     self.overrodeAction = True
 
-    def leftRed(self, robot, time):
-        if (self.var == None):
-            self.var = 0
-        if (self.goAround(robot, "Red", -1) == "move"):
-            self.var += 1
-        if (self.var > 1):
-            return "FIND_CORNER5"
-        #if(not sensorData["Left"]):
-        #   robot.rotate(self.standardRotateSpeed, -90)
-        #  robot.move(self.standardSpeed, 1)
+    def redTurnState(self, nextState, dir):
+        def fun(robot, time):
 
-    def rightRed(self, robot, time):
-        if (self.var == None):
-            self.var = 0
-        if (self.goAround(robot, "Red", 1) == "move"):
-            self.var += 1
-        if (self.var > 1):
-            return "FIND_CORNER5"
-        #if(not sensorData["Right"]):
-        #   robot.rotate(self.standardRotateSpeed, 90)
-        #  robot.move(self.standardSpeed, 1)
+            if (self.var == None):
+                self.var = 0
+            if (self.var > 0):
+                angle = robot.getAngle()
+                if (robot.isNotMoving()):
+                    robot.rotate(dir*self.standardRotateSpeed, 20)
+                if (angle > -100 and angle < -80):
+                    self.var = None
+                    return nextState
+            elif (self.goAround(robot, "Red", dir) == "move"):
+                self.var += 1
+        return fun
 
     def findRed(self, robot, time):
         self.objCount = 2
         data = robot.getSensorData()
+        ret = None
         if (sCheck(data["Front"], 0.5)):
-            print("Found")
-            #robot.stop()
-            if (colorCount(self.cameraData[self.LEFT], "Red")):
-                return "LEFT_RED"
-            elif (colorCount(self.cameraData[self.RIGHT], "Red")):
+            val = self.var
+            self.var = None
+            if (val == "FLEFT" or val == "LEFT"):
                 return "RIGHT_RED"
-            elif (colorCount(self.cameraData[self.FRIGHT], "Red")):
+            if (val == "FRIGHT" or val == "RIGHT"):
                 return "LEFT_RED"
-            elif (colorCount(self.cameraData[self.FLEFT], "Red")):
-                return "RIGHT_RED"
-        elif (self.findColor(robot, time, "Red")):
+        if (colorCount(self.cameraData[self.LEFT], "Red")):
+            self.var = "LEFT"
+        elif (colorCount(self.cameraData[self.RIGHT], "Red")):
+            self.var = "RIGHT"
+        elif (colorCount(self.cameraData[self.FRIGHT], "Red")):
+            self.var = "FRIGHT" if self.var != "RIGHT" or self.var != "LEFT" else self.var
+        elif (colorCount(self.cameraData[self.FLEFT], "Red")):
+            self.var = "FLEFT" if self.var != "RIGHT" or self.var != "LEFT" else self.var
+        if (self.findColor(robot, time, "Red")):
             robot.move(self.standardSpeed,1)
 
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
-        # return "FIND_RED"
         self.addPeriodic("status", self.printUpdate, 0.2)
-        delayTime = 0.25
         robot.initAngle()
-        # if(self.delay(delayTime)):
-        #     robot.rotate(-self.standardRotateSpeed, 40)
-        # robot.move(1,2)
-        #self.wait(lambda r, t: r.time, 5)
         if (self.delay(1, "Something")):
-            print("FIRST STATE")
-            return "FIND_CORNER1"
-
-    def findCorner1(self, robot, time):
-        if (self.findColor(robot, time, "Blue")):
-            ret = self.ramColor(robot, time, "Blue")
-            if (ret == "Done"):
-                return "CORNER1"
-
-    def findCorner2(self, robot, time):
-        if (self.findColor(robot, time, "Yellow")):
-            ret = self.ramColor(robot, time, "Yellow")
-            if (ret == "Done"):
-                return "CORNER2"
-
-    def findCorner3(self, robot, time):
-        if (self.findColor(robot, time, "Blue")):
-            ret = self.ramColor(robot, time, "Blue")
-            if (ret == "Done"):
-                return "CORNER3"
-
-    def findCorner4(self, robot, time):
-        if (self.findColor(robot, time, "Blue")):
-            ret = self.ramColor(robot, time, "Blue")
-            if (ret == "Done"):
-                return "CORNER4"
-
-    def findCorner5(self, robot, time):
-        if (self.findColor(robot, time, "Blue")):
-            ret = self.ramColor(robot, time, "Blue")
-            if (ret == "Done"):
-                return "CONER5"
-
-    def corner1(self, robot, time):
-        # self.roundAndRound(robot, "Blue")
-        if (self.var == None):
-            self.var = 0
-        ret = self.goAround(robot, "Blue", 1)
-        if (ret == "move"):
-            self.var += 1
-            print("Here")
-        if (self.var > 3 ):
-            print("MAG HAS WORKED")
-            self.var = None
-            return "FIND_CORNER2"
-
-
-    def corner5(self, robot, time):
-        # self.roundAndRound(robot, "Blue")
-        if (self.var == None):
-            self.var = 0
-        ret = self.goAround(robot, "Blue", 1)
-        if (ret == "move"):
-            self.var += 1
-            print("Here")
-        if (self.var > 3 ):
-            print("MAG HAS WORKED")
-            self.var = None
-            return "SPIN"
-
-    def corner2(self, robot, time):
-        # self.roundAndRound(robot, "Blue")
-        if (self.var == None):
-            self.var = 0
-        ret = self.goAround(robot, "Yellow", -1)
-        if (ret == "move"):
-            self.var += 1
-        if (self.var > 2 ):
-            print("MAG HAS WORKED")
-            self.var = None
-            return "FIND_CORNER3"
-
-    def corner3(self, robot, time):
-        # self.roundAndRound(robot, "Blue")
-        if (self.var == None):
-            self.var = 0
-        ret = self.goAround(robot, "Blue", 1)
-        if (ret == "move"):
-            self.var += 1
-            print("Here")
-        if (self.var > 3 ):
-            print("MAG HAS WORKED")
-            self.var = None
-            return "FIND_CORNER4"
-
-    def corner4(self, robot, time):
-        # self.roundAndRound(robot, "Blue")
-        if (self.var == None):
-            self.var = 0
-        ret = self.goAround(robot, "Blue", 1)
-        if (ret == "move"):
-            self.var += 1
-            print("Here")
-        if (self.var > 3 ):
-            print("MAG HAS WORKED")
-            self.var = None
-            return "FIND_RED"
-    
-    def stitch(self, robot, time):
-        col = "Yellow"
-        #angle = robot.getAngle()
-        if(not anyColorOf(self.cameraData, col)):
-            robot.move(0.5, 0.5)
-        else:
-            return "CORNER2"
-
-    def stitch2(self, robot, time):
-        col = "Blue"
-        angle = robot.getAngle()
-        if(not anyColorOf(self.cameraData, col)):
-            robot.move(1, 0.5)
-        else:
-            return "CORNER3"
+            return "CORNER1_STITCH"
 
     def ramColor(self, robot, time, color):
         sensorData = robot.getSensorData()
         if (colorCount(self.cameraData[self.FRONT], color) == 0):
             return "Lost"
-        if (sensorData["Front"] != -1 and sensorData["Front"] < 0.5):
+        if (sCheck(sensorData["Front"], 0.7)
+            or sCheck(sensorData["FrontLeft"], 0.4)
+            or sCheck(sensorData["FrontRight"], 0.4)):
             robot.stop()
             return "Done"
         else:
-            robot.constantMove(1)
+            robot.constantMove(self.standardSpeed*.8)
             return "Move"
 
     def findColor(self, robot, time, col):
@@ -392,30 +326,6 @@ class ReallyDumb():
         if ret != None and ret != self.state:
             print("Changing to state:", ret)
             self.state = ret
-    
-    def roundAndRound(self, robot, col):
-        if(robot.isNotMoving() and self.delay(0.5)):
-            if (colorCount(self.cameraData[self.FRONT], col) != 0 or colorCount(self.cameraData[self.FRIGHT], col) != 0):
-                robot.rotate(-self.standardRotateSpeed, 15)
-                # if(self.delay(delayTime)):
-                #     robot.move(2, 1)
-            elif (colorCount(self.cameraData[self.RIGHT], col) == 0):
-                robot.rotate(self.standardRotateSpeed, 15)
-            else:
-                robot.move(1,0.3)
-
-    def roundAndRoundY(self, robot, col):
-        if(robot.isNotMoving() and self.delay(0.1)):
-            if (colorCount(self.cameraData[self.FRONT], col) != 0 or colorCount(self.cameraData[self.FLEFT], col) != 0):
-                robot.rotate(self.standardRotateSpeed, 15)
-                return "found"
-                #robot.move(2, 1)
-            elif (colorCount(self.cameraData[self.LEFT], col) == 0):
-                robot.rotate(-self.standardRotateSpeed, 15)
-                return "lost"
-            else:
-                robot.move(1,0.3)
-                return "found"
 
     def goAround(self, robot, col, dir):
         if (robot.isNotMoving() and self.delay(0.1, "goRound")):
@@ -447,9 +357,9 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = False
-run.debugCamera = "Internet"
-run.scenario = "RED"
+run.isSim = True
+run.debugCamera = False
+run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
 
 
