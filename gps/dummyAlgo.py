@@ -127,8 +127,8 @@ class ReallyDumb():
         print("called")
         self.sensorData = robot.getSensorData()
 
-    def getSensorList(self):
-        data = self.sensorData
+    def getSensorList(self, robot):
+        data = robot.getSensorData()
         self.sensorList.insert(0, data)
         self.sensorList.pop(len(self.sensorList) - 1)
         return self.sensorList
@@ -177,6 +177,7 @@ class ReallyDumb():
         robot.constantRotate(self.standardRotateSpeed)
 
     def printUpdate(self, robot, time):
+        pass
         # sensorData = robot.getSensorData()
         # print("Sensors: F:{},R:{},L:{},FR:{},FL:{}".format(
         #     sensorData["Front"],
@@ -194,8 +195,8 @@ class ReallyDumb():
         #     colorsInSplit(self.cameraData[4])
         # ))
 
-        print("Angle: " + str(robot.getAngle()))
-        print("State: " + self.state)
+        # print("Angle: " + str(robot.getAngle()))
+        # print("State: " + self.state)
 
 
     def overrideCheck(self, robot, time):
@@ -246,7 +247,7 @@ class ReallyDumb():
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
         self.addPeriodic("status", self.printUpdate, 0.2)
-        self.addPeriodic("sensors", self.updateSensors, 0.1)
+        # self.addPeriodic("sensors", self.updateSensors, 0.1)
         robot.initAngle()
         if (self.delay(1, "Something")):
             return "CORNER1_STITCH"
