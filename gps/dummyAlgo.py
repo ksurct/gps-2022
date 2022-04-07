@@ -148,7 +148,7 @@ class ReallyDumb():
         def fun(robot, time):
             if (self.var == None):
                 self.var = 0
-            ret = self.goAround(robot, color, dir)
+            ret = self.goAroundWithSensors(robot, color, dir)
             angle = robot.getAngle()
             if (angle < 0):
                 angle += 360
@@ -363,7 +363,7 @@ class ReallyDumb():
         if (robot.isNotMoving() and self.delay(0.1, "goRound")):
             data = self.getSensorList() # {[],[],[],[],[]}
             closeIndex = "FrontLeft" if dir == -1 else "FrontRight"
-            farIndex = "FrontLeft" if dir == -1 else "FrontRight"
+            farIndex = "Left" if dir == -1 else "Right"
             frontIndex = "Front"
             checkClose = data[0][closeIndex]
             checkFar = data[0][farIndex]
@@ -386,8 +386,8 @@ class ReallyDumb():
                         robot.rotate(-self.standardRotateSpeed * dir, 20)
                         return "close"
                     elif not s[farIndex] == -1:
-                        robot.move(self.standardSpeed, 1)
-                        return "move"
+                        robot.rotate(self.standardRotateSpeed * dir, 20)
+                        return "far"
                 robot.rotate(self.standardRotateSpeed * dir, 20)
                 return "lost"
 
