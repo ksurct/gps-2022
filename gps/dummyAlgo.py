@@ -80,6 +80,7 @@ class ReallyDumb():
         self.state = "INIT"
         self.standardSpeed = 1
         self.standardRotateSpeed = 900
+        self.sensorList = [None, None, None, None, None]
         self.overrodeAction = False
         self.waitQueue = []
         self.currentWait = None
@@ -120,6 +121,14 @@ class ReallyDumb():
             "LEFT_RED": self.redTurnState("CORNER5_STITCH", -1),
             "RIGHT_RED": self.redTurnState("CORNER5_STITCH", 1)
         }
+
+    def updateSensors(self, robot, time):
+        self.sensorData = robot.getSensorData()
+
+    def getSensorList(self, robot, time):
+        data = self.sensorData
+        self.sensorList.insert(0, data)
+        self.sensorList.pop(len(self.sensorList) - 1)
 
     def updateCamera(self, robot, time):
         self.cameraData = bigestColors(robot.getCameraData()["main"], self.objCount)
@@ -234,6 +243,7 @@ class ReallyDumb():
     def init(self, robot, time):
         self.addPeriodic("camera", self.updateCamera, 0.1)                          
         self.addPeriodic("status", self.printUpdate, 0.2)
+        self.addPeriodic("sensors", self.updateSensors, 0.1)
         robot.initAngle()
         if (self.delay(1, "Something")):
             return "CORNER1_STITCH"
