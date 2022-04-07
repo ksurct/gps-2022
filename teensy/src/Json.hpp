@@ -21,7 +21,10 @@ namespace json {
         float magX;
         float magY;
         float magZ;
-        float magCourse;
+        float gyroX;
+        float gyroY;
+        float gyroZ;
+        float yaw;
         void sendJson();
     };
 }

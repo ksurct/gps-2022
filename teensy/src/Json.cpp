@@ -16,7 +16,7 @@ void json::Data::sendJson() {
     StaticJsonDocument<1000> doc;
     // Distance Sensors
     
-    doc["magCourse"] = magCourse;
+    doc["magCourse"] = yaw;
     
     doc["fr_data"] = fr_data;
     doc["fl_data"] = fl_data;
@@ -46,6 +46,9 @@ void json::Data::sendJson() {
     doc["magZ"] = magZ;
 
     
+    doc["gyroX"] = gyroX;
+    doc["gyroY"] = gyroY;
+    doc["gyroZ"] = gyroZ;
 
     serializeJson(doc, Serial);
     Serial.println("");

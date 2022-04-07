@@ -1,4 +1,5 @@
 {
-    "configuration": "FlashFreq=80,UploadSpeed=921600",
-    "board": "esp32:esp32:nodemcu-32s"
+    "configuration": "cpu=atmega328",
+    "board": "arduino:avr:nano",
+    "sketch": "teensy/teensy.ino"
 }
