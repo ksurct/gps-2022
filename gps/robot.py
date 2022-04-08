@@ -265,4 +265,4 @@ if __name__ == '__main__':
     while True:
         print(robot.getAngle())
         print(robot.getSensorData())
-        time.sleep(0.1)
+        time.sleep(0.5)
