@@ -459,13 +459,13 @@ class ReallyDumb():
             else:
                 for i in range(len(data)):
                     s= data[i]
-                    if not s[frontIndex] == -1:
+                    if sCheck(s[frontIndex], 1.5):
                         robot.rotate(-self.standardRotateSpeed * dir, 2*30)
                         return "front"
-                    elif not s[closeIndex] == -1:
+                    elif sCheck(s[closeIndex], 1.5):
                         robot.rotate(-self.standardRotateSpeed * dir, 30)
                         return "close"
-                    elif not s[farIndex] == -1 and i == 1:
+                    elif sCheck(s[farIndex], 1.5) and i == 1:
                         robot.rotate(self.standardRotateSpeed * dir, 30)
                         return "far"
                 robot.rotate(self.standardRotateSpeed * dir, 30)
