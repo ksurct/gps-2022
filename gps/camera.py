@@ -21,10 +21,10 @@ class Camera():
         self.splitCount = splits
         self.name = name
         self.outFrame = []
-        self.defaultAreaRequire = 125
+        self.defaultAreaRequire = 500
         # internetCam.camera = self
         # internetCam.run()
-        self.areaRequired = 125
+        self.areaRequired = 500
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
