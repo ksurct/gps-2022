@@ -50,6 +50,7 @@ def run():
         yellow = (255,255,0,255)
         blue = (0,0,255,255)
         green = (0,255,0,255)
+        ramp = (255, 255, 150, 255)
         red = (255,0,0,255)
         # Pixels is the resolution on screen
         # Course resolution is the grid count used to draw a course
@@ -77,6 +78,7 @@ def run():
         print(x,y)
         course.circle(x,y, r=brp, c=blue, px=True) #the blue barrels
         course.circle(x=(midpointX+(-30*feetToPixels)), y=(midpointY-(20*feetToPixels)), r=brp, c=blue, px=True)
+        course.circle(x=int((midpointX+(-1*(30)*feetToPixels))), y=int((midpointX)),r=3*feetToPixels, c=ramp, px=True)
         course.circle(x=(midpointX+(-30*feetToPixels)), y=(midpointY-(-20*feetToPixels)), r=brp, c=blue, px=True)
         course.circle(x=(midpointX+(30*feetToPixels)), y=(midpointY-(-20*feetToPixels)), r=brp, c=blue, px=True)
         course.circle(x=(midpointX), y=(midpointY-(-10*feetToPixels)), r=brp, c=yellow, px=True)
@@ -98,10 +100,10 @@ def run():
         #      (0,0)x----------
         #
         sensors = {
-            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True,coneAngle=5),
-            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True,coneAngle=5),
-            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True,coneAngle=5),
-            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True,coneAngle=5),
+            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True,coneAngle=10),
+            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True,coneAngle=10),
+            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True,coneAngle=10),
+            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True,coneAngle=10),
             "Front": robot_sim.Sensor(x=robotWidth/2,y=robotLength,d=sensorMaxDistance*pixelsPerMeter,angle=0,debug=True,coneAngle=10),
         }
 
@@ -134,6 +136,7 @@ def run():
         cameras['main'].registerColor(red, "Red")
         cameras['main'].registerColor(blue, "Blue")
         cameras['main'].registerColor(yellow, "Yellow")
+        cameras['main'].registerColor(ramp, "Ramp")
 
         # Location is pixel placement in display
         # Length and width are in pixels

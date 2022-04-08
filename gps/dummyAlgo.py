@@ -194,7 +194,9 @@ class ReallyDumb():
                 robot.move(self.standardSpeed*1.5, 1)
             elif (colorCount(self.cameraData[self.FRONT], color) != 0
                     or colorCount(self.cameraData[self.FLEFT], color) != 0
-                    or colorCount(self.cameraData[self.FRIGHT], color) != 0):
+                    or colorCount(self.cameraData[self.FRIGHT], color) != 0
+                    or colorCount(self.cameraData[self.RIGHT], color) != 0
+                    or colorCount(self.cameraData[self.LEFT], color) != 0):
                 return nexState
         return fun
 
@@ -474,7 +476,7 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = False
+run.isSim = True
 run.debugCamera = "Internet"
 run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
