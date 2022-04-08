@@ -197,6 +197,12 @@ class Camera():
         return objects
 
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
+        frameHeight = frame.shape[0]
+        frameWidth = frame.shape[1]
+        cutoff = frameHeight * 0.5
+
+        cv2.line(frame, (0, cutoff), (frameWidth, cutoff), (200, 0, 0))
+
         for pic, contour in enumerate(contours):
             area = cv2.contourArea(contour)
             if (area > self.areaRequired):
@@ -204,7 +210,7 @@ class Camera():
                 split = int(x // (width))
                 size = w
                 # check if in dimension tolerance and bottom is below certain point
-                if (w / h < 1 and y + h > frame.shape[0] * 0.5):
+                if (w / h < 1 and y + h > cutoff):
                     if (x + w > (split+1)*width and split != self.splitCount and w / h < 1 and y + h > frame.shape[0] * 0.5):
                         size = (split+1)*width - x
                         objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
