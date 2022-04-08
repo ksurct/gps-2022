@@ -9,25 +9,27 @@ from dummyAlgo import ReallyDumb
 
 def normal(pin):
     algo = ReallyDumb()
+
+    def algorithm(robot, time, events = None):
+        algo.run(robot, time)
+
     run.cameraSplits = 5
     run.algo = algorithm
     run.isSim = False
-    run.debugCamera = "Internet"
+    run.debugCamera = False
     run.scenario = "MAIN"
     run.startingOffsetError = (2,2)
-    def algorithm(robot, time, events = None):
-        algo.run(robot, time)
 
     run.run()
 
 def fast(pin):
-    print("fast")
+    normal(pin)
 
 def terminal(pin):
-    print("terminal")
+    normal(pin)
 
 def escapeVelocity(pin):
-    print("escapeVelocity", pin)
+    normal(pin)
 
 b1 = Button(11, normal) 
 b2 = Button(25, fast) 
