@@ -163,7 +163,7 @@ class ReallyDumb():
 
     def stitchState(self, nexState, color, angleMargin):
         def fun(robot, time):
-            self.wait(lambda r, t: r.move(self.standardSpeed, 1), 1)
+            self.wait(lambda r, t: r.move(self.standardSpeed*1.5, 1), .2)
             #angle = robot.getAngle()
             if(not (colorCount(self.cameraData[self.FRONT], color) != 0
                 or colorCount(self.cameraData[self.FLEFT], color) != 0
@@ -376,7 +376,7 @@ class ReallyDumb():
                 robot.rotate(-self.standardRotateSpeed * dir, 20)
                 return "close"
             elif not checkFar == -1:
-                robot.move(self.standardSpeed, 1)
+                robot.move(self.standardSpeed, .5)
                 print("move forward")
                 return "move"
             elif checkFar + checkClose + checkFront == -3:
