@@ -21,10 +21,10 @@ class Camera():
         self.splitCount = splits
         self.name = name
         self.outFrame = []
-        self.defaultAreaRequire = 125
+        self.defaultAreaRequire = 500
         # internetCam.camera = self
         # internetCam.run()
-        self.areaRequired = 125
+        self.areaRequired = 500
         # default value
         self.default_red_lower = np.array([136, 100, 111], np.uint8)
         self.default_red_upper = np.array([180, 255, 255], np.uint8)
@@ -119,7 +119,7 @@ class Camera():
         if (len(frame) == 0):
             #self.tick()
             _, frame = self.cam.read()
-        frame = frame[int(len(frame)*0.5):int(len(frame)*0.65)]
+        # frame = frame[int(len(frame)*0.5):int(len(frame)*0.65)]
         width = frame.shape[1]
         objectCount = 0
 
@@ -186,10 +186,10 @@ class Camera():
             width = frame.shape[1]
             for i in range(0, self.splitCount):
                 splitWidth = width//self.splitCount
-                split = frame[:, int(i*splitWidth):int((i+1)*splitWidth)]
+                # split = frame[:, int(i*splitWidth):int((i+1)*splitWidth)]
                 # Program Termination
                 cv2.imshow("Multiple Color Detection in Real-TIme", frame)
-                cv2.imshow('split %d' % i, split)
+                # cv2.imshow('split %d' % i, split)
         elif(self.show == "Internet"):
             self.outFrame = frame
         if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -197,25 +197,33 @@ class Camera():
         return objects
 
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
+        frameHeight = frame.shape[0]
+        frameWidth = frame.shape[1]
+        cutoff = frameHeight * 0.55
+
+        cv2.line(frame, (0, int(cutoff)), (frameWidth, int(cutoff)), (200, 0, 0))
+
         for pic, contour in enumerate(contours):
             area = cv2.contourArea(contour)
             if (area > self.areaRequired):
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
-                if (x + w > (split+1)*width and split != self.splitCount):
-                    size = (split+1)*width - x
-                    objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
-                objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
-                objectCount+=1
-                if (self.show):
-                    frame = cv2.rectangle(frame, (x, y),
-                                            (x + w, y + h),
-                                            (200, 200, 200), 2)
+                # check if in dimension tolerance and bottom is below certain point
+                if (w / h < 1 and y + h > cutoff):
+                    if (x + w > (split+1)*width and split != self.splitCount and w / h < 1 and y + h > frame.shape[0] * 0.5):
+                        size = (split+1)*width - x
+                        objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
+                    objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
+                    objectCount+=1
+                    if (self.show):
+                        frame = cv2.rectangle(frame, (x, y),
+                                                (x + w, y + h),
+                                                (200, 200, 200), 2)
 
-                    cv2.putText(frame, color, (x, y),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                1.0, (200, 200, 200))
+                        cv2.putText(frame, color, (x, y),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    1.0, (200, 200, 200))
         return frame
 
     def tune(self, tolerance, color):
