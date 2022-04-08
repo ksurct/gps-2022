@@ -466,28 +466,29 @@ class ReallyDumb():
                 robot.rotate(self.standardRotateSpeed * dir, 30)
                 return "lost"
 
-algo = ReallyDumb()
+if (__name__ == "__main__"):
+    algo = ReallyDumb()
 
-# Algorithm
-# Called every 'tick' 1/FPS
-# This is a dummy algorithm that shows how to a control a robot
-def algorithm(robot, time, events = None):
-    algo.run(robot, time)
+    # Algorithm
+    # Called every 'tick' 1/FPS
+    # This is a dummy algorithm that shows how to a control a robot
+    def algorithm(robot, time, events = None):
+        algo.run(robot, time)
 
-run.cameraSplits = 5
-run.algo = algorithm
-run.isSim = True
-run.debugCamera = "Internet"
-run.scenario = "MAIN"
-run.startingOffsetError = (2,2)
+    run.cameraSplits = 5
+    run.algo = algorithm
+    run.isSim = True
+    run.debugCamera = "Internet"
+    run.scenario = "MAIN"
+    run.startingOffsetError = (2,2)
 
 
-run.run()
+    run.run()
 
-# m = Margin(260, 270, True)
+    # m = Margin(260, 270, True)
 
-# print("Test = ", m.optimal())
+    # print("Test = ", m.optimal())
 
-# print("Test = ", m.turnValue(90))
+    # print("Test = ", m.turnValue(90))
 
-# print("Test = ", m.turnValue(90))
+    # print("Test = ", m.turnValue(90))
