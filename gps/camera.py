@@ -203,20 +203,21 @@ class Camera():
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
-                print(frame.shape[0])
-                if (x + w > (split+1)*width and split != self.splitCount and w / h < 1 and y + h > frame.shape[0] / 2):
-                    size = (split+1)*width - x
-                    objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
-                objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
-                objectCount+=1
-                if (self.show):
-                    frame = cv2.rectangle(frame, (x, y),
-                                            (x + w, y + h),
-                                            (200, 200, 200), 2)
+                # check if in dimension tolerance and bottom is below certain point
+                if (w / h < 1 and y + h > frame.shape[0] * 0.5):
+                    if (x + w > (split+1)*width and split != self.splitCount and w / h < 1 and y + h > frame.shape[0] * 0.5):
+                        size = (split+1)*width - x
+                        objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
+                    objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
+                    objectCount+=1
+                    if (self.show):
+                        frame = cv2.rectangle(frame, (x, y),
+                                                (x + w, y + h),
+                                                (200, 200, 200), 2)
 
-                    cv2.putText(frame, color, (x, y),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                1.0, (200, 200, 200))
+                        cv2.putText(frame, color, (x, y),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    1.0, (200, 200, 200))
         return frame
 
     def tune(self, tolerance, color):
