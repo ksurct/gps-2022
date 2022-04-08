@@ -100,11 +100,11 @@ def run():
         #      (0,0)x----------
         #
         sensors = {
-            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True,coneAngle=10),
-            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True,coneAngle=10),
-            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True,coneAngle=10),
-            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True,coneAngle=10),
-            "Front": robot_sim.Sensor(x=robotWidth/2,y=robotLength,d=sensorMaxDistance*pixelsPerMeter,angle=0,debug=True,coneAngle=10),
+            "Left": robot_sim.Sensor(x=0,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=-90,debug=True,coneAngle=15),
+            "FrontLeft": robot_sim.Sensor(x=(0.0254*pixelsPerMeter),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=-45,debug=True,coneAngle=15),
+            "Right": robot_sim.Sensor(x=robotWidth,y=(robotLength-(0.0889*pixelsPerMeter)),d=sensorMaxDistance*pixelsPerMeter,angle=90,debug=True,coneAngle=15),
+            "FrontRight": robot_sim.Sensor(x=(robotWidth-(0.0254*pixelsPerMeter)),y=(0.3302*pixelsPerMeter),d=sensorMaxDistance*pixelsPerMeter,angle=45,debug=True,coneAngle=15),
+            "Front": robot_sim.Sensor(x=robotWidth/2,y=robotLength,d=sensorMaxDistance*pixelsPerMeter,angle=0,debug=True,coneAngle=15),
         }
 
         # Cameras:
@@ -143,7 +143,7 @@ def run():
         angle = 0
         if (scenario == "MAIN"):
             angle = 180
-            sx = midpointX + 25*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
+            sx = midpointX + 30*feetToPixels + random.uniform(-startingOffsetError[0], startingOffsetError[0])*pixelsPerMeter
             sy = midpointY + random.uniform(-startingOffsetError[1], startingOffsetError[1])*pixelsPerMeter
         if (scenario == "RED"):
             angle = 90

@@ -463,12 +463,12 @@ class ReallyDumb():
                         robot.rotate(-self.standardRotateSpeed * dir, 2*30)
                         return "front"
                     elif sCheck(s[closeIndex], 1.5):
-                        robot.rotate(-self.standardRotateSpeed * dir, 30)
+                        robot.rotate(-self.standardRotateSpeed * dir, 35)
                         return "close"
                     elif sCheck(s[farIndex], 1.5) and i == 1:
-                        robot.rotate(self.standardRotateSpeed * dir, 30)
+                        robot.rotate(self.standardRotateSpeed * dir, 35)
                         return "far"
-                robot.rotate(self.standardRotateSpeed * dir, 30)
+                robot.rotate(self.standardRotateSpeed * dir, 35)
                 return "lost"
 
 if (__name__ == "__main__"):
@@ -482,10 +482,10 @@ if (__name__ == "__main__"):
 
     run.cameraSplits = 5
     run.algo = algorithm
-    run.isSim = False
+    run.isSim = True
     run.debugCamera = "Internet"
     run.scenario = "MAIN"
-    run.startingOffsetError = (2,2)
+    run.startingOffsetError = (0,0)
 
 
     run.run()

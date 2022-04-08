@@ -48,10 +48,11 @@ run.startingOffsetError = (2,2)
 count = 0
 
 GPIO.setup(11, GPIO.IN) 
-
+import time
 while (True):
     state = GPIO.input(11)
     if (count > 10):
+        time.sleep(3)
         run.run()
     if (not state):
         count += 1
