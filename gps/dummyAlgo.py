@@ -131,7 +131,7 @@ class ReallyDumb():
             "FIND_CORNER3": self.findState("CORNER3", "Blue"),
             "FIND_CORNER4": self.findState("CORNER4", "Blue"),
             "FIND_CORNER5": self.findState("CORNER5", "Blue"),
-            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(125, 150)),
+            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(135, 160)),
             "CORNER2": self.turnState("CORNER3_STITCH", "Yellow", -1, Margin(40, 60)),
             "CORNER3": self.turnState("CORNER4_STITCH", "Blue", 1, Margin(-180 + 360, -160 + 360)),
             "CORNER4": self.turnState("RED_STITCH", "Blue", 1, Margin(-100 + 360, -80 + 360)),
@@ -295,7 +295,11 @@ class ReallyDumb():
 
 
     def findColor(self, robot, time, col):
-        delayTime = 0.4
+        delayTime = 0.8
+        sensorData = self.getSensorList(robot)
+        if (sCheck(sensorData[0]["Front"], 0.7)):
+            return True
+
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
             return True
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
