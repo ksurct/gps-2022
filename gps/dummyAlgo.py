@@ -131,9 +131,9 @@ class ReallyDumb():
             "FIND_CORNER3": self.findState("CORNER3", "Blue"),
             "FIND_CORNER4": self.findState("CORNER4", "Blue"),
             "FIND_CORNER5": self.findState("CORNER5", "Blue"),
-            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(110, 130)),
-            "CORNER2": self.turnState("CORNER3_STITCH", "Yellow", -1, Margin(35, 50)),
-            "CORNER3": self.turnState("CORNER4_STITCH", "Blue", 1, Margin(165, -165 + 360)),
+            "CORNER1": self.turnState("CORNER2_STITCH", "Blue", 1, Margin(125, 150)),
+            "CORNER2": self.turnState("CORNER3_STITCH", "Yellow", -1, Margin(40, 60)),
+            "CORNER3": self.turnState("CORNER4_STITCH", "Blue", 1, Margin(-180 + 360, -160 + 360)),
             "CORNER4": self.turnState("RED_STITCH", "Blue", 1, Margin(-100 + 360, -80 + 360)),
             "CORNER5": self.turnState("CORNER1_STITCH", "Blue", 1, Margin(10, -10 + 360, False)),
             "RED_STITCH": self.stitchState("FIND_RED", "Red", Margin(-100 + 360,-90 + 360)),
@@ -191,7 +191,7 @@ class ReallyDumb():
     def stitchState(self, nexState, color, angleMargin):
         def fun(robot, time):
             if (robot.isNotMoving()):
-                robot.move(self.standardSpeed*1.5, 1)
+                robot.move(self.standardSpeed*2, 1)
             elif (colorCount(self.cameraData[self.FRONT], color) != 0
                     or colorCount(self.cameraData[self.FLEFT], color) != 0
                     or colorCount(self.cameraData[self.FRIGHT], color) != 0
@@ -222,7 +222,7 @@ class ReallyDumb():
         #     colorsInSplit(self.cameraData[4])
         # ))
 
-        # print("Angle: " + str(robot.getAngle()))
+        print("Angle: " + str(robot.getAngle()))
         # print("State: " + self.state)
 
 
@@ -295,7 +295,7 @@ class ReallyDumb():
 
 
     def findColor(self, robot, time, col):
-        delayTime = 1
+        delayTime = 0.4
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
             return True
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
@@ -441,17 +441,18 @@ class ReallyDumb():
             checkClose = data[0][closeIndex]
             checkFar = data[0][farIndex]
             checkFront = data[0][frontIndex]
-            if not checkFront == -1:
+
+            if sCheck(checkFront, 1.5):
                 robot.rotate(-self.standardRotateSpeed * dir, 2*30)
                 return "front"
-            elif not checkClose == -1:
+            elif sCheck(checkClose, 1.5):
                 robot.rotate(-self.standardRotateSpeed * dir, 30)
                 return "close"
-            elif not checkFar == -1:
+            elif sCheck(checkFar, 1.5):
                 robot.move(self.standardSpeed, .5)
                 print("move forward")
                 return "move"
-            elif checkFar + checkClose + checkFront == -3:
+            else:
                 for i in range(len(data)):
                     s= data[i]
                     if not s[frontIndex] == -1:
@@ -485,10 +486,10 @@ if (__name__ == "__main__"):
 
     run.run()
 
-    # m = Margin(260, 270, True)
+    m = Margin(170, -170 + 360, False)
 
-    # print("Test = ", m.optimal())
+    print("Test = ", m.optimal())
 
-    # print("Test = ", m.turnValue(90))
+    print("Test = ", m.contains(-176))
 
-    # print("Test = ", m.turnValue(90))
+    print("Test = ", m.turnValue(90))

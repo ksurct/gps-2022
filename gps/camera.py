@@ -199,7 +199,7 @@ class Camera():
     def addObject(self, objects, objectCount, frame, width, contours, color, hsvFrame):
         frameHeight = frame.shape[0]
         frameWidth = frame.shape[1]
-        cutoff = frameHeight * 0.65
+        cutoff = frameHeight * 0.55
 
         cv2.line(frame, (0, int(cutoff)), (frameWidth, int(cutoff)), (200, 0, 0))
 
