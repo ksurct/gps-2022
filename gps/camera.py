@@ -119,7 +119,7 @@ class Camera():
         if (len(frame) == 0):
             #self.tick()
             _, frame = self.cam.read()
-        frame = frame[int(len(frame)*0.5):int(len(frame)*0.65)]
+        # frame = frame[int(len(frame)*0.5):int(len(frame)*0.65)]
         width = frame.shape[1]
         objectCount = 0
 
@@ -186,10 +186,10 @@ class Camera():
             width = frame.shape[1]
             for i in range(0, self.splitCount):
                 splitWidth = width//self.splitCount
-                split = frame[:, int(i*splitWidth):int((i+1)*splitWidth)]
+                # split = frame[:, int(i*splitWidth):int((i+1)*splitWidth)]
                 # Program Termination
                 cv2.imshow("Multiple Color Detection in Real-TIme", frame)
-                cv2.imshow('split %d' % i, split)
+                # cv2.imshow('split %d' % i, split)
         elif(self.show == "Internet"):
             self.outFrame = frame
         if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -203,7 +203,8 @@ class Camera():
                 x, y, w, h = cv2.boundingRect(contour)
                 split = int(x // (width))
                 size = w
-                if (x + w > (split+1)*width and split != self.splitCount):
+                print(frame.shape[0])
+                if (x + w > (split+1)*width and split != self.splitCount and w / h < 1 and y + h > frame.shape[0] / 2):
                     size = (split+1)*width - x
                     objects[split+1].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": (split+1)*width, "size": (w - size)/width})
                 objects[split].append({"hsv": hsvFrame[int(y+h/2), int(x+w/2)], "id": objectCount, "color": color, "x": x, "size": size/width})
