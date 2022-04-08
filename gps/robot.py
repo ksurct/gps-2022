@@ -17,7 +17,7 @@ class Robot():
     def __init__(self, algorithm, camera):
         GPIO.setmode(GPIO.BCM)
         self.left = Motor(12,23, 1)
-        self.right = Motor(13,24, 0.9)
+        self.right = Motor(13,24, 0.8)
         self.speed = 0
         self.forwardDistanceMod = 3
         self.backwardDistanceMod = 1

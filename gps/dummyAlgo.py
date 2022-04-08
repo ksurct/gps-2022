@@ -440,10 +440,10 @@ class ReallyDumb():
             checkFar = data[0][farIndex]
             checkFront = data[0][frontIndex]
             if not checkFront == -1:
-                robot.rotate(-self.standardRotateSpeed * dir, 2*20)
+                robot.rotate(-self.standardRotateSpeed * dir, 2*30)
                 return "front"
             elif not checkClose == -1:
-                robot.rotate(-self.standardRotateSpeed * dir, 20)
+                robot.rotate(-self.standardRotateSpeed * dir, 30)
                 return "close"
             elif not checkFar == -1:
                 robot.move(self.standardSpeed, .5)
@@ -453,15 +453,15 @@ class ReallyDumb():
                 for i in range(len(data)):
                     s= data[i]
                     if not s[frontIndex] == -1:
-                        robot.rotate(-self.standardRotateSpeed * dir, 2*20)
+                        robot.rotate(-self.standardRotateSpeed * dir, 2*30)
                         return "front"
                     elif not s[closeIndex] == -1:
-                        robot.rotate(-self.standardRotateSpeed * dir, 20)
+                        robot.rotate(-self.standardRotateSpeed * dir, 30)
                         return "close"
                     elif not s[farIndex] == -1 and i == 1:
-                        robot.rotate(self.standardRotateSpeed * dir, 20)
+                        robot.rotate(self.standardRotateSpeed * dir, 30)
                         return "far"
-                robot.rotate(self.standardRotateSpeed * dir, 20)
+                robot.rotate(self.standardRotateSpeed * dir, 30)
                 return "lost"
 
 algo = ReallyDumb()
@@ -474,7 +474,7 @@ def algorithm(robot, time, events = None):
 
 run.cameraSplits = 5
 run.algo = algorithm
-run.isSim = True
+run.isSim = False
 run.debugCamera = "Internet"
 run.scenario = "MAIN"
 run.startingOffsetError = (2,2)
