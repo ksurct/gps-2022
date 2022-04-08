@@ -101,7 +101,9 @@ class ReallyDumb():
         self.state = "INIT"
         self.standardSpeed = 1
         self.standardRotateSpeed = 900
-        self.sensorList = [None, None, None]
+        def dsen():
+            return {"Front": -1, "FrontRight": -1, "FrontLeft": -1, "Left": -1, "Right": -1}
+        self.sensorList = [dsen(), dsen(), dsen()]
         self.overrodeAction = False
         self.waitQueue = []
         self.currentWait = None
@@ -110,8 +112,10 @@ class ReallyDumb():
         self.time = 0
         self.cameraData = [[],[],[],[],[]]
         self.LEFT = 0
+        self.callSensorListOnce = True
         self.FLEFT = 1
         self.FRONT = 2
+        self.sensorValid = 5
         self.FRIGHT = 3
         self.RIGHT = 4
         self.delays = {}
@@ -149,9 +153,11 @@ class ReallyDumb():
         self.sensorData = robot.getSensorData()
 
     def getSensorList(self, robot):
-        data = robot.getSensorData()
-        self.sensorList.insert(0, data)
-        self.sensorList.pop(len(self.sensorList) - 1)
+        if (self.callSensorListOnce):
+            data = robot.getSensorData()
+            self.sensorList.insert(0, data)
+            self.sensorList.pop(len(self.sensorList) - 1)
+            self.callSensorListOnce = False
         return self.sensorList
 
     def updateCamera(self, robot, time):
@@ -285,6 +291,7 @@ class ReallyDumb():
             robot.constantMove(self.standardSpeed*.8)
             return "Move"
 
+
     def findColor(self, robot, time, col):
         delayTime = 1
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
@@ -304,6 +311,48 @@ class ReallyDumb():
         else:
             if (self.delay(delayTime)):
                 robot.rotate(-self.standardRotateSpeed, 40)
+        return False
+
+    def ramObject(self, robot, time):
+        sensorData = self.getSensorList(robot)[0]
+        if (sCheck(sensorData["Front"], 0.7)):
+            robot.stop()
+            return "Done"
+        elif (sCheck(sensorData["Front"], self.sensorValid)):
+            robot.constantMove(self.standardSpeed*0.7)
+        else:
+            return "Lost"
+
+    def findObject(self, robot, time):
+        if (robot.isNotMoving() and self.delay(0.5)):
+            print("Running")
+            sensorData = self.getSensorList(robot)
+            if (sCheck(sensorData[0]["Front"], self.sensorValid)):
+                print("Found")
+                return True
+
+            for i in range(len(sensorData)):
+                print(i)
+                s = sensorData[i]
+                # Previous front detection
+                if sCheck(s["Front"], self.sensorValid):
+                    print("Cluel4")
+                    robot.rotate(self.standardRotateSpeed, 20); break
+                elif sCheck(s["FrontLeft"], self.sensorValid):
+                    print("Cluel3")
+                    robot.rotate(-self.standardRotateSpeed, 20); break
+                elif sCheck(s["FrontRight"], self.sensorValid):
+                    print("Cluel2")
+                    robot.rotate(self.standardRotateSpeed, 20); break
+                elif sCheck(s["Left"], self.sensorValid):
+                    print("Cluel1")
+                    robot.rotate(-self.standardRotateSpeed, 40); break
+                elif sCheck(s["Right"], self.sensorValid):
+                    print("Cluelesss")
+                    robot.rotate(self.standardRotateSpeed, 40); break
+                else: # No idea
+                    print("Clueless")
+                    robot.rotate(self.standardRotateSpeed, 15); break
         return False
 
     def yellow(self, robot, time):
@@ -351,6 +400,7 @@ class ReallyDumb():
 
     def run(self, robot, time):
         self.time = time
+        self.callSensorListOnce = True
         self.runPeriodic(robot, time)
         self.overrideCheck(robot, time)
         if (self.runWait(robot, time)):
