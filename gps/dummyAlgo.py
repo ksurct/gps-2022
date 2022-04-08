@@ -477,7 +477,7 @@ if (__name__ == "__main__"):
 
     run.cameraSplits = 5
     run.algo = algorithm
-    run.isSim = True
+    run.isSim = False
     run.debugCamera = "Internet"
     run.scenario = "MAIN"
     run.startingOffsetError = (2,2)
