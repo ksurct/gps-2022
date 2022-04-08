@@ -190,6 +190,9 @@ class ReallyDumb():
 
     def stitchState(self, nexState, color, angleMargin):
         def fun(robot, time):
+            if (self.var == None):
+                self.var = True
+                self.wait(lambda r, t: r.move(2,1.5), 2)
             if (robot.isNotMoving()):
                 robot.move(self.standardSpeed*2, 1)
             elif (colorCount(self.cameraData[self.FRONT], color) != 0
@@ -197,6 +200,7 @@ class ReallyDumb():
                     or colorCount(self.cameraData[self.FRIGHT], color) != 0
                     or colorCount(self.cameraData[self.RIGHT], color) != 0
                     or colorCount(self.cameraData[self.LEFT], color) != 0):
+                self.var = None
                 return nexState
         return fun
 
@@ -296,10 +300,6 @@ class ReallyDumb():
 
     def findColor(self, robot, time, col):
         delayTime = 0.8
-        sensorData = self.getSensorList(robot)
-        if (sCheck(sensorData[0]["Front"], 0.7)):
-            return True
-
         if (colorCount(self.cameraData[self.FRONT], col) != 0):
             return True
         elif (colorCount(self.cameraData[self.FRIGHT], col) != 0):
@@ -482,8 +482,8 @@ if (__name__ == "__main__"):
 
     run.cameraSplits = 5
     run.algo = algorithm
-    run.isSim = True
-    run.debugCamera = "Internet"
+    run.isSim = False
+    run.debugCamera = False
     run.scenario = "MAIN"
     run.startingOffsetError = (0,0)
 
