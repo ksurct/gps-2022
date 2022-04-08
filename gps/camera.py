@@ -8,8 +8,8 @@ import json
 # import internetCam
 
 class Camera():
-    cam = cv2.VideoCapture(0)
     def __init__(self, splits, show, name, internet=False):
+        self.cam = cv2.VideoCapture(0)
         self.show = show
         self.frame = []
         if (show == "Internet"):
@@ -382,22 +382,33 @@ if __name__ == "__main__":
         show = "Internet"
     if (yn1 == "y"):
         cameraTune = {}
+        if os.path.exists('camera.json'):
+            with open('camera.json', 'r') as camera_file:
+                try:
+                    cameraTune = json.load(camera_file)
+                except:
+                    print("Failure")
+                    exit()
+        print("Starting with", cameraTune)
         camera = Camera(1, show, "main")
         try:
-            tol = float(input("Tuning red, tolerance = "))
-            res = camera.tuneRed(tol)
-            cameraTune["red lower"] = res[0]
-            cameraTune["red upper"] = res[1]
-            tol = float(input("Tuning yellow, tolerance = "))
-            time.sleep(2)
-            res = camera.tuneYellow(tol)
-            cameraTune["yellow lower"] = res[0]
-            cameraTune["yellow upper"] = res[1]
-            tol = float(input("Tuning blue, tolerance = "))
-            time.sleep(2)
-            res = camera.tuneBlue(tol)
-            cameraTune["blue lower"] = res[0]
-            cameraTune["blue upper"] = res[1]
+            if (input("r? ") == "y"):
+                tol = float(input("Tuning red, tolerance = "))
+                res = camera.tuneRed(tol)
+                cameraTune["red lower"] = res[0]
+                cameraTune["red upper"] = res[1]
+            if (input("y? ") == "y"):
+                tol = float(input("Tuning yellow, tolerance = "))
+                time.sleep(2)
+                res = camera.tuneYellow(tol)
+                cameraTune["yellow lower"] = res[0]
+                cameraTune["yellow upper"] = res[1]
+            if (input("b? ") == "y"):
+                tol = float(input("Tuning blue, tolerance = "))
+                time.sleep(2)
+                res = camera.tuneBlue(tol)
+                cameraTune["blue lower"] = res[0]
+                cameraTune["blue upper"] = res[1]
         except:
             pass
         with open('camera.json', 'w') as camera_file:

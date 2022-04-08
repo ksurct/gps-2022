@@ -1,4 +1,5 @@
 
+from numpy import diff
 import run
 
 mod = 0
@@ -17,6 +18,26 @@ class Margin():
         if (self.standard):
             return angle > self.a and angle < self.b
         return angle < self.a or angle > self.b
+
+    def optimal(self):
+        if (self.standard):
+            return (self.a + self.b) / 2
+        diff = 360 - self.b + self.a
+        return (diff/2 + self.b) % 360
+
+    def turnValue(self, angle):
+        opt = self.optimal()
+
+        diff = (opt - angle) % 360
+        diff2 = (angle - opt) % 360
+        print(opt)
+        print(diff)
+        print(diff2)
+        if (abs(diff2) < abs(diff)):
+            diff = diff2
+        if (diff > 180):
+            return 360 - diff
+        return -diff
 
 def anyColorOf(data, col):
     for split in data:
@@ -163,13 +184,11 @@ class ReallyDumb():
 
     def stitchState(self, nexState, color, angleMargin):
         def fun(robot, time):
-            self.wait(lambda r, t: r.move(self.standardSpeed*1.5, 1), .2)
-            #angle = robot.getAngle()
-            if(not (colorCount(self.cameraData[self.FRONT], color) != 0
-                or colorCount(self.cameraData[self.FLEFT], color) != 0
-                or colorCount(self.cameraData[self.FRIGHT], color) != 0)):
-                robot.move(self.standardSpeed, 1)
-            else:
+            if (robot.isNotMoving()):
+                robot.move(self.standardSpeed*1.5, 1)
+            elif (colorCount(self.cameraData[self.FRONT], color) != 0
+                    or colorCount(self.cameraData[self.FLEFT], color) != 0
+                    or colorCount(self.cameraData[self.FRIGHT], color) != 0):
                 return nexState
         return fun
 
@@ -228,6 +247,7 @@ class ReallyDumb():
         ret = None
         if (sCheck(data["Front"], 0.5)):
             val = self.var
+            robot.stop()
             self.var = None
             if (val == "FLEFT" or val == "LEFT"):
                 return "RIGHT_RED"
@@ -412,5 +432,10 @@ run.startingOffsetError = (2,2)
 
 run.run()
 
+# m = Margin(260, 270, True)
 
+# print("Test = ", m.optimal())
 
+# print("Test = ", m.turnValue(90))
+
+# print("Test = ", m.turnValue(90))
