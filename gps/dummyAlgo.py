@@ -80,7 +80,7 @@ class ReallyDumb():
         self.state = "INIT"
         self.standardSpeed = 1
         self.standardRotateSpeed = 900
-        self.sensorList = [None, None, None, None, None]
+        self.sensorList = [None, None, None]
         self.overrodeAction = False
         self.waitQueue = []
         self.currentWait = None
@@ -224,7 +224,7 @@ class ReallyDumb():
 
     def findRed(self, robot, time):
         self.objCount = 2
-        data = self.getSensorList()[0]
+        data = self.getSensorList(robot)[0]
         ret = None
         if (sCheck(data["Front"], 0.5)):
             val = self.var
@@ -253,7 +253,7 @@ class ReallyDumb():
             return "CORNER1_STITCH"
 
     def ramColor(self, robot, time, color):
-        sensorData = self.getSensorList()[0]
+        sensorData = self.getSensorList(robot)[0]
         if (colorCount(self.cameraData[self.FRONT], color) == 0):
             return "Lost"
         if (sCheck(sensorData["Front"], 0.7)):
@@ -362,7 +362,7 @@ class ReallyDumb():
 
     def goAroundWithSensors(self, robot, col, dir):
         if (robot.isNotMoving() and self.delay(0.1, "goRound")):
-            data = self.getSensorList() # {[],[],[],[],[]}
+            data = self.getSensorList(robot) # {[],[],[],[],[]}
             closeIndex = "FrontLeft" if dir == -1 else "FrontRight"
             farIndex = "Left" if dir == -1 else "Right"
             frontIndex = "Front"
@@ -377,16 +377,18 @@ class ReallyDumb():
                 return "close"
             elif not checkFar == -1:
                 robot.move(self.standardSpeed, 1)
+                print("move forward")
                 return "move"
             elif checkFar + checkClose + checkFront == -3:
-                for s in data:
+                for i in range(len(data)):
+                    s= data[i]
                     if not s[frontIndex] == -1:
                         robot.rotate(-self.standardRotateSpeed * dir, 2*20)
                         return "front"
                     elif not s[closeIndex] == -1:
                         robot.rotate(-self.standardRotateSpeed * dir, 20)
                         return "close"
-                    elif not s[farIndex] == -1:
+                    elif not s[farIndex] == -1 and i == 1:
                         robot.rotate(self.standardRotateSpeed * dir, 20)
                         return "far"
                 robot.rotate(self.standardRotateSpeed * dir, 20)
