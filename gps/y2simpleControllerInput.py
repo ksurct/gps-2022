@@ -1,3 +1,4 @@
+from multiprocessing.connection import wait
 import pyglet
 
 from robot import Robot
@@ -91,6 +92,24 @@ def on_key_press(key, mod):
         GPIO.output(led, GPIO.LOW)
         stopped = True
         r.stop()
+    elif key == "o":
+        #donut (360)
+        r.constantRotate(2)
+        wait(5)
+        stopped = False
+    elif key == "b":
+        #boost
+        r.constantMove(initialMoveSpeed+0.3)
+        stopped = False
+
+
+    else:
+        r.constantRotate(0)
+        r.constantMove(0)
+        stopped = True
+    
+
+
 
 
 @window.event
