@@ -1,4 +1,4 @@
-#import robot_sim
+import robot_sim
 #import robot
 import random
 #import pygame
