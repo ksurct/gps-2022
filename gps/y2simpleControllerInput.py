@@ -17,6 +17,8 @@ initialRotateSpeed = 1
 stopped = True
 
 window = pyglet.window.Window(width=50, height=50)
+keys = pyglet.window.key.KeyStateHandler()
+window.push_handlers(keys)
 
 
 @window.event
@@ -30,6 +32,16 @@ def on_key_press(key, mod):
     key = chr(key)
     print("Pressed", key)
 
+    if key == "d":
+        # Rotate right
+        r.constantRotate(initialRotateSpeed)
+        stopped = False
+
+    if key == "a":
+        # Rotate left
+        r.constantRotate(-initialRotateSpeed)
+        stopped = False
+
     if key == "w":
         # Forward
         r.constantMove(initialMoveSpeed)
@@ -40,15 +52,7 @@ def on_key_press(key, mod):
         r.constantMove(-initialMoveSpeed)
         stopped = False
 
-    elif key == "d":
-        # Rotate right
-        r.constantRotate(initialRotateSpeed)
-        stopped = False
-
-    elif key == "a":
-        # Rotate left
-        r.constantRotate(-initialRotateSpeed)
-        stopped = False
+    
 
     elif key == "=":  # = means +
         # Increase move speed
@@ -107,10 +111,6 @@ def on_key_press(key, mod):
         r.constantRotate(0)
         r.constantMove(0)
         stopped = True
-    
-
-
-
 
 @window.event
 def on_key_release(key, mod):
