@@ -184,6 +184,13 @@ class Robot():
         self.moving = True
         self.timeToKill = -1
 
+    # Set constant rotation with no simulation code
+    def constantRotateNoSim(self, speed):
+        self.setLeftMps(speed)
+        self.setRightMps(-speed)
+        self.timeToKill = -1
+        self.moving = True
+
     # Move a certain distance at a speed
     def move(self, speedMps, distanceMeters):
         seconds = abs(distanceMeters / speedMps)
