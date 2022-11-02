@@ -29,8 +29,8 @@ if keys[key.W]:
 if keys[key.S]:
     r.constantMove(-moveSpeed)
 
-# @window.event
-# def on_key_press(key, mod):
+@window.event
+def on_key_press(key, mod):
 #     global led
 #     global r
 #     global initialMoveSpeed
@@ -62,48 +62,48 @@ if keys[key.S]:
 
     
 
-#     elif key == "=":  # = means +
-#         # Increase move speed
-#         initialMoveSpeed += .2
-#         if not stopped:
-#             r.constantMove(initialMoveSpeed)
-#         print("Movement Speed increased to " + str(initialMoveSpeed))
+    if key == "=":  # = means +
+        # Increase move speed
+        initialMoveSpeed += .2
+        if not stopped:
+            r.constantMove(initialMoveSpeed)
+        print("Movement Speed increased to " + str(initialMoveSpeed))
 
-#     elif key == "-":
-#         # Decrease move speed
-#         print("Movement Speed" + str(initialMoveSpeed))
-#         initialMoveSpeed -= 1
-#         if (initialMoveSpeed <= 0):
-#             initialMoveSpeed = 0
-#             print("Movement Speed modified " + str(initialMoveSpeed))
-#             stopped = True
-#             r.stop()
-#         if not stopped:
-#             r.constantMove(initialMoveSpeed)
-#         print("Movement Speed decreased to " + str(initialMoveSpeed))
+    elif key == "-":
+        # Decrease move speed
+        print("Movement Speed" + str(initialMoveSpeed))
+        initialMoveSpeed -= 1
+        if (initialMoveSpeed <= 0):
+            initialMoveSpeed = 0
+            print("Movement Speed modified " + str(initialMoveSpeed))
+            stopped = True
+            r.stop()
+        if not stopped:
+            r.constantMove(initialMoveSpeed)
+        print("Movement Speed decreased to " + str(initialMoveSpeed))
 
-#     elif key == "]":
-#         # Increase rotation speed
-#         initialRotateSpeed += 1
-#         if not stopped:
-#             r.constantRotate(initialRotateSpeed)
-#         print("Rotate Speed increased to " + str(initialRotateSpeed))
+    elif key == "]":
+        # Increase rotation speed
+        initialRotateSpeed += 1
+        if not stopped:
+            r.constantRotate(initialRotateSpeed)
+        print("Rotate Speed increased to " + str(initialRotateSpeed))
 
-#     elif key == "[":
-#         # Decrease rotation speed
-#         initialRotateSpeed -= 5
-#         if (initialRotateSpeed <= 0):
-#             initialRotateSpeed = 0
-#             stopped = True
-#         if not stopped:
-#             r.constantRotate(-initialRotateSpeed)
-#         print("Rotate Speed decreased to " + str(initialRotateSpeed))
+    elif key == "[":
+        # Decrease rotation speed
+        initialRotateSpeed -= 5
+        if (initialRotateSpeed <= 0):
+            initialRotateSpeed = 0
+            stopped = True
+        if not stopped:
+            r.constantRotate(-initialRotateSpeed)
+        print("Rotate Speed decreased to " + str(initialRotateSpeed))
 
-#     elif key == "q" or initialMoveSpeed == 0:
-#         # Stop
-#         GPIO.output(led, GPIO.LOW)
-#         stopped = True
-#         r.stop()
+    elif key == "q" or initialMoveSpeed == 0:
+        # Stop
+        GPIO.output(led, GPIO.LOW)
+        stopped = True
+        r.stop()
 #     elif key == "o":
 #         #donut (360)
 #         r.constantRotate(2)
