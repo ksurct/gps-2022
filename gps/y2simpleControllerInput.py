@@ -16,7 +16,6 @@ r = Robot(a)
 initialMoveSpeed = .2
 initialRotateSpeed = 1
 stopped = True
-
 moveSpeed = .8
 
 window = pyglet.window.Window(width=50, height=50)
@@ -24,18 +23,27 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 if keys[key.W]:
-    r.constantMove(moveSpeed)
+    
+    if keys[key.A]:
+        r.newArcMove("L", moveSpeed)
+    else:
+        r.constantMove(moveSpeed)
+    
+    if keys[key.D]:
+        r.newArcMove("R", moveSpeed)
+    else:
+        r.constantMove(moveSpeed)
 
-if keys[key.S]:
+elif keys[key.S]:
     r.constantMove(-moveSpeed)
+
+else:
+    r.stop()
+    stopped = True
 
 @window.event
 def on_key_press(key, mod):
-#     global led
-#     global r
-#     global initialMoveSpeed
-#     global initialRotateSpeed
-#     global stopped
+
 #     GPIO.output(led, GPIO.HIGH)
 #     key = chr(key)
 #     print("Pressed", key)
@@ -101,7 +109,7 @@ def on_key_press(key, mod):
 
     elif key == "q" or initialMoveSpeed == 0:
         # Stop
-        GPIO.output(led, GPIO.LOW)
+#        GPIO.output(led, GPIO.LOW)
         stopped = True
         r.stop()
 #     elif key == "o":
