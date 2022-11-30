@@ -1,5 +1,4 @@
 from enum import Enum
-import robot
 import math
 
 class State(Enum):
@@ -25,8 +24,15 @@ class newTestAlgorithm:
         self.distance_from_obstacle = 0
         self.current_state = State.IDLE
         self.offset_feet = 2
+        def dsen():
+            return {"Front": -1, "FrontRight": -1, "FrontLeft": -1, "Left": -1, "Right": -1}
+        self.sensorList = [dsen(), dsen(), dsen()]
+        self.callSensorListOnce = True
+        self.sensorData = None
 
     def algorithm(self, robot):
+        self.update_sensors()
+
         self.update_state()
 
         if self.current_state == State.IDLE:
@@ -38,14 +44,12 @@ class newTestAlgorithm:
         elif self.current_state == State.TURNLEFT1 or self.current_state == State.TURNLEFT2:
             robot.turn_left()        
 
-        #Update variables with sensor data
-
     def update_state(self):
         match self.current_state:
             case State.IDLE:
                 pass
             case State.DRIVE1:
-                if self.distance_travelled >= (20 + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (20 + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNRIGHT1:
@@ -53,7 +57,7 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE2:
-                if self.distance_travelled >= (self.pythag(10, 30) + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (self.pythag(10, 30) + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNLEFT1:
@@ -61,7 +65,7 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE3:
-                if self.distance_travelled >= (self.pythag(10, 30) + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (self.pythag(10, 30) + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNRIGHT2:
@@ -69,7 +73,7 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE4:
-                if self.distance_travelled >= (20 + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (20 + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNLEFT2:
@@ -77,7 +81,7 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE5:
-                if self.distance_travelled >= (20 + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (20 + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNRIGHT3:
@@ -85,7 +89,7 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE6:
-                if self.distance_travelled >= (60 + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (60 + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
             case State.TURNRIGHT4:
@@ -93,9 +97,21 @@ class newTestAlgorithm:
                     self.degrees_rotated = 0
                     self.current_state += 1
             case State.DRIVE7:
-                if self.distance_travelled >= (20 + self.offset_feet) and self.distance_from_obstacle < 1:
+                if self.distance_travelled >= (20 + self.offset_feet) or self.distance_from_obstacle < 1:
                     self.distance_travelled = 0
                     self.current_state += 1
     
     def pythag(a, b):
         return math.sqrt(a*a + b*b)
+
+    def update_sensors(self, robot):
+        print("called")
+        self.sensorData = robot.getSensorData()
+
+    def get_sensor_list(self, robot):
+        if (self.callSensorListOnce):
+            data = robot.getSensorData()
+            self.sensorList.insert(0, data)
+            self.sensorList.pop(len(self.sensorList) - 1)
+            self.callSensorListOnce = False
+        return self.sensorList
